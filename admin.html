@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pravin Kitchens & Interiors — Admin Panel</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono&display=swap');
+
+        :root {
+            --bg: #07120a;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #0c2414 0%, #030805 100%);
+            --surface: rgba(18, 36, 23, 0.55);
+            --surface-hover: rgba(28, 54, 35, 0.75);
+            --surface2: rgba(35, 71, 46, 0.3);
+            --border: rgba(61, 187, 110, 0.15);
+            --border-hover: rgba(61, 187, 110, 0.35);
+            --accent: #3dbb6e;
+            --accent-glow: rgba(61, 187, 110, 0.25);
+            --accent-gradient: linear-gradient(135deg, #3dbb6e 0%, #2ecc71 100%);
+            --accent-dark: #27ae60;
+            --text: #e8f7ee;
+            --muted: #83a08d;
+            --danger: #ff6b6b;
+            --good: #2ecc71;
+            --radius: 16px;
+            --sans: 'Outfit', 'Inter', -apple-system, sans-serif;
+            --mono: 'Space Mono', monospace;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            --blur: blur(16px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--sans);
+            color: var(--text);
+            background: var(--bg);
+            background-image: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient blurred background accents */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(61, 187, 110, 0.08) 0%, transparent 70%);
+            top: -150px;
+            left: -150px;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(40px);
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.06) 0%, transparent 70%);
+            bottom: -200px;
+            right: -200px;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(40px);
+        }
+
+        header {
+            background: rgba(18, 36, 23, 0.6);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 span {
+            color: var(--accent);
+        }
+
+        .role-badge {
+            background: rgba(61, 187, 110, 0.1);
+            color: var(--accent);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-gradient);
+            color: #030805;
+            box-shadow: 0 0 15px rgba(61, 187, 110, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .layout {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 24px;
+            gap: 30px;
+            z-index: 5;
+        }
+
+        .sidebar {
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            background: rgba(18, 36, 23, 0.35);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+        }
+
+        .tab-btn:hover {
+            background: rgba(61, 187, 110, 0.08);
+            border-color: var(--border-hover);
+            color: var(--text);
+            transform: translateX(4px);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-gradient);
+            color: #030805;
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(61, 187, 110, 0.25);
+        }
+
+        .content {
+            flex: 1;
+            background: var(--surface);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            color: var(--accent);
+            letter-spacing: -0.3px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: rgba(5, 11, 7, 0.75);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: var(--sans);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .rates-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .rates-table th,
+        .rates-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(61, 187, 110, 0.08);
+            text-align: left;
+        }
+
+        .rates-table th {
+            font-size: 0.78rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 700;
+            background: rgba(9, 19, 13, 0.5);
+            letter-spacing: 0.8px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .rates-table td td-name {
+            font-weight: 500;
+        }
+
+        .rates-table td input {
+            background: rgba(5, 11, 7, 0.75);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: 120px;
+            font-family: var(--mono);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .rates-table td input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+            outline: none;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: #030805;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(61, 187, 110, 0.2);
+            font-family: var(--sans);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(61, 187, 110, 0.4);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: var(--sans);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 107, 107, 0.1);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--good);
+            color: #030805;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 100;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .item-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .item-manage-card {
+            background: rgba(18, 36, 23, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s;
+        }
+
+        .item-manage-card:hover {
+            border-color: var(--border-hover);
+            background: rgba(18, 36, 23, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(61, 187, 110, 0.08);
+        }
+
+        .item-manage-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .item-manage-card-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .tag-pill {
+            background: rgba(61, 187, 110, 0.1);
+            border: 1px solid rgba(61, 187, 110, 0.15);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-family: var(--mono);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .tag-pill button {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .tag-pill button:hover {
+            transform: scale(1.2);
+        }
+
+        .tag-pill button.rename-btn {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .tag-pill button.rename-btn:hover {
+            color: var(--accent);
+            transform: scale(1.2);
+        }
+
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sub-form {
+            background: rgba(5, 11, 7, 0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Room Selector Tabs */
+        .room-tabs-container {
+            background: rgba(18, 36, 23, 0.45);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 18px 22px;
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            box-shadow: var(--shadow);
+            margin-bottom: 0px;
+        }
+
+        .room-tabs-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .room-tabs {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+        }
+
+        .room-tab {
+            background: rgba(5, 11, 7, 0.4);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .room-tab:hover:not(.disabled) {
+            border-color: var(--accent);
+            color: var(--text);
+            background: rgba(61, 187, 110, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .room-tab.active {
+            background: var(--accent-gradient);
+            color: #030805;
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(61, 187, 110, 0.3);
+        }
+
+        .room-tab.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: rgba(255, 255, 255, 0.02);
+            border-style: dashed;
+        }
+
+        .room-tab .tab-icon {
+            font-size: 1.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .room-tab.active .tab-icon {
+            background: rgba(5, 11, 7, 0.15);
+        }
+
+        .room-tab:hover:not(.disabled) .tab-icon {
+            transform: scale(1.15) rotate(5deg);
+            background: rgba(61, 187, 110, 0.15);
+        }
+
+        .room-tab .coming-soon-badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--muted);
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-left: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo"
+                style="height: 50px; border-radius: 6px; object-fit: contain;">
+            <div>
+                <h1>Pravin Kitchens &amp; Interiors
+                    <span class="role-badge">Admin Panel</span>
+                    <span class="role-badge" id="divisionBadge"
+                        style="background:var(--surface2);color:var(--accent);border-color:var(--accent);">Marketing</span>
+                    <span class="role-badge" id="roomBadge"
+                        style="background:var(--accent);color:#fff;border-color:var(--accent);">Kitchen</span>
+                </h1>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-btn" onclick="location.href='employee.html'">Go to Employee Panel</button>
+            <button class="nav-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Room Selector Tabs -->
+    <div class="room-tabs-container-wrapper"
+        style="max-width: 1200px; width: 100%; margin: 20px auto 0; padding: 0 20px;">
+        <div class="room-tabs-container">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 12px;">
+                <div style="display: flex; gap: 14px; align-items: center;">
+                    <div id="floorSelectorsWrap" style="display: none; gap: 10px; align-items: center;">
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label
+                                style="font-size:0.68rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Floor</label>
+                            <select id="floorSelector"
+                                style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:4px 8px; border-radius:4px; font-size:0.8rem; outline:none;"
+                                onchange="updateRoomState(selectedRoom, selectedRoomName)">
+                                <option value="Ground Floor">Ground Floor</option>
+                                <option value="First Floor">First Floor</option>
+                                <option value="Second Floor">Second Floor</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label
+                                style="font-size:0.68rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Room
+                                No.</label>
+                            <select id="roomNoSelector"
+                                style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:4px 8px; border-radius:4px; font-size:0.8rem; outline:none;"
+                                onchange="updateRoomState(selectedRoom, selectedRoomName)">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="room-tabs" id="roomTabs"></div>
+        </div>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <button class="tab-btn active" onclick="switchTab('rates', this)">Rates Management</button>
+            <button class="tab-btn" onclick="switchTab('add-opt', this)">Manage Materials</button>
+            <button class="tab-btn" onclick="switchTab('add-item', this)">Manage Items</button>
+            <button class="tab-btn" onclick="switchTab('add-div', this)">Manage Divisions</button>
+            <button class="tab-btn" onclick="switchTab('settings', this)">Settings &amp; Specs</button>
+            <button class="tab-btn" onclick="switchTab('quotes-folder', this)">Saved Quotes</button>
+        </div>
+
+        <div class="content">
+            <!-- Rates Management Tab -->
+            <div id="rates" class="tab-panel active">
+                <h2>Default &amp; Custom Rates</h2>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 15px;">
+                    Set standard pricing per square foot for all materials. These rates will automatically lock on the
+                    employee screen.
+                </p>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="rates-table">
+                        <thead>
+                            <tr>
+                                <th>Material Name</th>
+                                <th>Rate (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ratesTableBody">
+                            <!-- populated by js -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="action-row">
+                    <button class="btn-danger" onclick="resetAllDefaults()">Reset to Defaults</button>
+                    <button class="btn-primary" onclick="saveRates()">Save Rates</button>
+                </div>
+            </div>
+
+            <!-- Manage Materials Options Tab -->
+            <div id="add-opt" class="tab-panel">
+                <h2>Add Material Option to Item Card</h2>
+                <div class="sub-form" style="background: none; border: none; padding: 0;">
+                    <div class="form-group">
+                        <label for="matTargetItem">Select Target Item</label>
+                        <select id="matTargetItem">
+                            <!-- populated by js -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="matLabel">Material Label / Name</label>
+                        <input type="text" id="matLabel" placeholder="e.g. Green Premium Lamination">
+                    </div>
+                    <div class="form-group">
+                        <label for="matFormula">Formula / Dimensions Required</label>
+                        <select id="matFormula">
+                            <option value="(L+W)*H">(L + W) * H [Cabinet Standard]</option>
+                            <option value="L*H">L * H [Wall Panel / Beam]</option>
+                            <option value="L*W">L * W [Ledge]</option>
+                            <option value="SQFT">SQFT [Direct input]</option>
+                            <option value="QTY">QTY [Quantity based]</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="matInitialRate">Initial Rate (₹)</label>
+                        <input type="number" id="matInitialRate" placeholder="e.g. 500">
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-primary" onclick="addMaterialToItem()">Add Material Option</button>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; font-size: 1rem; color: var(--accent);">Current Items &amp; Materials</h3>
+                <div class="item-list-container" id="currentItemsList">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- Manage Custom Items Tab -->
+            <div id="add-item" class="tab-panel">
+                <h2>Add Completely New Item Card</h2>
+                <div class="sub-form" style="background: none; border: none; padding: 0;">
+                    <div class="form-group">
+                        <label for="newItemName">New Item Name</label>
+                        <input type="text" id="newItemName" placeholder="e.g. Designer Wardrobe">
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-primary" onclick="addCustomItem()">Create Item Card</button>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; font-size: 1rem; color: var(--accent);">All Items</h3>
+                <div class="item-list-container" id="customCreatedItemsList">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- Manage Divisions Tab -->
+            <div id="add-div" class="tab-panel">
+                <h2>Manage Divisions</h2>
+                <div class="sub-form" style="background: none; border: none; padding: 0;">
+                    <div class="form-group">
+                        <label for="newDivId">Division ID (lowercase, alphanumeric, e.g. 'commercial')</label>
+                        <input type="text" id="newDivId" placeholder="e.g. commercial">
+                    </div>
+                    <div class="form-group">
+                        <label for="newDivName">Division Name</label>
+                        <input type="text" id="newDivName" placeholder="e.g. Commercial">
+                    </div>
+                    <div class="form-group">
+                        <label for="newDivIcon">Division Icon (Emoji)</label>
+                        <input type="text" id="newDivIcon" placeholder="e.g. 🏢">
+                    </div>
+                    <div class="form-group">
+                        <label for="newDivSub">Description</label>
+                        <input type="text" id="newDivSub" placeholder="e.g. Office and commercial interior quotes">
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-primary" onclick="addDivision()">Create Division</button>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; font-size: 1rem; color: var(--accent);">Current Divisions</h3>
+                <div class="item-list-container" id="currentDivisionsList">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- Manage Settings & Specs Tab -->
+            <div id="settings" class="tab-panel">
+                <h2>Material Specifications &amp; Terms</h2>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 15px;">
+                    Define the default list of materials / descriptions that will be printed in the quote summary after
+                    the total.
+                </p>
+                <div class="sub-form" style="background: none; border: none; padding: 0;">
+                    <div class="form-group">
+                        <label for="materialSpecsInput">Material Specifications Text</label>
+                        <textarea id="materialSpecsInput" rows="6"
+                            style="background: rgba(5, 11, 7, 0.75); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 0.95rem; width: 100%; resize: vertical; font-family: var(--sans); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); transition: all 0.3s;"></textarea>
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Quotes Folder Tab -->
+            <div id="quotes-folder" class="tab-panel">
+                <h2>Saved Quotes Folder</h2>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;">
+                    All modular interior quotes saved by employees and administrators are listed below. Quotes older
+                    than 45 days are deleted automatically.
+                </p>
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table class="rates-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Quote No</th>
+                                <th>Type</th>
+                                <th>Customer Name</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Division</th>
+                                <th>Amount</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminQuotesTableBody">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Saved successfully!</div>
+
+    <script>
+        // Check admin session
+        if (sessionStorage.getItem('pks_admin_auth') !== 'true') {
+            location.href = 'index.html';
+        }
+
+        const selectedDivision = sessionStorage.getItem('pks_selected_division') || 'marketing';
+        const selectedDivisionName = sessionStorage.getItem('pks_selected_division_name') || 'Marketing';
+        document.getElementById('divisionBadge').textContent = selectedDivisionName;
+
+        const DEFAULT_DIVISIONS = [
+            { id: 'marketing', name: 'Marketing', icon: '📈', sub: 'Marketing division quotes', active: true },
+            { id: 'showroom', name: 'Showroom', icon: '🏢', sub: 'Showroom display & walk-in quotes', active: true }
+        ];
+
+        function getDivisions() {
+            const stored = localStorage.getItem('pks_divisions');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) return parsed;
+                } catch (e) { }
+            }
+            localStorage.setItem('pks_divisions', JSON.stringify(DEFAULT_DIVISIONS));
+            return DEFAULT_DIVISIONS;
+        }
+
+        let divisionsList = getDivisions();
+
+        function getDeletedStandardItems() {
+            const stored = localStorage.getItem('pks_deleted_standard_items');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) return parsed;
+                } catch (e) { }
+            }
+            return [];
+        }
+        let deletedStandardItems = getDeletedStandardItems();
+
+        function getDeletedStandardMaterials() {
+            const stored = localStorage.getItem('pks_deleted_standard_materials');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) return parsed;
+                } catch (e) { }
+            }
+            return [];
+        }
+        let deletedStandardMaterials = getDeletedStandardMaterials();
+
+        const ROOMS = [
+            { id: 'kitchen', name: 'Kitchen', icon: '🍳', active: true },
+            { id: 'living_room', name: 'Living Room', icon: '🛋️', active: true },
+            { id: 'prayer_unit', name: 'Prayer Unit', icon: '🪔', active: true },
+            { id: 'bedroom', name: 'Bedroom', icon: '🛏️', active: true },
+            { id: 'dining_room', name: 'Dining Room', icon: '🍽️', active: true },
+            { id: 'musical_room', name: 'Musical Room', icon: '🎵', active: true },
+            { id: 'study_room', name: 'Study Room', icon: '📚', active: true },
+            { id: 'sitout', name: 'Sitout', icon: '🌿', active: true },
+            { id: 'store_room', name: 'Store Room', icon: '📦', active: true },
+            { id: 'toilet_area', name: 'Toilet Area', icon: '🚿', active: true }
+        ];
+
+        let selectedRoom = sessionStorage.getItem('pks_selected_room') || 'kitchen';
+        let selectedRoomName = sessionStorage.getItem('pks_selected_room_name') || 'Kitchen';
+
+        function logout() {
+            sessionStorage.removeItem('pks_admin_auth');
+            location.href = 'index.html';
+        }
+
+        /* ---------- Base Materials & Defaults ---------- */
+        const DEFAULT_RATES = {
+            "Marine Ply – Lamination": 450,
+            "Marine Ply – Lamination (Box Type)": 450,
+            "Marine Ply – Lamination (Door Type)": 450,
+            "Marine Ply – Lamination (Door Only)": 450,
+            "Marine Ply – Lamination (Partition Type)": 450,
+            "Marine Ply – Lamination (Framed)": 450,
+            "Marine Ply – Lamination (Box)": 450,
+            "Marine Ply (Box Type)": 450,
+            "Marine Ply (Door Type)": 450,
+
+            "Marine Ply – Acrylic": 650,
+            "Marine Ply – Acrylic (Box Type)": 650,
+            "Marine Ply – Acrylic (Door Type)": 650,
+            "Marine Ply – Acrylic (Door Only)": 650,
+            "Marine Ply – Acrylic (Partition Type)": 650,
+            "Marine Ply – Acrylic (Framed)": 650,
+            "Marine Ply – Acrylic (Box)": 650,
+
+            "WPC": 550,
+            "WPC (Box Type)": 550,
+            "WPC (Door Type)": 550,
+            "WPC (Door Only)": 550,
+            "WPC (Partition Type)": 550,
+            "WPC (Framed)": 550,
+            "WPC (Box)": 550,
+            "PVC": 300,
+            "Lamination": 250,
+            "Charcoal": 400,
+            "Marine Plane": 350,
+            "Engineering Wood": 280,
+            "Engineering Wood (Box Type)": 280,
+            "Engineering Wood (Door Type)": 280,
+            "Engineering Wood (Door Only)": 280,
+            "King Size Bed (Direct Price)": 35000,
+            "Queen Size Bed (Direct Price)": 28000,
+            "Glass": 350,
+            "Wood finishing": 500,
+            "Veneer finishing": 700,
+            "PU Paint": 600,
+            "Basket": 0,
+            "Tandom Box": 0,
+            "Oil Pull Out": 0,
+            "PVC Cutlery Tray": 0,
+            "SS Cutlery Tray": 0,
+            "Dustbin Unit": 0,
+            "Detergent Holder": 0,
+            "GTBT": 0,
+            "ROLLING SHUTTER": 0,
+            "Tall Unit": 0,
+            "Swing Corner": 0,
+            "Magic Corner": 0,
+            "PARACEL CORNER": 0,
+            "D-Tray": 0,
+            "Soft Closing Runner": 0,
+            "Soft Closing Hinges": 0,
+            "Profile Handle": 0
+        };
+
+        const ACCESSORY_LIST = [
+            "Basket",
+            "Tandom Box",
+            "Oil Pull Out",
+            "PVC Cutlery Tray",
+            "SS Cutlery Tray",
+            "Dustbin Unit",
+            "Detergent Holder",
+            "GTBT",
+            "ROLLING SHUTTER",
+            "Tall Unit",
+            "Swing Corner",
+            "Magic Corner",
+            "PARACEL CORNER",
+            "D-Tray",
+            "Soft Closing Runner",
+            "Soft Closing Hinges",
+            "Profile Handle"
+        ];
+
+        const ROOM_ITEMS = {
+            kitchen: [
+                { id: 1, name: "Kitchen Bottom", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Partition Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Partition Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Partition Type)", "WPC (Door Only)"] },
+                { id: 2, name: "Kitchen Top Box", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
+                { id: 3, name: "Kitchen Loft", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Framed)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Framed)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Framed)", "WPC (Door Only)"] },
+                { id: 4, name: "Kitchen – Island Cabin", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
+                { id: 5, name: "Kitchen – Breakfast Table", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
+                { id: 6, name: "Breakfast Table – Wall Panelling", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 7, name: "Breakfast Table – Beam Covering", options: ["Lamination"] },
+                { id: 8, name: "Breakfast Table – Open Box", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
+                { id: 9, name: "Spice Rack", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
+                { id: 10, name: "Ledge", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
+                { id: 11, name: "Kitchen Side Storage Cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 12, name: "Kitchen & Dining Partition", options: ["WPC", "Marine Plane", "Engineering Wood"] }
+            ],
+            living_room: [
+                { id: 16, name: "Tv Unit – Wall Panelling", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 17, name: "Tv Unit – Bottom Cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 18, name: "Tv Unit – Side Show Wall Cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 19, name: "Living & Dining Room Partition", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 20, name: "Living Room Wall Panelling", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 21, name: "Staircase Bottom", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 60, name: "QUATUYAD", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 61, name: "LIVING AND KITCHEN PARTITION", options: ["WPC", "Marine Plane", "Engineering Wood"] }
+            ],
+            prayer_unit: [
+                { id: 75, name: "PRAYER UNIT BOTTOM CABINET", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
+            ],
+            bedroom: [
+                { id: 25, name: "Wardrobe", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 27, name: "Bed back wall paneling with headrest", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 28, name: "Bed", options: ["King Size Bed (Direct Price)", "Queen Size Bed (Direct Price)"] },
+                { id: 29, name: "Bay window", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 30, name: "Dressing unit wall paneling", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 31, name: "Dressing unit bottom cabinet", options: ["Marine Ply – Lamination (Box)", "Marine Ply – Acrylic (Box)", "WPC (Box)"] },
+                { id: 32, name: "Tv unit-wall paneling", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 33, name: "Tv unit-bottom cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 34, name: "Tv unit-SIDE SHOW WALL CABINET", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 65, name: "SIDE CABINET", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 66, name: "CUPBOARD 1", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 67, name: "CUPBOARD 2", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 68, name: "LOFT 1", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 69, name: "LOFT 2", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 70, name: "WALL PANNELING", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 71, name: "WALL PANNELING WITH HIDDEN DOOR", options: ["PVC", "Lamination", "Charcoal"] }
+            ],
+            dining_room: [
+                { id: 37, name: "Wash basin unit bottom cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 38, name: "Wash basin unit wall paneling", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 39, name: "Dining room crockery unit", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 40, name: "Accessories", options: ACCESSORY_LIST }
+            ],
+            musical_room: [
+                { id: 80, name: "WALL PANEL", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 81, name: "WALL PANNELLING TABLE", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
+            ],
+            study_room: [
+                { id: 85, name: "BOOK SHELF", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 86, name: "STUDY TABLE", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 87, name: "STUDY TABLE TOP BOX", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 88, name: "COMPUTER TABLE", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
+            ],
+            toilet_area: [
+                { id: 41, name: "Toilet area washbasin cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+            ],
+            store_room: [
+                { id: 44, name: "Store room cupboard", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
+            ],
+            sitout: [
+                { id: 46, name: "Chappal stand", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 47, name: "Sit out area ceiling", options: ["PVC", "Lamination", "Charcoal", "Wood finishing", "Veneer finishing", "PU Paint"] }
+            ]
+        };
+
+        for (const room in ROOM_ITEMS) {
+            ROOM_ITEMS[room].forEach(item => {
+                if (item.name) item.name = item.name.toUpperCase();
+            });
+        }
+
+        let BASE_ITEMS = ROOM_ITEMS[selectedRoom] || ROOM_ITEMS.kitchen;
+
+        /* ---------- Data Loaders ---------- */
+        function getRates() {
+            const stored = localStorage.getItem('pks_rates');
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) { }
+            }
+            return { ...DEFAULT_RATES };
+        }
+
+        function getCustomMaterials() {
+            const stored = localStorage.getItem('pks_custom_materials');
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) { }
+            }
+            return {};
+        }
+
+        function getCustomItems() {
+            const stored = localStorage.getItem('pks_custom_items');
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) { }
+            }
+            return [];
+        }
+
+        /* ---------- State Management ---------- */
+        let currentRates = getRates();
+        let customMaterials = getCustomMaterials();
+        let customItems = getCustomItems();
+
+        /* ---------- UI Actions ---------- */
+        function switchTab(tabId, btnEl) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnEl.classList.add('active');
+
+            // Hide room tabs when managing divisions or settings (it's a global action, not room-specific)
+            const roomTabsEl = document.getElementById('roomTabs');
+            const roomBadgeEl = document.getElementById('roomBadge');
+            if (tabId === 'add-div' || tabId === 'settings' || tabId === 'quotes-folder') {
+                if (roomTabsEl) roomTabsEl.style.display = 'none';
+                if (roomBadgeEl) roomBadgeEl.style.display = 'none';
+            } else {
+                if (roomTabsEl) roomTabsEl.style.display = 'flex';
+                if (roomBadgeEl) roomBadgeEl.style.display = 'inline-block';
+            }
+
+            renderTabContent(tabId);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => {
+                t.style.display = 'none';
+            }, 2000);
+        }
+
+        /* ---------- Renderers ---------- */
+        function renderRatesTable() {
+            const body = document.getElementById('ratesTableBody');
+            body.innerHTML = '';
+
+            // Get all unique material labels used anywhere
+            const allMaterials = new Set();
+            // Default ones
+            Object.keys(DEFAULT_RATES).forEach(k => allMaterials.add(k));
+            // Custom ones from customMaterials
+            Object.values(customMaterials).forEach(mats => {
+                mats.forEach(m => allMaterials.add(m.label));
+            });
+            // Custom ones from customItems
+            customItems.forEach(item => {
+                item.options.forEach(opt => allMaterials.add(opt.label));
+            });
+
+            Array.from(allMaterials).sort().forEach(mat => {
+                const tr = document.createElement('tr');
+                const rateVal = currentRates[mat] !== undefined ? currentRates[mat] : 0;
+                tr.innerHTML = `
+                    <td>${mat}</td>
+                    <td><input type="number" data-material="${mat}" value="${rateVal}"></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function saveRates() {
+            const inputs = document.querySelectorAll('#ratesTableBody input');
+            const ratesObj = {};
+            inputs.forEach(input => {
+                const mat = input.dataset.material;
+                const val = parseFloat(input.value) || 0;
+                ratesObj[mat] = val;
+            });
+            localStorage.setItem('pks_rates', JSON.stringify(ratesObj));
+            currentRates = ratesObj;
+            showToast("Rates saved successfully!");
+        }
+
+        function resetAllDefaults() {
+            if (confirm("Are you sure you want to reset all rates to zero and clear all custom items, materials, and divisions?")) {
+                localStorage.removeItem('pks_custom_materials');
+                localStorage.removeItem('pks_custom_items');
+                localStorage.removeItem('pks_divisions');
+                localStorage.removeItem('pks_deleted_standard_items');
+                deletedStandardItems = [];
+                localStorage.removeItem('pks_deleted_standard_materials');
+                deletedStandardMaterials = [];
+                localStorage.removeItem('pks_saved_quotes');
+
+                // Set all rates in currentRates to 0
+                currentRates = {};
+                Object.keys(DEFAULT_RATES).forEach(k => {
+                    currentRates[k] = 0;
+                });
+                localStorage.setItem('pks_rates', JSON.stringify(currentRates));
+
+                BASE_ITEMS = ROOM_ITEMS[selectedRoom] || ROOM_ITEMS.kitchen;
+                customMaterials = {};
+                customItems = [];
+                divisionsList = getDivisions();
+                renderRatesTable();
+                renderItemsDropdown();
+                renderCurrentItemsList();
+                renderCustomItemsList();
+                if (document.getElementById('add-div').classList.contains('active')) {
+                    renderDivisionsList();
+                }
+                showToast("All settings reset. Rates set to zero.");
+            }
+        }
+
+        // dropdown options for target items
+        function renderItemsDropdown() {
+            const select = document.getElementById('matTargetItem');
+            select.innerHTML = '';
+
+            // Standard Items
+            BASE_ITEMS.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = `std-${item.id}`;
+                opt.textContent = `${item.id}. ${item.name} [Standard]`;
+                select.appendChild(opt);
+            });
+
+            // Custom Items
+            if (selectedRoom !== 'accessories') {
+                customItems.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = `custom-${item.id}`;
+                    opt.textContent = `${item.id}. ${item.name} [Custom]`;
+                    select.appendChild(opt);
+                });
+            }
+        }
+
+        function renderCurrentItemsList() {
+            const container = document.getElementById('currentItemsList');
+            container.innerHTML = '';
+
+            // Render Standard items with custom modifications
+            BASE_ITEMS.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-manage-card';
+
+                // Get standard list (filter deleted)
+                let filteredOptions = item.options.filter(opt => !deletedStandardMaterials.includes(`${item.id}-${opt}`));
+                let matTags = filteredOptions.map(opt => `
+                    <span class="tag-pill">
+                        ${opt}
+                        <button class="rename-btn" onclick="renameMaterialOption(${item.id}, ${JSON.stringify(opt).replace(/"/g, '&quot;')}, 'standard')" title="Rename">✎</button>
+                        <button onclick="removeStandardMaterial(${item.id}, ${JSON.stringify(opt).replace(/"/g, '&quot;')})">✕</button>
+                    </span>
+                `).join('');
+
+                // Custom materials for this item (allow for all cards)
+                const customList = customMaterials[item.id] || [];
+                let customTags = customList.map((m, index) => `
+                    <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
+                        ${m.label}
+                        <button class="rename-btn" onclick="renameMaterialOption(${item.id}, ${JSON.stringify(m.label).replace(/"/g, '&quot;')}, 'custom-standard', null, ${index})" title="Rename">✎</button>
+                        <button onclick="removeCustomMaterial(${item.id}, ${index})">✕</button>
+                    </span>
+                `).join('');
+
+                div.innerHTML = `
+                    <div class="item-manage-card-header">
+                        <div class="item-manage-card-title">${item.id}. ${item.name} <span class="role-badge" style="font-size:0.68rem; padding: 2px 8px; margin-left: 8px;">Standard</span></div>
+                    </div>
+                    <div class="tags-row">
+                        ${matTags}
+                        ${customTags}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            // Render Custom items under the same list
+            if (selectedRoom !== 'accessories') {
+                customItems.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'item-manage-card';
+
+                    let optTags = item.options.map((opt, optIdx) => `
+                        <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
+                            ${opt.label}
+                            <button class="rename-btn" onclick="renameMaterialOption(${item.id}, ${JSON.stringify(opt.label).replace(/"/g, '&quot;')}, 'custom-item', ${index}, ${optIdx})" title="Rename">✎</button>
+                            <button onclick="removeCustomItemMaterial(${index}, ${optIdx})">✕</button>
+                        </span>
+                    `).join('');
+
+                    div.innerHTML = `
+                        <div class="item-manage-card-header">
+                            <div class="item-manage-card-title">${item.id}. ${item.name.toUpperCase()} <span class="role-badge" style="font-size:0.68rem; padding: 2px 8px; margin-left: 8px; background: rgba(61, 187, 110, 0.15);">Custom</span></div>
+                        </div>
+                        <div class="tags-row">
+                            ${optTags.length > 0 ? optTags : '<span style="font-size:0.8rem; color:var(--muted); font-style:italic;">No materials added — choose target item above to add.</span>'}
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function renderCustomItemsList() {
+            const container = document.getElementById('customCreatedItemsList');
+            container.innerHTML = '';
+
+            // 1. Render Standard items that are NOT deleted
+            BASE_ITEMS.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-manage-card';
+
+                let matTags = item.options.map(opt => `<span class="tag-pill">${opt}</span>`).join('');
+                const customList = customMaterials[item.id] || [];
+                let customTags = customList.map((m, index) => `
+                    <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
+                        ${m.label}
+                    </span>
+                `).join('');
+
+                div.innerHTML = `
+                    <div class="item-manage-card-header">
+                        <div class="item-manage-card-title">${item.id}. ${item.name} <span class="role-badge" style="font-size:0.68rem; padding: 2px 8px; margin-left: 8px;">Standard</span></div>
+                        <button class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteStandardItem(${item.id})">Delete Card</button>
+                    </div>
+                    <div class="tags-row" style="margin-bottom: 10px;">
+                        ${matTags}
+                        ${customTags}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            // 2. Render Custom items
+            if (selectedRoom !== 'accessories') {
+                customItems.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'item-manage-card';
+
+                    let optTags = item.options.map((opt, optIdx) => `
+                        <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
+                            ${opt.label}
+                        </span>
+                    `).join('');
+
+                    div.innerHTML = `
+                        <div class="item-manage-card-header">
+                            <div class="item-manage-card-title">${item.id}. ${item.name.toUpperCase()} <span class="role-badge" style="font-size:0.68rem; padding: 2px 8px; margin-left: 8px; background: rgba(61, 187, 110, 0.15);">Custom</span></div>
+                            <button class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteCustomItem(${index})">Delete Card</button>
+                        </div>
+                        <div class="tags-row" style="margin-bottom: 10px;">
+                            ${optTags || '<span style="font-size: 0.8rem; color: var(--muted); font-style: italic;">No materials added yet</span>'}
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        /* ---------- Custom material option actions ---------- */
+        function addMaterialToItem() {
+            const targetSelect = document.getElementById('matTargetItem').value;
+            const label = document.getElementById('matLabel').value.trim();
+            const formulaType = document.getElementById('matFormula').value;
+            const initialRate = parseFloat(document.getElementById('matInitialRate').value) || 0;
+
+            if (!label) {
+                alert("Please specify a material label.");
+                return;
+            }
+
+            // Determine dimensions and note based on formula choice
+            let fields, note;
+            if (formulaType === "L*H") { fields = ["L", "H"]; note = "L×H"; }
+            else if (formulaType === "L*W") { fields = ["L", "W"]; note = "L×W"; }
+            else if (formulaType === "SQFT") { fields = ["SQFT"]; note = "direct sq.ft"; }
+            else if (formulaType === "QTY") { fields = ["QTY"]; note = "qty"; }
+            else { fields = ["L", "W", "H"]; note = "(L+W)×H"; }
+
+            // Check target type
+            if (targetSelect.startsWith('std-')) {
+                const itemId = parseInt(targetSelect.substring(4));
+                if (!customMaterials[itemId]) {
+                    customMaterials[itemId] = [];
+                }
+                customMaterials[itemId].push({ label, fields, formulaType, note });
+                localStorage.setItem('pks_custom_materials', JSON.stringify(customMaterials));
+            } else if (targetSelect.startsWith('custom-')) {
+                const itemId = parseInt(targetSelect.substring(7));
+                const item = customItems.find(i => i.id === itemId);
+                if (item) {
+                    item.options.push({ label, fields, formulaType, note });
+                    localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+                }
+            }
+
+            // Also save rate
+            currentRates[label] = initialRate;
+            localStorage.setItem('pks_rates', JSON.stringify(currentRates));
+
+            // Clean inputs & redraw
+            document.getElementById('matLabel').value = '';
+            document.getElementById('matInitialRate').value = '';
+
+            renderCurrentItemsList();
+            renderCustomItemsList();
+            renderRatesTable();
+            showToast("Material option added successfully!");
+        }
+
+        function removeCustomMaterial(itemId, index) {
+            if (confirm("Remove this custom material option?")) {
+                customMaterials[itemId].splice(index, 1);
+                if (customMaterials[itemId].length === 0) {
+                    delete customMaterials[itemId];
+                }
+                localStorage.setItem('pks_custom_materials', JSON.stringify(customMaterials));
+                renderCurrentItemsList();
+                renderRatesTable();
+                showToast("Material option removed.");
+            }
+        }
+
+        function removeStandardMaterial(itemId, optionName) {
+            if (confirm(`Are you sure you want to remove the standard material option "${optionName}" from this item?`)) {
+                deletedStandardMaterials.push(`${itemId}-${optionName}`);
+                localStorage.setItem('pks_deleted_standard_materials', JSON.stringify(deletedStandardMaterials));
+                renderCurrentItemsList();
+                renderCustomItemsList();
+                showToast("Material option removed.");
+            }
+        }
+
+        function getStandardFormulaInfo(itemId, optName) {
+            const name = optName.trim();
+            const nameUpper = name.toUpperCase();
+            // QTY-based items
+            if (nameUpper.includes("DIRECT PRICE") || nameUpper.includes("BASKET") ||
+                nameUpper.includes("TANDOM") || nameUpper.includes("RUNNER") ||
+                nameUpper.includes("HINGE") || nameUpper.includes("HANDLE") ||
+                nameUpper.includes("PULL OUT") || nameUpper.includes("TALL UNIT") ||
+                nameUpper.includes("MAGIC CORNER") || nameUpper.includes("SHUTTER") ||
+                nameUpper.includes("DETERGENT") || nameUpper.includes("D-TRAY") ||
+                nameUpper.includes("GTBT") || nameUpper.includes("CORNER") ||
+                nameUpper.includes("PARACEL") || nameUpper.includes("SWING")) {
+                return { formulaType: "QTY", fields: ["QTY"], note: "qty" };
+            }
+            // L*W formulas (Ledge, Sit out ceiling)
+            if (itemId === 10 || itemId === 47 || name === "Wood finishing" ||
+                name === "Veneer finishing" || name === "PU Paint") {
+                return { formulaType: "L*W", fields: ["L", "W"], note: "L×W" };
+            }
+            // SQFT (Spice rack)
+            if (itemId === 9) {
+                return { formulaType: "SQFT", fields: ["SQFT"], note: "direct sq.ft" };
+            }
+            // L*H (Wall panel, Beam, Door type)
+            if (nameUpper.includes("DOOR ONLY") || nameUpper.includes("DOOR TYPE") ||
+                name === "Glass" || itemId === 6 || itemId === 7 || itemId === 16 ||
+                itemId === 20 || itemId === 27 || itemId === 30 || itemId === 32 ||
+                itemId === 38 || itemId === 70 || itemId === 71 || itemId === 80) {
+                return { formulaType: "L*H", fields: ["L", "H"], note: "L×H" };
+            }
+            // Default: (L+W)*H
+            return { formulaType: "(L+W)*H", fields: ["L", "W", "H"], note: "(L+W)×H" };
+        }
+
+        function renameMaterialOption(itemId, oldLabel, type, customItemIndex, customOptIndex) {
+            const newLabel = prompt(`Rename "${oldLabel}" to:`, oldLabel);
+            if (!newLabel) return;
+            const cleanLabel = newLabel.trim();
+            if (!cleanLabel) { alert("Name cannot be empty."); return; }
+            if (cleanLabel === oldLabel) return;
+
+            // Transfer rate
+            if (currentRates[oldLabel] !== undefined) {
+                currentRates[cleanLabel] = currentRates[oldLabel];
+                // Only delete old key if not referenced elsewhere
+                let usedElsewhere = false;
+                for (const room in ROOM_ITEMS) {
+                    ROOM_ITEMS[room].forEach(item => {
+                        if (item.id !== itemId && item.options.includes(oldLabel) &&
+                            !deletedStandardMaterials.includes(`${item.id}-${oldLabel}`)) {
+                            usedElsewhere = true;
+                        }
+                    });
+                }
+                if (!usedElsewhere) delete currentRates[oldLabel];
+            } else {
+                currentRates[cleanLabel] = 0;
+            }
+            localStorage.setItem('pks_rates', JSON.stringify(currentRates));
+
+            if (type === 'standard') {
+                // Hide the old standard option
+                deletedStandardMaterials.push(`${itemId}-${oldLabel}`);
+                localStorage.setItem('pks_deleted_standard_materials', JSON.stringify(deletedStandardMaterials));
+                // Add as a custom material with the same formula
+                const fi = getStandardFormulaInfo(itemId, oldLabel);
+                if (!customMaterials[itemId]) customMaterials[itemId] = [];
+                customMaterials[itemId].push({ label: cleanLabel, fields: fi.fields, formulaType: fi.formulaType, note: fi.note });
+                localStorage.setItem('pks_custom_materials', JSON.stringify(customMaterials));
+            } else if (type === 'custom-standard') {
+                if (customMaterials[itemId] && customMaterials[itemId][customOptIndex]) {
+                    customMaterials[itemId][customOptIndex].label = cleanLabel;
+                    localStorage.setItem('pks_custom_materials', JSON.stringify(customMaterials));
+                }
+            } else if (type === 'custom-item') {
+                if (customItems[customItemIndex] && customItems[customItemIndex].options[customOptIndex]) {
+                    customItems[customItemIndex].options[customOptIndex].label = cleanLabel;
+                    localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+                }
+            }
+
+            renderCurrentItemsList();
+            renderCustomItemsList();
+            renderRatesTable();
+            showToast("Material renamed successfully!");
+        }
+
+        /* ---------- Custom Item Actions ---------- */
+        function addCustomItem() {
+            const name = document.getElementById('newItemName').value.trim().toUpperCase();
+            if (!name) {
+                alert("Please specify a name for the custom item.");
+                return;
+            }
+
+            // Determine next ID (highest current standard/custom ID + 1)
+            let maxId = 0;
+            BASE_ITEMS.forEach(item => {
+                if (item.id > maxId) maxId = item.id;
+            });
+            customItems.forEach(item => {
+                if (item.id > maxId) maxId = item.id;
+            });
+            const nextId = maxId + 1;
+
+            customItems.push({
+                id: nextId,
+                name: name,
+                options: []
+            });
+
+            localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+            document.getElementById('newItemName').value = '';
+
+            renderItemsDropdown();
+            renderCurrentItemsList();
+            renderCustomItemsList();
+            showToast("New Item Card created!");
+        }
+
+        function deleteCustomItem(index) {
+            if (confirm("Delete this custom item card entirely?")) {
+                customItems.splice(index, 1);
+                localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+                renderItemsDropdown();
+                renderCurrentItemsList();
+                renderCustomItemsList();
+                renderRatesTable();
+                showToast("Item card deleted.");
+            }
+        }
+
+        function deleteStandardItem(itemId) {
+            if (confirm("Are you sure you want to delete this standard item card? (You can restore it later by resetting defaults).")) {
+                deletedStandardItems.push(itemId);
+                localStorage.setItem('pks_deleted_standard_items', JSON.stringify(deletedStandardItems));
+
+                // Refresh base items
+                const rawItems = ROOM_ITEMS[selectedRoom] || ROOM_ITEMS.kitchen;
+                BASE_ITEMS = rawItems.filter(item => !deletedStandardItems.includes(item.id));
+
+                renderItemsDropdown();
+                renderCurrentItemsList();
+                renderCustomItemsList();
+                renderRatesTable();
+                showToast("Standard item card deleted.");
+            }
+        }
+
+        function removeCustomItemMaterial(itemIndex, optIdx) {
+            if (confirm("Remove this material option from this custom item?")) {
+                customItems[itemIndex].options.splice(optIdx, 1);
+                localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+                renderCurrentItemsList();
+                renderCustomItemsList();
+                renderRatesTable();
+                showToast("Material option removed.");
+            }
+        }
+
+        function renderRoomTabs() {
+            const tabsEl = document.getElementById('roomTabs');
+            tabsEl.innerHTML = '';
+
+            ROOMS.forEach(room => {
+                const tab = document.createElement('div');
+                tab.className = `room-tab ${room.id === selectedRoom ? 'active' : ''} ${room.active ? '' : 'disabled'}`;
+
+                let badge = '';
+                if (!room.active) {
+                    badge = `<span class="coming-soon-badge">Soon</span>`;
+                }
+
+                tab.innerHTML = `
+                    <span class="tab-icon">${room.icon}</span>
+                    <span class="tab-name">${room.name}</span>
+                    ${badge}
+                `;
+
+                if (room.active) {
+                    tab.onclick = () => {
+                        updateRoomState(room.id, room.name);
+                    };
+                }
+                tabsEl.appendChild(tab);
+            });
+        }
+
+        function updateRoomState(roomId, roomName) {
+            selectedRoom = roomId;
+            selectedRoomName = roomName;
+            sessionStorage.setItem('pks_selected_room', roomId);
+            sessionStorage.setItem('pks_selected_room_name', roomName);
+
+            const rawItems = ROOM_ITEMS[selectedRoom] || ROOM_ITEMS.kitchen;
+            BASE_ITEMS = rawItems.filter(item => !deletedStandardItems.includes(item.id));
+            currentRates = getRates();
+            customMaterials = getCustomMaterials();
+            customItems = getCustomItems();
+
+            document.getElementById('roomBadge').textContent = selectedRoomName;
+
+            // Toggle Floor and Room selectors ONLY for bedroom
+            const selectorsWrap = document.getElementById('floorSelectorsWrap');
+            if (selectorsWrap) {
+                selectorsWrap.style.display = (roomId === 'bedroom') ? 'flex' : 'none';
+            }
+
+            renderRoomTabs();
+
+            const activePanel = document.querySelector('.tab-panel.active');
+            if (activePanel) {
+                renderTabContent(activePanel.id);
+            }
+        }
+
+        /* ---------- Manage Divisions Actions ---------- */
+        function renderDivisionsList() {
+            const container = document.getElementById('currentDivisionsList');
+            container.innerHTML = '';
+
+            divisionsList.forEach((div, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-manage-card';
+                card.innerHTML = `
+                    <div class="item-manage-card-header">
+                        <div class="item-manage-card-title">${div.icon} ${div.name} <span style="font-size:0.75rem; color:var(--muted); font-weight:normal;">(ID: ${div.id})</span></div>
+                        <button class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteDivision(${index})">Delete</button>
+                    </div>
+                    <div style="font-size: 0.82rem; color: var(--muted); margin-top: 5px;">${div.sub}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addDivision() {
+            const id = document.getElementById('newDivId').value.trim().toLowerCase();
+            const name = document.getElementById('newDivName').value.trim();
+            const icon = document.getElementById('newDivIcon').value.trim() || '🏢';
+            const sub = document.getElementById('newDivSub').value.trim();
+
+            if (!id || !name || !sub) {
+                alert("Please fill in the ID, Name, and Description.");
+                return;
+            }
+
+            if (!/^[a-z0-9_]+$/.test(id)) {
+                alert("Division ID must be lowercase alphanumeric and underscores only.");
+                return;
+            }
+
+            if (divisionsList.some(d => d.id === id)) {
+                alert("A division with this ID already exists.");
+                return;
+            }
+
+            divisionsList.push({ id, name, icon, sub, active: true });
+            localStorage.setItem('pks_divisions', JSON.stringify(divisionsList));
+
+            document.getElementById('newDivId').value = '';
+            document.getElementById('newDivName').value = '';
+            document.getElementById('newDivIcon').value = '';
+            document.getElementById('newDivSub').value = '';
+
+            renderDivisionsList();
+            showToast("New division added successfully!");
+        }
+
+        function deleteDivision(index) {
+            if (divisionsList.length <= 1) {
+                alert("You must keep at least one division in the system.");
+                return;
+            }
+
+            const div = divisionsList[index];
+            if (confirm(`Are you sure you want to delete the division "${div.name}"?`)) {
+                divisionsList.splice(index, 1);
+                localStorage.setItem('pks_divisions', JSON.stringify(divisionsList));
+
+                if (div.id === selectedDivision) {
+                    const fallbackDiv = divisionsList[0];
+                    sessionStorage.setItem('pks_selected_division', fallbackDiv.id);
+                    sessionStorage.setItem('pks_selected_division_name', fallbackDiv.name);
+                    location.reload();
+                    return;
+                }
+
+                renderDivisionsList();
+                showToast("Division deleted.");
+            }
+        }
+
+        function cleanupExpiredQuotes() {
+            const stored = localStorage.getItem('pks_saved_quotes');
+            if (stored) {
+                try {
+                    const quotes = JSON.parse(stored);
+                    if (Array.isArray(quotes)) {
+                        const now = Date.now();
+                        const maxAge = 45 * 24 * 60 * 60 * 1000;
+                        const validQuotes = quotes.filter(q => (now - q.timestamp) < maxAge);
+                        if (validQuotes.length !== quotes.length) {
+                            localStorage.setItem('pks_saved_quotes', JSON.stringify(validQuotes));
+                        }
+                    }
+                } catch (e) { }
+            }
+        }
+        cleanupExpiredQuotes();
+
+        function renderAdminQuotes() {
+            const body = document.getElementById('adminQuotesTableBody');
+            body.innerHTML = '';
+
+            const stored = localStorage.getItem('pks_saved_quotes');
+            let savedQuotes = [];
+            if (stored) {
+                try {
+                    savedQuotes = JSON.parse(stored);
+                } catch (e) { }
+            }
+
+            if (!Array.isArray(savedQuotes) || savedQuotes.length === 0) {
+                body.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--muted); font-style: italic; padding: 20px;">No quotes saved in the folder yet.</td></tr>`;
+                return;
+            }
+
+            savedQuotes.sort((a, b) => b.timestamp - a.timestamp);
+
+            savedQuotes.forEach(q => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${q.quoteDate || '—'}</td>
+                    <td>${q.quoteNo}</td>
+                    <td>${q.docType}</td>
+                    <td>${q.custName || '—'}</td>
+                    <td>${q.custPhone || '—'}</td>
+                    <td>${q.custAddress || '—'}</td>
+                    <td>${q.divisionName}</td>
+                    <td>₹${q.totalAmount.toFixed(2)}</td>
+                    <td style="text-align: center; white-space: nowrap; gap: 8px;">
+                        <button class="btn-primary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; background: var(--accent); color: var(--bg); border: none;" onclick="loadAdminQuote('${q.id}')">Load</button>
+                        <button class="btn-danger" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteAdminQuote('${q.id}')">Delete</button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function loadAdminQuote(quoteId) {
+            const stored = localStorage.getItem('pks_saved_quotes');
+            if (!stored) return;
+            try {
+                const savedQuotes = JSON.parse(stored);
+                const quote = savedQuotes.find(q => q.id === quoteId);
+                if (quote) {
+                    if (confirm("Load this quote to the Quote Builder?")) {
+                        sessionStorage.setItem('pks_selected_division', quote.divisionId);
+                        sessionStorage.setItem('pks_selected_division_name', quote.divisionName);
+                        sessionStorage.setItem('pks_economy_mode', quote.economyMode ? 'true' : 'false');
+                        sessionStorage.setItem('pks_restore_quote_data', JSON.stringify(quote));
+                        sessionStorage.setItem('pks_role', 'admin');
+                        location.href = 'employee.html';
+                    }
+                }
+            } catch (e) { }
+        }
+
+        function deleteAdminQuote(quoteId) {
+            if (confirm("Are you sure you want to permanently delete this quote from the folder?")) {
+                const stored = localStorage.getItem('pks_saved_quotes');
+                if (!stored) return;
+                try {
+                    const savedQuotes = JSON.parse(stored);
+                    const filtered = savedQuotes.filter(q => q.id !== quoteId);
+
+                    localStorage.setItem('pks_saved_quotes', JSON.stringify(filtered));
+                    localStorage.setItem('pks_quote_counter', filtered.length);
+
+                    renderAdminQuotes();
+                } catch (e) { }
+            }
+        }
+
+        function saveSettings() {
+            const specs = document.getElementById('materialSpecsInput').value.trim().toUpperCase();
+            localStorage.setItem('pks_material_specs', specs);
+            showToast("Settings saved successfully!");
+        }
+
+        /* ---------- Initialize View ---------- */
+        function renderTabContent(tabId) {
+            if (tabId === 'rates') renderRatesTable();
+            else if (tabId === 'add-opt') {
+                renderItemsDropdown();
+                renderCurrentItemsList();
+            } else if (tabId === 'add-item') {
+                renderCustomItemsList();
+            } else if (tabId === 'add-div') {
+                renderDivisionsList();
+            } else if (tabId === 'settings') {
+                const defaultSpecs = "MARINE PLY THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS";
+                document.getElementById('materialSpecsInput').value = (localStorage.getItem('pks_material_specs') || defaultSpecs).toUpperCase();
+            } else if (tabId === 'quotes-folder') {
+                renderAdminQuotes();
+            }
+        }
+
+        // Setup dynamic tabs and panels
+        updateRoomState(selectedRoom, selectedRoomName);
+    </script>
+</body>
+
+</html>

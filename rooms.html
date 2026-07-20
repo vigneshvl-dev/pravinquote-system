@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pravin Kitchens &amp; Interiors — Select Division</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #07120a;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #0c2414 0%, #030805 100%);
+            --surface: rgba(18, 36, 23, 0.55);
+            --surface-hover: rgba(28, 54, 35, 0.75);
+            --surface2: rgba(35, 71, 46, 0.3);
+            --border: rgba(61, 187, 110, 0.15);
+            --border-hover: rgba(61, 187, 110, 0.35);
+            --accent: #3dbb6e;
+            --accent-gradient: linear-gradient(135deg, #3dbb6e 0%, #2ecc71 100%);
+            --text: #e8f7ee;
+            --muted: #83a08d;
+            --danger: #ff6b6b;
+            --radius: 16px;
+            --sans: 'Outfit', 'Inter', -apple-system, sans-serif;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            --blur: blur(16px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--sans);
+            color: var(--text);
+            background: var(--bg);
+            background-image: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(61, 187, 110, 0.08) 0%, transparent 70%);
+            top: -150px;
+            left: -150px;
+            pointer-events: none;
+            filter: blur(40px);
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.06) 0%, transparent 70%);
+            bottom: -200px;
+            right: -200px;
+            pointer-events: none;
+            filter: blur(40px);
+        }
+
+        header {
+            background: rgba(18, 36, 23, 0.6);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        header img {
+            height: 46px;
+            border-radius: 6px;
+            object-fit: contain;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header h1 span {
+            color: var(--accent);
+        }
+
+        .role-badge {
+            background: rgba(61, 187, 110, 0.1);
+            color: var(--accent);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--border);
+            margin-left: 10px;
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(4px);
+        }
+
+        .logout-btn:hover {
+            border-color: var(--danger);
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--danger);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.25);
+            transform: translateY(-2px);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 60px 24px;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .page-title h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+            gap: 24px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .room-card {
+            background: var(--surface);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .room-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+        }
+
+        .room-card:hover {
+            border-color: var(--border-hover);
+            background: var(--surface-hover);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(61, 187, 110, 0.15);
+        }
+
+        .room-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .room-icon {
+            font-size: 2.2rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .room-card:hover .room-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(61, 187, 110, 0.15);
+        }
+
+        .room-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        .room-sub {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .room-arrow {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.4rem;
+            color: var(--accent);
+            opacity: 0;
+            transition: opacity 0.2s, right 0.2s;
+        }
+
+        .room-card:hover .room-arrow {
+            opacity: 1;
+            right: 14px;
+        }
+
+        .room-card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .coming-soon {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--muted);
+            background: var(--border);
+            border-radius: 4px;
+            padding: 2px 7px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        /* Clean wrapping and centering handled by auto-fit grid */
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-left">
+            <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo">
+            <div>
+                <h1>Pravin Kitchens &amp; Interiors <span class="role-badge" id="roleBadge">Loading...</span></h1>
+                <div
+                    style="font-size:0.75rem; color:var(--muted); margin-top:2px; text-transform:uppercase; letter-spacing:1.5px;">
+                    Select Division</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="logout-btn"
+                style="background: var(--accent); border-color: var(--accent); padding: 0; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 40px; height: 40px; min-width: 40px;"
+                onclick="openSavedQuotesModal()" title="Saved Quotes Folder">📂</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-title">
+            <h2>Which division are you working on?</h2>
+            <p id="subtitleText">Select a division to continue</p>
+        </div>
+
+        <div class="rooms-grid" id="roomsGrid"></div>
+    </main>
+
+    <!-- Saved Quotes Modal -->
+    <div class="modal-overlay" id="quotesFolderModal"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);">
+        <div
+            style="background: rgba(18, 36, 23, 0.95); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; width: 90%; max-width: 900px; box-shadow: var(--shadow); max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; backdrop-filter: var(--blur);">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                <h2 style="color: var(--accent); margin: 0; font-size: 1.5rem; font-family: var(--sans);">Saved Quotes
+                    (45-Day Auto-Cleanup)</h2>
+                <button onclick="closeSavedQuotesModal()"
+                    style="background: transparent; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: var(--sans);">Close</button>
+            </div>
+
+            <div style="flex: 1; min-height: 250px; overflow-x: auto;">
+                <style>
+                    .quote-table-custom {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 0.9rem;
+                    }
+
+                    .quote-table-custom th,
+                    .quote-table-custom td {
+                        padding: 10px;
+                        text-align: left;
+                        border-bottom: 1px solid var(--border);
+                    }
+
+                    .quote-table-custom th {
+                        color: var(--accent);
+                        font-weight: 600;
+                    }
+                </style>
+                <table class="quote-table-custom">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>No.</th>
+                            <th>Type</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Division</th>
+                            <th>Room</th>
+                            <th>Material</th>
+                            <th>Amount</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quotesFolderTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium / Economy Mode Selection Modal -->
+    <div class="modal-overlay" id="modeSelectionModal"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);">
+        <div
+            style="background: rgba(18, 36, 23, 0.95); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; width: 90%; max-width: 420px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 20px; backdrop-filter: var(--blur);">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                <h2 style="color: var(--accent); margin: 0; font-size: 1.35rem; font-family: var(--sans);"
+                    id="modeModalTitle">Select Option</h2>
+                <button onclick="closeModeSelectionModal()"
+                    style="background: transparent; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: var(--sans);">Cancel</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Premium Option -->
+                <div class="room-card"
+                    style="width: 100%; text-align: left; padding: 20px; flex-direction: row; align-items: center; justify-content: space-between;"
+                    onclick="selectMode('premium')">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="room-icon"
+                            style="width: 44px; height: 44px; font-size: 1.6rem; margin-right: 0;">🌟</span>
+                        <div>
+                            <div class="room-name" style="font-size: 1.1rem; margin-bottom: 4px;">Premium</div>
+                            <div style="font-size: 0.78rem; color: var(--muted);">Standard pricing and materials</div>
+                        </div>
+                    </div>
+                    <span style="color: var(--accent); font-size: 1.2rem;">→</span>
+                </div>
+
+                <!-- Economy Option -->
+                <div class="room-card"
+                    style="width: 100%; text-align: left; padding: 20px; flex-direction: row; align-items: center; justify-content: space-between;"
+                    onclick="selectMode('economy')">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="room-icon"
+                            style="width: 44px; height: 44px; font-size: 1.6rem; margin-right: 0;">💰</span>
+                        <div>
+                            <div class="room-name" style="font-size: 1.1rem; margin-bottom: 4px;">Economy</div>
+                            <div style="font-size: 0.78rem; color: var(--muted);">Budget pricing & materials</div>
+                        </div>
+                    </div>
+                    <span style="color: var(--accent); font-size: 1.2rem;">→</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_DIVISIONS = [
+            { id: 'marketing', name: 'Marketing', icon: '📈', sub: 'Marketing division quotes', active: true },
+            { id: 'showroom', name: 'Showroom', icon: '🏢', sub: 'Showroom display & walk-in quotes', active: true }
+        ];
+
+        function getDivisions() {
+            const stored = localStorage.getItem('pks_divisions');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) return parsed;
+                } catch (e) {
+                    console.error("Error parsing divisions, using defaults", e);
+                }
+            }
+            localStorage.setItem('pks_divisions', JSON.stringify(DEFAULT_DIVISIONS));
+            return DEFAULT_DIVISIONS;
+        }
+
+        const DIVISIONS = getDivisions();
+
+        // Determine role from sessionStorage
+        const role = sessionStorage.getItem('pks_role');
+
+        // If no role set, go back to login
+        if (!role) {
+            location.href = 'index.html';
+        }
+
+        // If admin, they bypass rooms.html completely now, redirect them to admin.html
+        if (role === 'admin') {
+            location.href = 'admin.html';
+        }
+
+        document.getElementById('roleBadge').textContent = role === 'admin' ? 'Admin' : 'Employee';
+        document.getElementById('subtitleText').textContent = role === 'admin'
+            ? 'Select a division to manage rates and items'
+            : 'Select a division to start building a quote';
+
+        const grid = document.getElementById('roomsGrid');
+
+        DIVISIONS.forEach(div => {
+            const card = document.createElement('div');
+            card.className = 'room-card' + (div.active ? '' : ' disabled');
+            card.innerHTML = `
+                <div class="room-icon">${div.icon}</div>
+                <div class="room-name">${div.name}</div>
+                <div class="room-sub">${div.sub}</div>
+                ${!div.active ? '<span class="coming-soon">Coming Soon</span>' : '<span class="room-arrow">→</span>'}
+            `;
+            if (div.active) {
+                card.onclick = () => selectDivision(div.id, div.name);
+            }
+            grid.appendChild(card);
+        });
+
+        let tempDivId = '';
+        let tempDivName = '';
+
+        function selectDivision(divId, divName) {
+            if (divId === 'marketing' || divId === 'showroom') {
+                tempDivId = divId;
+                tempDivName = divName;
+                document.getElementById('modeModalTitle').textContent = `Select Option for ${divName}`;
+                document.getElementById('modeSelectionModal').style.display = 'flex';
+            } else {
+                sessionStorage.setItem('pks_economy_mode', 'false');
+                proceedSelectDivision(divId, divName);
+            }
+        }
+
+        function selectMode(mode) {
+            if (mode === 'economy') {
+                sessionStorage.setItem('pks_economy_mode', 'true');
+            } else {
+                sessionStorage.setItem('pks_economy_mode', 'false');
+            }
+            closeModeSelectionModal();
+            proceedSelectDivision(tempDivId, tempDivName);
+        }
+
+        function closeModeSelectionModal() {
+            document.getElementById('modeSelectionModal').style.display = 'none';
+        }
+
+        function proceedSelectDivision(divId, divName) {
+            sessionStorage.setItem('pks_selected_division', divId);
+            sessionStorage.setItem('pks_selected_division_name', divName);
+
+            // Set default room and room name so subsequent pages load correctly
+            sessionStorage.setItem('pks_selected_room', 'kitchen');
+            sessionStorage.setItem('pks_selected_room_name', 'Kitchen');
+
+            if (role === 'admin') {
+                location.href = 'admin.html';
+            } else {
+                location.href = 'employee.html';
+            }
+        }
+
+        function cleanupExpiredQuotes() {
+            const stored = localStorage.getItem('pks_saved_quotes');
+            if (stored) {
+                try {
+                    const quotes = JSON.parse(stored);
+                    if (Array.isArray(quotes)) {
+                        const now = Date.now();
+                        const maxAge = 45 * 24 * 60 * 60 * 1000;
+                        const validQuotes = quotes.filter(q => (now - q.timestamp) < maxAge);
+                        if (validQuotes.length !== quotes.length) {
+                            localStorage.setItem('pks_saved_quotes', JSON.stringify(validQuotes));
+                        }
+                    }
+                } catch (e) { }
+            }
+        }
+
+        function openSavedQuotesModal() {
+            cleanupExpiredQuotes();
+            document.getElementById('quotesFolderModal').style.display = 'flex';
+            renderSavedQuotes();
+        }
+
+        function closeSavedQuotesModal() {
+            document.getElementById('quotesFolderModal').style.display = 'none';
+        }
+
+        function renderSavedQuotes() {
+            const body = document.getElementById('quotesFolderTableBody');
+            body.innerHTML = '';
+
+            const stored = localStorage.getItem('pks_saved_quotes');
+            let savedQuotes = [];
+            if (stored) {
+                try {
+                    savedQuotes = JSON.parse(stored);
+                } catch (e) { }
+            }
+
+            if (!Array.isArray(savedQuotes) || savedQuotes.length === 0) {
+                body.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--muted); font-style: italic; padding: 20px;">No quotes saved in the folder yet.</td></tr>`;
+                return;
+            }
+
+            savedQuotes.sort((a, b) => b.timestamp - a.timestamp);
+
+            savedQuotes.forEach(q => {
+                const tr = document.createElement('tr');
+
+                // Aggregate unique rooms and materials
+                const lines = q.quoteLines || [];
+                const uniqueRooms = [...new Set(lines.map(l => l.roomName || ''))].filter(Boolean).join(', ') || '—';
+                const uniqueMaterials = [...new Set(lines.map(l => l.material || ''))].filter(Boolean).join(', ') || '—';
+
+                tr.innerHTML = `
+                    <td>${q.quoteDate || '—'}</td>
+                    <td>${q.quoteNo}</td>
+                    <td>${q.docType}</td>
+                    <td>${q.custName || '—'}</td>
+                    <td>${q.custPhone || '—'}</td>
+                    <td>${q.divisionName}</td>
+                    <td>${uniqueRooms}</td>
+                    <td>${uniqueMaterials}</td>
+                    <td>₹${q.totalAmount.toFixed(2)}</td>
+                    <td style="text-align: center; white-space: nowrap; gap: 8px;">
+                        <button class="logout-btn" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; background: var(--accent); color: var(--bg); border: none;" onclick="loadSavedQuote('${q.id}')">Edit</button>
+                        <button class="logout-btn" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteSavedQuote('${q.id}')">Delete</button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function loadSavedQuote(quoteId) {
+            const stored = localStorage.getItem('pks_saved_quotes');
+            if (!stored) return;
+            try {
+                const savedQuotes = JSON.parse(stored);
+                const quote = savedQuotes.find(q => q.id === quoteId);
+                if (quote) {
+                    if (confirm("Load this quote? This will redirect you to the quote editor screen.")) {
+                        sessionStorage.setItem('pks_selected_division', quote.divisionId);
+                        sessionStorage.setItem('pks_selected_division_name', quote.divisionName);
+                        sessionStorage.setItem('pks_economy_mode', quote.economyMode ? 'true' : 'false');
+                        sessionStorage.setItem('pks_restore_quote_data', JSON.stringify(quote));
+                        location.href = 'employee.html';
+                    }
+                }
+            } catch (e) {
+                alert("Failed to load quote.");
+            }
+        }
+
+        function deleteSavedQuote(quoteId) {
+            if (confirm("Are you sure you want to permanently delete this quote from the folder?")) {
+                const stored = localStorage.getItem('pks_saved_quotes');
+                if (!stored) return;
+                try {
+                    const savedQuotes = JSON.parse(stored);
+                    const filtered = savedQuotes.filter(q => q.id !== quoteId);
+
+                    localStorage.setItem('pks_saved_quotes', JSON.stringify(filtered));
+                    localStorage.setItem('pks_quote_counter', filtered.length);
+
+                    renderSavedQuotes();
+                } catch (e) { }
+            }
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

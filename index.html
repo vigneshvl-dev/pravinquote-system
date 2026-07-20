@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pravin Kitchens & Interiors — Login / Role Selection</title>
+    <style>
+        :root {
+            --bg: #0b1a10;
+            --surface: #122417;
+            --surface2: #1b3523;
+            --border: #23452e;
+            --accent: #3dbb6e;
+            --accent-dark: #2a9055;
+            --text: #d4edd9;
+            --muted: #7aaa87;
+            --danger: #e05c5c;
+            --good: #2ecc71;
+            --radius: 12px;
+            --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--sans);
+            color: var(--text);
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient background decoration */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            top: -150px;
+            left: -150px;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(61, 187, 110, 0.15) 0%, transparent 70%);
+            filter: blur(45px);
+            animation: floatSlow 18s infinite alternate ease-in-out;
+            z-index: 1;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 550px;
+            height: 550px;
+            bottom: -200px;
+            right: -200px;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.08) 0%, transparent 70%);
+            filter: blur(45px);
+            animation: floatSlowReverse 24s infinite alternate ease-in-out;
+            z-index: 1;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .brand-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            margin: 0 auto 15px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .brand-header h1 {
+            font-size: 1.85rem;
+            margin: 0;
+            letter-spacing: 0.5px;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+
+
+        .brand-header p {
+            margin: 8px 0 0 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+
+        .role-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .role-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            background: rgba(61, 187, 110, 0.05);
+            box-shadow: 0 4px 15px rgba(61, 187, 110, 0.15);
+        }
+
+        .role-btn.admin-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .role-btn .arrow {
+            font-size: 1.2rem;
+            color: var(--accent);
+            transition: transform 0.25s;
+        }
+
+        .role-btn:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        .role-desc {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--muted);
+            display: block;
+            margin-top: 4px;
+            text-align: left;
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .modal-body input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .modal-body input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .modal-btn.cancel {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .modal-btn.cancel:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .modal-btn.confirm {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .modal-btn.confirm:hover {
+            background: var(--accent-dark);
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* Ambient floating animations */
+        @keyframes floatSlow {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(70px, 40px) scale(1.08);
+            }
+
+            100% {
+                transform: translate(-30px, 70px) scale(0.95);
+            }
+        }
+
+        @keyframes floatSlowReverse {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-70px, -40px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(30px, -80px) scale(0.9);
+            }
+        }
+
+        /* Element animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated-fade-in {
+            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.22s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.35s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.48s;
+        }
+
+        /* Hide default browser password reveal eye icon */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="brand-header animated-fade-in delay-1">
+            <img src="logo.jpg" alt="Pravin Kitchens & Interiors Logo" class="brand-logo animated-fade-in delay-2">
+            <h1 class="animated-fade-in delay-3">Pravin Kitchens &amp; Interiors</h1>
+            <p class="animated-fade-in delay-3" style="margin-top: 8px;">Modular Quote System</p>
+        </div>
+
+        <div class="card animated-fade-in delay-4">
+            <div class="card-title">Select Portal to Continue</div>
+            <!-- Admin Panel Button -->
+            <button class="role-btn admin-btn" onclick="openAdminModal()">
+                <div>
+                    <span>Admin Dashboard</span>
+                </div>
+                <span class="arrow">→</span>
+            </button>
+
+            <!-- Employee Panel Button -->
+            <button class="role-btn" onclick="openEmployeeModal()">
+                <div>
+                    <span>Employee Portal</span>
+                </div>
+                <span class="arrow">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal">
+            <h3 class="modal-title">Admin Access Required</h3>
+            <div class="modal-body">
+                <label for="adminPass">Enter Passcode</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="adminPass" placeholder="••••••••" onkeydown="handleKeyDown(event)"
+                        style="padding-right: 40px; width: 100%;">
+                    <button type="button" onclick="togglePassVisibility()"
+                        style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: #ffffff; padding: 0; display: flex; align-items: center; justify-content: center; outline: none;"
+                        title="Toggle Password Visibility">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <div class="error-msg" id="errorMsg">Incorrect passcode. Try again.</div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeAdminModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="verifyAdmin()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Password Modal -->
+    <div class="modal-overlay" id="employeeModal">
+        <div class="modal">
+            <h3 class="modal-title">Employee Access Required</h3>
+            <div class="modal-body">
+                <label for="employeePass">Enter Passcode</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="employeePass" placeholder="••••••••"
+                        onkeydown="handleEmployeeKeyDown(event)" style="padding-right: 40px; width: 100%;">
+                    <button type="button" onclick="toggleEmployeePassVisibility()"
+                        style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: #ffffff; padding: 0; display: flex; align-items: center; justify-content: center; outline: none;"
+                        title="Toggle Password Visibility">
+                        <svg id="eyeIconEmployee" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <div class="error-msg" id="employeeErrorMsg">Incorrect passcode. Try again.</div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeEmployeeModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="verifyEmployee()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default passcode in localStorage if not exists or is still default
+        if (!localStorage.getItem('pks_admin_pass') || localStorage.getItem('pks_admin_pass') === 'admin123') {
+            localStorage.setItem('pks_admin_pass', 'pravin');
+        }
+
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+            document.getElementById('adminPass').focus();
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminPass').type = 'password';
+            document.getElementById('eyeIcon').innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            `;
+        }
+
+        function togglePassVisibility() {
+            const input = document.getElementById('adminPass');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = `
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                `;
+            } else {
+                input.type = 'password';
+                icon.innerHTML = `
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                `;
+            }
+        }
+
+        function openEmployeeModal() {
+            document.getElementById('employeeModal').classList.add('active');
+            document.getElementById('employeePass').focus();
+            document.getElementById('employeeErrorMsg').style.display = 'none';
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').classList.remove('active');
+            document.getElementById('employeePass').value = '';
+            document.getElementById('employeePass').type = 'password';
+            document.getElementById('eyeIconEmployee').innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            `;
+        }
+
+        function toggleEmployeePassVisibility() {
+            const input = document.getElementById('employeePass');
+            const icon = document.getElementById('eyeIconEmployee');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = `
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                `;
+            } else {
+                input.type = 'password';
+                icon.innerHTML = `
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                `;
+            }
+        }
+
+        function verifyEmployee() {
+            const entered = document.getElementById('employeePass').value;
+            const correct = 'a123';
+
+            if (entered === correct) {
+                sessionStorage.setItem('pks_role', 'employee');
+                location.href = 'rooms.html';
+            } else {
+                document.getElementById('employeeErrorMsg').style.display = 'block';
+                document.getElementById('employeePass').select();
+            }
+        }
+
+        function handleEmployeeKeyDown(event) {
+            if (event.key === 'Enter') {
+                verifyEmployee();
+            }
+        }
+
+        function verifyAdmin() {
+            const entered = document.getElementById('adminPass').value;
+            const correct = localStorage.getItem('pks_admin_pass');
+
+            if (entered === correct) {
+                sessionStorage.setItem('pks_admin_auth', 'true');
+                sessionStorage.setItem('pks_role', 'admin');
+                location.href = 'admin.html';
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+                document.getElementById('adminPass').select();
+            }
+        }
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                verifyAdmin();
+            }
+        }
+    </script>
+</body>
+
+</html>
