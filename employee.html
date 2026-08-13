@@ -507,18 +507,130 @@
             color: var(--accent);
         }
 
+        /* Toggle Switch styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 32px;
+            height: 18px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.15);
+            transition: .3s;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--text);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px);
+            background-color: #fff;
+        }
+
+        #globalMarkupDropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            flex-direction: column;
+            min-width: 100px;
+            padding: 4px;
+        }
+
+        #globalMarkupDropdown button {
+            padding: 6px 12px;
+            text-align: left;
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--text);
+            transition: background 0.2s ease;
+        }
+
+        #globalMarkupDropdown button:hover {
+            background: var(--accent-light);
+            color: var(--accent-dark);
+        }
+
+        .dis-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 2px;
+        }
+
+        .dis-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .dis-btn.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white !important;
+        }
+
         @media print {
 
             header,
             .room-tabs-container,
+            #pricingModeTabsContainer,
             .items-grid,
             .intro,
             .quote-actions,
-            .del-btn,
+            .specs-and-terms-container,
+            #uiSpecsBlock,
+            #globalMarkupDropdown,
+            .item-discounts,
+            .no-print,
+            th button {
+                display: none !important;
+            }
+
             .quote-table th:last-child,
             .quote-table td:last-child,
-            .specs-and-terms-container,
-            #uiSpecsBlock {
+            .quote-table th:nth-last-child(2),
+            .quote-table td:nth-last-child(2) {
                 display: none !important;
             }
 
@@ -526,25 +638,33 @@
                 display: block !important;
             }
 
+            @page {
+                margin: 20mm 15mm 20mm 15mm;
+            }
+
             body {
                 background: #fff;
                 color: #000;
+                padding-top: 15px;
             }
 
             table.quote-table {
                 background: #fff;
                 box-shadow: none;
                 color: #000;
+                border-collapse: collapse !important;
+                border: 1px solid #000 !important;
+                width: 100% !important;
             }
 
             table.quote-table th {
                 background: #f0f0f0;
                 color: #000;
-                border-bottom: 2px solid #000;
+                border: 1px solid #000 !important;
             }
 
             table.quote-table td {
-                border-bottom: 1px solid #ddd;
+                border: 1px solid #000 !important;
             }
 
             tfoot td {
@@ -569,6 +689,29 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+        }
+
+        .mode-tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-tab-btn:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-tab-btn.active {
+            background: var(--accent) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 10px rgba(176, 125, 46, 0.3);
         }
 
         /* Room Selector Tabs */
@@ -738,6 +881,10 @@
                     <td id="printDivisionName">—</td>
                 </tr>
                 <tr>
+                    <td style="font-weight: bold;">Quotation Type:</td>
+                    <td id="printQuotationType">—</td>
+                </tr>
+                <tr>
                     <td style="font-weight: bold;">Date:</td>
                     <td id="printQuoteDate">—</td>
                 </tr>
@@ -769,6 +916,8 @@
                             style="background:var(--accent-light);color:var(--accent-dark);border-color:var(--accent);">Marketing</span>
                         <span class="role-badge" id="roomBadge"
                             style="background:var(--accent);color:#fff;border-color:var(--accent);">Kitchen</span>
+                        <span class="role-badge" id="qualityBadge"
+                            style="background:#2b6cb0;color:#fff;border-color:#2b6cb0;margin-left:4px;">Premium</span>
                     </h1>
                     <div class="tag" id="roomTitle">Modular Quote System</div>
                 </div>
@@ -811,6 +960,22 @@
     </header>
 
     <main>
+        <!-- Quality/Pricing Mode Tabs -->
+        <div id="pricingModeTabsContainer"
+            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; background: var(--surface2); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); width: fit-content;">
+            <div
+                style="font-size: 0.82rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 1px;">
+                Pricing Mode:</div>
+            <div style="display: flex; gap: 6px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 8px;">
+                <button type="button" class="mode-tab-btn" id="modeBtnPremium"
+                    onclick="switchPricingMode('premium')">Premium</button>
+                <button type="button" class="mode-tab-btn" id="modeBtnMedium"
+                    onclick="switchPricingMode('medium')">Middle / Standard</button>
+                <button type="button" class="mode-tab-btn" id="modeBtnEconomy"
+                    onclick="switchPricingMode('economy')">Economy</button>
+            </div>
+        </div>
+
         <p class="intro">Pick an item below, choose the material, then click <b>Add Size</b> to enter measurements.
             Rates are managed by the admin and locked for safety.</p>
 
@@ -853,6 +1018,13 @@
         <div class="quote-wrap">
             <div class="quote-title">
                 <h2>Quote Summary</h2>
+                <div class="no-print" style="display: flex; align-items: center; gap: 8px; background: var(--surface2); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-left: 10px;">
+                    <span>Show Sq.Ft &amp; Size</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleSqft" checked onchange="handleSqftToggle()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <div class="line"></div>
             </div>
             <table class="quote-table">
@@ -860,13 +1032,24 @@
                     <tr>
                         <th>#</th>
                         <th>Room</th>
-                        <th>Item</th>
                         <th>Material</th>
-                        <th>Size</th>
-                        <th class="num">Sq.Ft</th>
+                        <th id="sizeHeader">Size</th>
+                        <th class="num" id="sqftHeader">Sq.Ft</th>
                         <th class="num" id="rateHeader">Rate</th>
-                        <th class="num">Amount</th>
-                        <th></th>
+                        <th class="num" style="position: relative;">
+                            Amount
+                            <button type="button" onclick="toggleGlobalMarkupDropdown(event)"
+                                style="background: none; border: none; cursor: pointer; color: var(--accent); padding: 0 4px; font-size: 0.9rem;">▲</button>
+                            <div id="globalMarkupDropdown">
+                                <button type="button" onclick="setGlobalMarkup(0)">None</button>
+                                <button type="button" onclick="setGlobalMarkup(5)">+5%</button>
+                                <button type="button" onclick="setGlobalMarkup(10)">+10%</button>
+                                <button type="button" onclick="setGlobalMarkup(20)">+20%</button>
+                            </div>
+                        </th>
+                        <th class="num">Offer Price</th>
+                        <th style="width: 50px;"></th>
+                        <th style="width: 40px;"></th>
                     </tr>
                 </thead>
                 <tbody id="quoteBody">
@@ -883,13 +1066,7 @@
                 </tfoot>
             </table>
 
-            <!-- Materials Specs Display (Screen Only) -->
-            <div id="uiSpecsBlock"
-                style="margin-top: 18px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.8rem; line-height: 1.5; color: var(--text); display: none;">
-                <strong style="color: var(--accent-dark); display: block; margin-bottom: 4px;">Material
-                    Specifications:</strong>
-                <span id="uiSpecsText"></span>
-            </div>
+
 
             <!-- Payment Terms Inputs (Screen Only) -->
             <div class="specs-and-terms-container"
@@ -897,48 +1074,132 @@
                 <div
                     style="font-weight: 700; font-size: 0.85rem; color: var(--accent-dark); text-transform: uppercase; letter-spacing: 0.5px;">
                     Payment Terms</div>
-                <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px;">
-                        <label
-                            style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Advance
-                            Payment</label>
-                        <input type="text" id="payAdvance" placeholder="e.g. 50% Advance"
-                            style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none;">
+
+                <!-- Row: Payment Fields (left) + Split Calculator (right) -->
+                <div style="display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap;">
+
+                    <!-- Left: 4 payment input fields -->
+                    <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <!-- Token Payment -->
+                            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 4px;">
+                                <label
+                                    style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">10%
+                                    Token</label>
+                                <div style="font-size: 0.72rem; color: var(--muted); font-style: italic;">Commencement
+                                    of 3D design on receipt of token.</div>
+                                <input type="text" id="payToken" placeholder="e.g. ₹25,000"
+                                    style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none;">
+                            </div>
+                            <!-- 50% Advance -->
+                            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 4px;">
+                                <label
+                                    style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">50%
+                                    Advance</label>
+                                <div style="font-size: 0.72rem; color: var(--muted); font-style: italic;">Drawing will
+                                    be sent for production on receipt of advance.</div>
+                                <input type="text" id="payAdvance" placeholder="e.g. ₹1,25,000"
+                                    style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none;">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <!-- 35% Part Payment -->
+                            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 4px;">
+                                <label
+                                    style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">35%
+                                    Part Payment</label>
+                                <div style="font-size: 0.72rem; color: var(--muted); font-style: italic;">After the
+                                    completion of frame work.</div>
+                                <input type="text" id="paySecond" placeholder="e.g. ₹87,500"
+                                    style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none;">
+                            </div>
+                            <!-- 5% Final Payment -->
+                            <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 4px;">
+                                <label
+                                    style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">5%
+                                    Final Payment</label>
+                                <div style="font-size: 0.72rem; color: var(--muted); font-style: italic;">The last day
+                                    of work completion in site.</div>
+                                <input type="text" id="payFinal" placeholder="e.g. ₹12,500"
+                                    style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none;">
+                            </div>
+                        </div>
+                        <!-- Any Requirements -->
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label
+                                style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Any
+                                Requirements / Notes</label>
+                            <textarea id="anyRequirements" rows="2"
+                                placeholder="e.g. Customer requested specific colour shade, delivery by Diwali, etc."
+                                style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none; resize: vertical; font-family: inherit;"></textarea>
+                        </div>
                     </div>
-                    <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px;">
-                        <label
-                            style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Second
-                            Payment</label>
-                        <input type="text" id="paySecond" placeholder="e.g. 45% Delivery"
-                            style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none;">
+
+                    <!-- Right: Auto-Split Calculator Box -->
+                    <div id="paySplitBox"
+                        style="min-width: 200px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
+                        <div
+                            style="font-size: 0.72rem; font-weight: 700; color: var(--accent-dark); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 2px;">
+                            💰 Amount Split
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--muted); margin-bottom: 2px;">
+                            Grand Total: <strong id="splitTotalDisplay" style="color: var(--text);">₹0</strong>
+                        </div>
+                        <!-- Split rows -->
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; background: rgba(176,125,46,0.08); border-radius: 6px; padding: 5px 10px;">
+                                <span style="font-size: 0.75rem; font-weight: 600; color: var(--accent-dark);">10%
+                                    Token</span>
+                                <span id="split10"
+                                    style="font-size: 0.8rem; font-weight: 700; color: var(--text);">₹0</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; background: rgba(176,125,46,0.08); border-radius: 6px; padding: 5px 10px;">
+                                <span style="font-size: 0.75rem; font-weight: 600; color: var(--accent-dark);">50%
+                                    Advance</span>
+                                <span id="split50"
+                                    style="font-size: 0.8rem; font-weight: 700; color: var(--text);">₹0</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; background: rgba(176,125,46,0.08); border-radius: 6px; padding: 5px 10px;">
+                                <span style="font-size: 0.75rem; font-weight: 600; color: var(--accent-dark);">35% Part
+                                    Pay</span>
+                                <span id="split35"
+                                    style="font-size: 0.8rem; font-weight: 700; color: var(--text);">₹0</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; background: rgba(176,125,46,0.13); border-radius: 6px; padding: 5px 10px; border: 1px solid rgba(176,125,46,0.25);">
+                                <span style="font-size: 0.75rem; font-weight: 600; color: var(--accent-dark);">5%
+                                    Final</span>
+                                <span id="split5"
+                                    style="font-size: 0.8rem; font-weight: 700; color: var(--accent);">₹0</span>
+                            </div>
+                        </div>
                     </div>
-                    <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px;">
-                        <label
-                            style="font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Final
-                            Payment</label>
-                        <input type="text" id="payFinal" placeholder="e.g. 5% Handover"
-                            style="background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text); outline: none;">
-                    </div>
+
                 </div>
             </div>
 
-            <!-- Print-Only Payment Terms & Specs (shown only during browser print) -->
+            <!-- Print-Only Payment Terms (shown only during browser print) -->
             <div class="print-only-specs-terms" style="display: none; margin-top: 20px;">
-                <div
-                    style="margin-bottom: 12px; padding: 10px; border: 1px solid #ccc; font-size: 0.82rem; line-height: 1.4; color: #000; border-radius: 6px;">
-                    <strong style="display: block; margin-bottom: 4px; color: var(--accent-dark);">Material
-                        Specifications:</strong>
-                    <span id="printSpecsText"></span>
-                </div>
                 <div
                     style="padding: 10px; border: 1px solid #ccc; font-size: 0.82rem; line-height: 1.4; color: #000; border-radius: 6px;">
                     <strong style="display: block; margin-bottom: 4px; color: var(--accent-dark);">Payment
                         Terms:</strong>
                     <ul style="margin: 0; padding-left: 15px; list-style-type: square; color: #333;">
-                        <li><strong>Advance Payment:</strong> <span id="printPayAdvance"></span></li>
-                        <li><strong>Second Payment:</strong> <span id="printPaySecond"></span></li>
-                        <li><strong>Final Payment:</strong> <span id="printPayFinal"></span></li>
+                        <li><strong>10% Token:</strong> Commencement of 3D design on receipt of token.<span
+                                id="printPayToken"></span></li>
+                        <li><strong>50% Advance:</strong> Drawing will be sent for production on receipt of
+                            advance.<span id="printPayAdvance"></span></li>
+                        <li><strong>35% Part Payment:</strong> After the completion of frame work.<span
+                                id="printPaySecond"></span></li>
+                        <li><strong>5% Final Payment:</strong> The last day of work completion in site.<span
+                                id="printPayFinal"></span></li>
                     </ul>
+                    <div id="printAnyRequirements" style="margin-top: 6px; display: none;">
+                        <strong>Requirements / Notes:</strong> <span id="printAnyRequirementsText"></span>
+                    </div>
                 </div>
             </div>
 
@@ -994,9 +1255,14 @@
         const selectedDivision = sessionStorage.getItem('pks_selected_division') || 'marketing';
         const selectedDivisionName = sessionStorage.getItem('pks_selected_division_name') || 'Marketing';
         const isEconomyMode = sessionStorage.getItem('pks_economy_mode') === 'true';
+        const pricingMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+
+        let modeLabel = 'Premium';
+        if (pricingMode === 'medium') modeLabel = 'Middle / Standard';
+        else if (pricingMode === 'economy') modeLabel = 'Economy';
 
         // Render division badge in header
-        document.getElementById('divisionBadge').textContent = selectedDivisionName + (isEconomyMode ? ' (Economy)' : ' (Premium)');
+        document.getElementById('divisionBadge').textContent = `${selectedDivisionName} (${modeLabel})`;
 
         const role = sessionStorage.getItem('pks_role');
         if (!role) {
@@ -1015,12 +1281,17 @@
             { id: 'sitout', name: 'Sitout', icon: '🌿', active: true },
             { id: 'store_room', name: 'Store Room', icon: '📦', active: true },
             { id: 'toilet_area', name: 'Toilet Area', icon: '🚿', active: true },
-            { id: 'accessories', name: 'Accessories', icon: '✨', active: true }
+            { id: 'accessories', name: 'Accessories', icon: '✨', active: true },
+            { id: 'full_teak_wood', name: 'Full Teak Wood', icon: '👑', active: true },
+            { id: 'half_teak_wood', name: 'Half Teak Wood', icon: '🪵', active: true }
         ];
 
-        const ROOMS = allRooms.filter(r => !(isEconomyMode && r.id === 'study_room'));
+        const ROOMS = allRooms.filter(r => {
+            if (isEconomyMode && r.id === 'study_room') return false;
+            return true;
+        });
 
-        let selectedRoom = sessionStorage.getItem('pks_selected_room') || 'kitchen';
+        let selectedRoom = (sessionStorage.getItem('pks_selected_room') || 'kitchen').toLowerCase();
         let selectedRoomName = sessionStorage.getItem('pks_selected_room_name') || 'Kitchen';
 
         let FIELD_LABELS = {
@@ -1141,50 +1412,14 @@
             "Engineering Wood (Box Type)": 280,
             "Engineering Wood (Door Type)": 280,
             "Engineering Wood (Door Only)": 280,
+            "Engineering Wood (Partition Type)": 280,
             "King Size Bed (Direct Price)": 35000,
             "Queen Size Bed (Direct Price)": 28000,
             "Glass": 350,
             "Wood finishing": 500,
             "Veneer finishing": 700,
-            "PU Paint": 600,
-            "Basket": 0,
-            "Tandom Box": 0,
-            "Oil Pull Out": 0,
-            "PVC Cutlery Tray": 0,
-            "SS Cutlery Tray": 0,
-            "Dustbin Unit": 0,
-            "Detergent Holder": 0,
-            "GTBT": 0,
-            "ROLLING SHUTTER": 0,
-            "Tall Unit": 0,
-            "Swing Corner": 0,
-            "Magic Corner": 0,
-            "PARACEL CORNER": 0,
-            "D-Tray": 0,
-            "Soft Closing Runner": 0,
-            "Soft Closing Hinges": 0,
-            "Profile Handle": 0
+            "PU Paint": 600
         };
-
-        const ACCESSORY_OPTS = [
-            { label: "Basket", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Tandom Box", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Oil Pull Out", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "PVC Cutlery Tray", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "SS Cutlery Tray", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Dustbin Unit", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Detergent Holder", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "GTBT", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "ROLLING SHUTTER", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Tall Unit", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Swing Corner", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Magic Corner", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "PARACEL CORNER", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "D-Tray", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Soft Closing Runner", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Soft Closing Hinges", fields: ["QTY"], formula: v => v.QTY, note: "qty" },
-            { label: "Profile Handle", fields: ["QTY"], formula: v => v.QTY, note: "qty" }
-        ];
 
         // Load rates from localStorage or use defaults
         function getRates() {
@@ -1197,15 +1432,57 @@
             return DEFAULT_RATES;
         }
 
-        // Load custom materials added to standard groups
-        function getCustomMaterials() {
-            const stored = localStorage.getItem('pks_custom_materials');
-            if (stored) {
+        function normalizeKey(str) {
+            if (!str) return '';
+            return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
+        function resolveRate(ratesObj, constType, matType) {
+            function singleLookup(obj) {
+                if (!obj) return undefined;
+
+                const normMap = {};
+                for (const k in obj) {
+                    if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '' && parseFloat(obj[k]) > 0) {
+                        normMap[normalizeKey(k)] = parseFloat(obj[k]);
+                    }
+                }
+
+                // 1. Check exact constType
+                const k1 = normalizeKey(constType);
+                if (normMap[k1] !== undefined) return normMap[k1];
+
+                // 2. Check base constType (without parentheses)
+                const baseName = constType ? constType.replace(/\s*\([^)]*\)/g, '').trim() : '';
+                const k2 = normalizeKey(baseName);
+                if (k2 && normMap[k2] !== undefined) return normMap[k2];
+
+                // 3. Check matType
+                const k3 = normalizeKey(matType);
+                if (k3 && normMap[k3] !== undefined) return normMap[k3];
+
+                return undefined;
+            }
+
+            // 1. Try provided custom/room rates object
+            let rateVal = singleLookup(ratesObj);
+            if (rateVal !== undefined) return rateVal;
+
+            // 2. Fallback to global pks_rates (rates added in admin panel previously)
+            const globalStored = localStorage.getItem('pks_rates');
+            if (globalStored) {
                 try {
-                    return JSON.parse(stored);
+                    const globalRates = JSON.parse(globalStored);
+                    rateVal = singleLookup(globalRates);
+                    if (rateVal !== undefined) return rateVal;
                 } catch (e) { }
             }
-            return {};
+
+            // 3. Fallback to DEFAULT_RATES
+            rateVal = singleLookup(DEFAULT_RATES);
+            if (rateVal !== undefined) return rateVal;
+
+            return undefined;
         }
 
         // Load custom item cards
@@ -1213,253 +1490,797 @@
             const stored = localStorage.getItem('pks_custom_items');
             if (stored) {
                 try {
-                    return JSON.parse(stored);
+                    const items = JSON.parse(stored);
+                    if (Array.isArray(items)) {
+                        return items;
+                    }
                 } catch (e) { }
             }
             return [];
         }
 
-        // Setup base items list per room
-        const ROOM_ITEMS = {
-            kitchen: [
-                { id: 1, name: "Kitchen Bottom", options: KITCHEN_BOTTOM_OPTS },
-                { id: 2, name: "Kitchen Top Box", options: MP_LAM_ACR_WPC_BOX_DOOR_ONLY },
-                { id: 3, name: "Kitchen Loft", options: KITCHEN_LOFT_OPTS },
-                { id: 4, name: "Kitchen – Island Cabin", options: MP_LAM_ACR_WPC_BOX_DOOR_ONLY },
-                { id: 5, name: "Kitchen – Breakfast Table", options: MP_LAM_ACR_WPC_BOX_DOOR_ONLY },
-                { id: 6, name: "Breakfast Table – Wall Panelling", options: WALL_PANEL },
-                { id: 7, name: "Breakfast Table – Beam Covering", options: BEAM },
-                { id: 8, name: "Breakfast Table – Open Box", options: STD_CABINET },
-                { id: 9, name: "Spice Rack", options: SPICE },
-                { id: 10, name: "Ledge", options: LEDGE },
-                { id: 11, name: "Kitchen Side Storage Cabinet", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 12, name: "Kitchen & Dining Partition", options: PARTITION },
-            ],
-            living_room: [
-                { id: 16, name: "Tv Unit – Wall Panelling", options: WALL_PANEL },
-                { id: 17, name: "Tv Unit – Bottom Cabinet", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 18, name: "Tv Unit – Side Show Wall Cabinet", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 19, name: "Living & Dining Room Partition", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 20, name: "Living Room Wall Panelling", options: WALL_PANEL },
-                { id: 21, name: "Staircase Bottom", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 60, name: "QUATUYAD", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 61, name: "LIVING AND KITCHEN PARTITION", options: PARTITION }
-            ],
-            prayer_unit: [
-                { id: 75, name: "PRAYER UNIT BOTTOM CABINET", options: MP_LAM_ACR_WPC_BOX_DOOR }
-            ],
-            bedroom: [
-                { id: 25, name: "Wardrobe", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 27, name: "Bed back wall paneling with headrest", options: WALL_PANEL },
-                { id: 28, name: "Bed", options: BED_OPTS },
-                { id: 29, name: "Bay window", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 30, name: "Dressing unit wall paneling", options: WALL_PANEL },
-                { id: 31, name: "Dressing unit bottom cabinet", options: DRESSING_BOTTOM_OPTS },
-                { id: 32, name: "Tv unit-wall paneling", options: WALL_PANEL },
-                { id: 33, name: "Tv unit-bottom cabinet", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 34, name: "Tv unit-SIDE SHOW WALL CABINET", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 65, name: "SIDE CABINET", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 66, name: "CUPBOARD 1", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 67, name: "CUPBOARD 2", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 68, name: "LOFT 1", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 69, name: "LOFT 2", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 70, name: "WALL PANNELING", options: WALL_PANEL },
-                { id: 71, name: "WALL PANNELING WITH HIDDEN DOOR", options: WALL_PANEL }
-            ],
-            dining_room: [
-                { id: 37, name: "Wash basin unit bottom cabinet", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 38, name: "Wash basin unit wall paneling", options: WALL_PANEL },
-                { id: 39, name: "Dining room crockery unit", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 40, name: "Accessories", options: ACCESSORY_OPTS },
-            ],
-            musical_room: [
-                { id: 80, name: "WALL PANEL", options: WALL_PANEL },
-                { id: 81, name: "WALL PANNELLING TABLE", options: MP_LAM_ACR_WPC_BOX_DOOR }
-            ],
-            study_room: [
-                { id: 85, name: "BOOK SHELF", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 86, name: "STUDY TABLE", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 87, name: "STUDY TABLE TOP BOX", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 88, name: "COMPUTER TABLE", options: MP_LAM_ACR_WPC_BOX_DOOR }
-            ],
-            toilet_area: [
-                { id: 41, name: "Toilet area washbasin cabinet", options: MP_LAM_ACR_WPC_BOX_DOOR },
-            ],
-            store_room: [
-                { id: 44, name: "Store room cupboard", options: MP_LAM_ACR_WPC_BOX_DOOR },
-            ],
-            sitout: [
-                { id: 46, name: "Chappal stand", options: MP_LAM_ACR_WPC_BOX_DOOR },
-                { id: 47, name: "Sit out area ceiling", options: SITOUT_CEILING_OPTS },
-            ],
-            accessories: [
-                { id: 50, name: "Accessories", options: ACCESSORY_OPTS }
-            ]
-        };
+        // Setup base database
+        function getOrInitMaterialsDb() {
+            const currentDbVersion = 'v32';
+            let stored = localStorage.getItem('pks_materials_db');
+            let storedVersion = localStorage.getItem('pks_materials_db_version');
 
-        const ENG_WOOD_BOX_DOOR = [
-            { label: "Engineering Wood (Box Type)", fields: ["L", "W", "H"], formula: v => ((v.L + v.W) * v.H) / 144, note: "(L+W)×H/144" },
-            { label: "Engineering Wood (Door Type)", fields: ["L", "H"], formula: v => (v.L * v.H) / 144, note: "L×H/144" }
-        ];
+            let db = [];
+            const qualities = ['Premium', 'Middle / Standard', 'Economy'];
 
-        const ENG_WOOD_ONLY = [
-            { label: "Engineering Wood", fields: ["L", "W", "H"], formula: v => ((v.L + v.W) * v.H) / 144, note: "(L+W)×H/144" }
-        ];
+            function addMat(room, type, qual, item, constType, specs, formula, baseAmount, showSqft = true) {
+                db.push({
+                    id: 'mat_' + room + '_' + type.replace(/\s+/g, '_').toLowerCase() + '_' + qual.replace(/\s+/g, '_').toLowerCase() + '_' + item.replace(/\s+/g, '_').toLowerCase() + '_' + constType.replace(/\s+/g, '_').toLowerCase(),
+                    roomId: room,
+                    materialType: type,
+                    quality: qual,
+                    itemName: item,
+                    constructionType: constType,
+                    specifications: specs,
+                    formula: formula,
+                    baseAmount: baseAmount,
+                    offerPrice: baseAmount,
+                    discountPercentage: 0,
+                    amountIncreasePercentage: 0,
+                    showSqft: showSqft,
+                    status: 'ON'
+                });
+            }
 
-        const ROOM_ITEMS_ECONOMY = {
-            kitchen: [
-                { id: 101, name: "Staircase Bottom", options: ENG_WOOD_BOX_DOOR }
-            ],
-            living_room: [
-                { id: 102, name: "Living", options: ENG_WOOD_ONLY },
-                { id: 103, name: "Kitchen Partition", options: ENG_WOOD_ONLY }
-            ],
-            prayer_unit: [
-                { id: 104, name: "Prayer Unit Cabinet", options: ENG_WOOD_BOX_DOOR }
-            ],
-            bedroom: [
-                { id: 105, name: "Wardrobe", options: ENG_WOOD_BOX_DOOR },
-                { id: 106, name: "Bed", options: ENG_WOOD_ONLY },
-                { id: 107, name: "Bay Window", options: ENG_WOOD_BOX_DOOR },
-                { id: 108, name: "Side Cabinet", options: ENG_WOOD_BOX_DOOR },
-                { id: 109, name: "Cupboard", options: ENG_WOOD_BOX_DOOR },
-                { id: 110, name: "Loft", options: ENG_WOOD_BOX_DOOR }
-            ],
-            dining_room: [
-                { id: 117, name: "Wash basin unit bottom cabinet", options: ENG_WOOD_BOX_DOOR },
-                { id: 118, name: "Wash basin unit wall paneling", options: ENG_WOOD_ONLY },
-                { id: 119, name: "Dining room crockery unit", options: ENG_WOOD_BOX_DOOR },
-                { id: 120, name: "Accessories", options: ACCESSORY_OPTS }
-            ],
-            musical_room: [
-                { id: 111, name: "Table", options: ENG_WOOD_ONLY }
-            ],
-            study_room: [],
-            sitout: [
-                { id: 112, name: "Chappal Stand", options: ENG_WOOD_BOX_DOOR },
-                { id: 113, name: "Table", options: ENG_WOOD_ONLY }
-            ],
-            store_room: [
-                { id: 114, name: "Store Room and Cupboard", options: ENG_WOOD_BOX_DOOR },
-                { id: 115, name: "Table", options: ENG_WOOD_ONLY }
-            ],
-            toilet_area: [
-                { id: 41, name: "Toilet Area Washbasin Cabinet", options: ENG_WOOD_BOX_DOOR }
-            ],
-            accessories: [
-                { id: 50, name: "Accessories", options: ACCESSORY_OPTS }
-            ]
-        };
-
-        for (const room in ROOM_ITEMS) {
-            ROOM_ITEMS[room].forEach(item => {
-                if (item.name) item.name = item.name.toUpperCase();
-            });
-        }
-
-        for (const room in ROOM_ITEMS_ECONOMY) {
-            ROOM_ITEMS_ECONOMY[room].forEach(item => {
-                if (item.name) item.name = item.name.toUpperCase();
-            });
-        }
-
-        function getDeletedStandardItems() {
-            const stored = localStorage.getItem('pks_deleted_standard_items');
-            if (stored) {
+            let loadedFromStore = false;
+            if (stored && storedVersion === currentDbVersion) {
                 try {
                     const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed)) return parsed;
+                    if (Array.isArray(parsed) && parsed.length > 50) {
+                        db = parsed;
+                        loadedFromStore = true;
+                    }
                 } catch (e) { }
             }
-            return [];
-        }
-        const itemsSource = isEconomyMode ? ROOM_ITEMS_ECONOMY : ROOM_ITEMS;
-        const initialRawItems = itemsSource[selectedRoom] || itemsSource.kitchen;
-        const initialDeleted = getDeletedStandardItems();
-        let BASE_ITEMS = initialRawItems.filter(item => !initialDeleted.includes(item.id));
 
-        function getDeletedStandardMaterials() {
-            const stored = localStorage.getItem('pks_deleted_standard_materials');
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed)) return parsed;
-                } catch (e) { }
-            }
-            return [];
-        }
+            // Ensure no standard rooms have Accessories material type
+            db = db.filter(m => !(m.materialType === 'Accessories' && m.roomId !== 'accessories'));
 
+            const adminSavedSpecs = localStorage.getItem('pks_material_specs');
+            const defaultSpecs = adminSavedSpecs || "MARINE PLY THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS";
 
+            // Standard Rooms items
+            const stdMaterials = [
+                { label: "Marine Ply – Lamination", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic", base: 650, formula: "(L+W)*H/144" },
+                { label: "WPC", base: 550, formula: "(L+W)*H/144" },
+                { label: "PVC", base: 300, formula: "(L+W)*H/144" }
+            ];
 
-        // Combine base items with admin customizations
-        function getFullItemsList() {
-            const deletedMats = getDeletedStandardMaterials();
-            const list = BASE_ITEMS.map(item => {
-                const rawOptions = item.options ? [...item.options] : [];
-                const filteredOptions = isEconomyMode ? rawOptions : rawOptions.filter(opt => !deletedMats.includes(`${item.id}-${opt}`));
-                return {
-                    id: item.id,
-                    name: item.name.toUpperCase(),
-                    options: filteredOptions,
-                    custom: item.custom
-                };
-            });
+            const wallPanelMats = [
+                { label: "PVC", base: 300, formula: "L*W/144" },
+                { label: "Charcoal", base: 400, formula: "L*W/144" },
+                { label: "Lamination", base: 250, formula: "L*W/144" }
+            ];
 
-            if (isEconomyMode) {
-                return list;
-            }
+            // Economy items (Engineering Wood only)
+            const engWoodBoxDoor = [
+                { label: "Engineering Wood (Box Type)", base: 280, formula: "(L+W)*H/144" },
+                { label: "Engineering Wood (Door Only)", base: 280, formula: "L*H/144" },
+                { label: "Engineering Wood (Partition Type)", base: 280, formula: "(L+W)*H/144" }
+            ];
+            const engWoodOnly = [
+                { label: "Engineering Wood", base: 280, formula: "(L+W)*H/144" }
+            ];
 
-            const customMats = getCustomMaterials();
+            // Helper to populate standard items in standard rooms
+            function addStd(room, item, mats, specs = null) {
+                if (loadedFromStore) return;
+                qualities.forEach(qual => {
+                    if (qual === 'Economy') {
+                        let finalSpecs = "ENGINEERING WOOD THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS";
+                        if (item.toUpperCase() === 'BED') {
+                            mats.forEach(m => {
+                                let factor = 0.70;
+                                addMat(room, 'Standard', qual, item, m.label, finalSpecs, m.formula, Math.round(m.base * factor));
+                            });
+                            return;
+                        }
+                        const isWallPanelOrCeiling = mats.some(m => m.label === "PVC" || m.label === "Lamination" || m.label === "Charcoal");
+                        if (isWallPanelOrCeiling) {
+                            mats.forEach(m => {
+                                addMat(room, 'Standard', qual, item, m.label, finalSpecs, m.formula, m.base);
+                            });
+                        } else {
+                            const isTable = item.toUpperCase().includes("TABLE") &&
+                                !item.toUpperCase().includes("PANEL") &&
+                                !item.toUpperCase().includes("BEAM") &&
+                                !item.toUpperCase().includes("COVERING");
+                            const isCabinet = isTable ||
+                                item.toUpperCase().includes("PARTITION") ||
+                                item.toUpperCase().includes("CABINET") ||
+                                item.toUpperCase().includes("WARDROBE") ||
+                                item.toUpperCase().includes("CUPBOARD") ||
+                                mats.some(m => m.label.includes("Box") || m.label.includes("Door") || m.label.includes("Partition") || m.label.includes("Framed"));
+                            const ecoMats = isCabinet ? engWoodBoxDoor : engWoodOnly;
+                            ecoMats.forEach(m => {
+                                addMat(room, 'Standard', qual, item, m.label, finalSpecs, m.formula, m.base);
+                            });
 
-            // Append custom materials to standard items
-            list.forEach(item => {
-                const isAccessoryCard = [15, 23, 40, 50].includes(item.id);
-                if (!isAccessoryCard && !item.custom && customMats[item.id]) {
-                    customMats[item.id].forEach(m => {
-                        let formula;
-                        if (m.formulaType === "L*H") formula = v => (v.L * v.H) / 144;
-                        else if (m.formulaType === "L*W") formula = v => (v.L * v.W) / 144;
-                        else if (m.formulaType === "SQFT") formula = v => v.SQFT;
-                        else formula = v => ((v.L + v.W) * v.H) / 144;
+                            // If kitchen, living room or partition (excluding tables), also add standard materials
+                            if (!isTable && (room === 'kitchen' || room === 'living_room' || item.toUpperCase().includes('PARTITION'))) {
+                                let stdSpecs = defaultSpecs;
+                                mats.forEach(m => {
+                                    if (m.label === "Engineering Wood") return;
+                                    let factor = 0.70;
+                                    addMat(room, 'Standard', qual, item, m.label, stdSpecs, m.formula, Math.round(m.base * factor));
+                                });
+                            }
+                        }
+                        return;
+                    }
 
-                        item.options.push({
-                            label: m.label,
-                            fields: m.fields,
-                            formula: formula,
-                            note: m.note
-                        });
-                    });
-                }
-            });
+                    let factor = qual === 'Premium' ? 1.0 : 0.85;
+                    let finalSpecs = specs || defaultSpecs;
 
-            // Append admin created completely custom items
-            if (selectedRoom !== 'accessories') {
-                const customItems = getCustomItems();
-                customItems.forEach(item => {
-                    const processedOptions = item.options.map(opt => {
-                        let formula;
-                        if (opt.formulaType === "L*H") formula = v => (v.L * v.H) / 144;
-                        else if (opt.formulaType === "L*W") formula = v => (v.L * v.W) / 144;
-                        else if (opt.formulaType === "SQFT") formula = v => v.SQFT;
-                        else formula = v => ((v.L + v.W) * v.H) / 144;
-
-                        return {
-                            label: opt.label,
-                            fields: opt.fields,
-                            formula: formula,
-                            note: opt.note
-                        };
-                    });
-
-                    list.push({
-                        id: item.id,
-                        name: item.name.toUpperCase(),
-                        options: processedOptions
+                    mats.forEach(m => {
+                        addMat(room, 'Standard', qual, item, m.label, finalSpecs, m.formula, Math.round(m.base * factor));
                     });
                 });
             }
 
-            return list;
+            // Setup specialized option arrays exactly matching the user's screenshot
+            const boxPartitionDoor = [
+                { label: "Marine Ply – Lamination (Box Type)", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Lamination (Partition Type)", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Lamination (Door Only)", base: 450, formula: "L*H/144" },
+                { label: "Marine Ply – Acrylic (Box Type)", base: 650, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic (Partition Type)", base: 650, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic (Door Only)", base: 650, formula: "L*H/144" },
+                { label: "WPC (Box Type)", base: 550, formula: "(L+W)*H/144" },
+                { label: "WPC (Partition Type)", base: 550, formula: "(L+W)*H/144" },
+                { label: "WPC (Door Only)", base: 550, formula: "L*H/144" }
+            ];
+
+            const boxDoorOnly = [
+                { label: "Marine Ply – Lamination (Box Type)", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Lamination (Door Only)", base: 450, formula: "L*H/144" },
+                { label: "Marine Ply – Acrylic (Box Type)", base: 650, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic (Door Only)", base: 650, formula: "L*H/144" },
+                { label: "WPC (Box Type)", base: 550, formula: "(L+W)*H/144" },
+                { label: "WPC (Door Only)", base: 550, formula: "L*H/144" }
+            ];
+
+            const loftOptions = [
+                { label: "Marine Ply – Lamination (Box Type)", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Lamination (Framed)", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Lamination (Door Only)", base: 450, formula: "L*H/144" },
+                { label: "Marine Ply – Acrylic (Box Type)", base: 650, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic (Framed)", base: 650, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic (Door Only)", base: 650, formula: "L*H/144" },
+                { label: "WPC (Box Type)", base: 550, formula: "(L+W)*H/144" },
+                { label: "WPC (Framed)", base: 550, formula: "(L+W)*H/144" },
+                { label: "WPC (Door Only)", base: 550, formula: "L*H/144" }
+            ];
+
+            const sideCabinetOptions = [
+                { label: "Marine Ply – Lamination (Box Type)", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Lamination (Door Type)", base: 450, formula: "L*H/144" },
+                { label: "Marine Ply – Acrylic (Box Type)", base: 650, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic (Door Type)", base: 650, formula: "L*H/144" },
+                { label: "WPC (Box Type)", base: 550, formula: "(L+W)*H/144" },
+                { label: "WPC (Door Type)", base: 550, formula: "L*H/144" }
+            ];
+
+            // Populate all standard room items for Premium and Middle
+            addStd('kitchen', 'Kitchen Bottom', boxPartitionDoor);
+            addStd('kitchen', 'Kitchen Top Box', boxDoorOnly);
+            addStd('kitchen', 'Kitchen Loft', loftOptions);
+            addStd('kitchen', 'Kitchen Island Cabinet', boxDoorOnly);
+            addStd('kitchen', 'Kitchen Breakfast Table', boxDoorOnly);
+            addStd('kitchen', 'Breakfast Table Wall Paneling', [
+                { label: "PVC", base: 300, formula: "L*H/144" },
+                { label: "Lamination", base: 250, formula: "L*H/144" },
+                { label: "Charcoal", base: 400, formula: "L*H/144" }
+            ]);
+            addStd('kitchen', 'Breakfast Table Beam Covering', [
+                { label: "Lamination", base: 250, formula: "L*H/144" }
+            ]);
+            addStd('kitchen', 'Open Box', [
+                { label: "Marine Ply – Lamination", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic", base: 650, formula: "(L+W)*H/144" },
+                { label: "WPC", base: 550, formula: "(L+W)*H/144" }
+            ]);
+            addStd('kitchen', 'Spice Rack', [
+                { label: "Marine Ply – Lamination", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic", base: 650, formula: "(L+W)*H/144" },
+                { label: "WPC", base: 550, formula: "(L+W)*H/144" }
+            ]);
+            addStd('kitchen', 'Ledge', [
+                { label: "Marine Ply – Lamination", base: 450, formula: "(L+W)*H/144" },
+                { label: "Marine Ply – Acrylic", base: 650, formula: "(L+W)*H/144" },
+                { label: "WPC", base: 550, formula: "(L+W)*H/144" }
+            ]);
+            addStd('kitchen', 'Kitchen Side Storage Cabinet', sideCabinetOptions);
+            addStd('kitchen', 'Kitchen & Dining Partition', [
+                { label: "WPC", base: 550, formula: "(L+W)*H/144" },
+                { label: "Marine Plane", base: 350, formula: "(L+W)*H/144" },
+                { label: "Engineering Wood", base: 280, formula: "(L+W)*H/144" }
+            ]);
+            addStd('kitchen', 'Staircase Bottom', sideCabinetOptions);
+
+            addStd('living_room', 'Tv Unit – Wall Panelling', [
+                { label: "PVC", base: 300, formula: "L*W/144" },
+                { label: "Lamination", base: 250, formula: "L*W/144" },
+                { label: "Charcoal", base: 400, formula: "L*W/144" }
+            ]);
+            addStd('living_room', 'Tv Unit – Bottom Cabinet', sideCabinetOptions);
+            addStd('living_room', 'Tv Unit – Side Show Wall Cabinet', sideCabinetOptions);
+            addStd('living_room', 'Living & Dining Room Partition', sideCabinetOptions);
+            addStd('living_room', 'Living Room Wall Panelling', [
+                { label: "PVC", base: 300, formula: "L*W/144" },
+                { label: "Lamination", base: 250, formula: "L*W/144" },
+                { label: "Charcoal", base: 400, formula: "L*W/144" }
+            ]);
+            addStd('living_room', 'Staircase Bottom', sideCabinetOptions);
+            addStd('living_room', 'QUATUYAD', sideCabinetOptions);
+            addStd('living_room', 'LIVING AND KITCHEN PARTITION', [
+                { label: "WPC", base: 550, formula: "(L+W)*H/144" },
+                { label: "Marine Plane", base: 350, formula: "(L+W)*H/144" },
+                { label: "Engineering Wood", base: 280, formula: "(L+W)*H/144" }
+            ]);
+
+            addStd('prayer_unit', 'PRAYER UNIT BOTTOM CABINET', sideCabinetOptions);
+            addStd('prayer_unit', 'PRAYER UNIT WALL PANELING', wallPanelMats);
+
+            addStd('bedroom', 'Wardrobe', sideCabinetOptions);
+            addStd('bedroom', 'Bed back wall paneling with headrest', wallPanelMats);
+            addStd('bedroom', 'Bed', [
+                { label: "King Size Bed (Direct Price)", base: 35000, formula: "QTY" },
+                { label: "Queen Size Bed (Direct Price)", base: 28000, formula: "QTY" }
+            ]);
+            addStd('bedroom', 'Bay window', sideCabinetOptions);
+            addStd('bedroom', 'Dressing unit wall paneling', wallPanelMats);
+            addStd('bedroom', 'Dressing unit bottom cabinet', [{ label: "Glass", base: 350, formula: "L*W/144" }]);
+            addStd('bedroom', 'Tv unit-wall paneling', wallPanelMats);
+            addStd('bedroom', 'Tv unit-bottom cabinet', sideCabinetOptions);
+            addStd('bedroom', 'Tv unit-SIDE SHOW WALL CABINET', sideCabinetOptions);
+            addStd('bedroom', 'SIDE CABINET', sideCabinetOptions);
+            addStd('bedroom', 'CUPBOARD 1', sideCabinetOptions);
+            addStd('bedroom', 'CUPBOARD 2', sideCabinetOptions);
+            addStd('bedroom', 'LOFT 1', sideCabinetOptions);
+            addStd('bedroom', 'LOFT 2', sideCabinetOptions);
+            addStd('bedroom', 'WALL PANNELING', wallPanelMats);
+            addStd('bedroom', 'WALL PANNELING WITH HIDDEN DOOR', wallPanelMats);
+
+            addStd('dining_room', 'Wash basin unit bottom cabinet', sideCabinetOptions);
+            addStd('dining_room', 'Wash basin unit wall paneling', wallPanelMats);
+            addStd('dining_room', 'Dining room crockery unit', sideCabinetOptions);
+
+            addStd('musical_room', 'WALL PANEL', wallPanelMats);
+            addStd('musical_room', 'WALL PANNELLING TABLE', sideCabinetOptions);
+
+            addStd('study_room', 'BOOK SHELF', sideCabinetOptions);
+            addStd('study_room', 'STUDY TABLE', sideCabinetOptions);
+            addStd('study_room', 'STUDY TABLE TOP BOX', sideCabinetOptions);
+            addStd('study_room', 'COMPUTER TABLE', sideCabinetOptions);
+
+            addStd('toilet_area', 'Toilet area washbasin cabinet', sideCabinetOptions);
+            addStd('store_room', 'Store room cupboard', sideCabinetOptions);
+            addStd('sitout', 'Chappal stand', sideCabinetOptions);
+            addStd('sitout', 'Sit out area ceiling', [{ label: "Lamination", base: 250, formula: "L*W/144" }]);
+
+            // Economy items now auto-generated by addStd for all rooms above
+
+            // 2. NEW WOOD ROOMS: Full Teak Wood and Half Teak Wood
+            // full_teak_wood room (Premium only)
+            const ftSpecsBottom = "KERALA TEAK WOOD, BACKDSEAT 8 MM TEAK WOOD, BOX WOOD SIZE 17MM, DOOR WOOD SIZE FRAME 25MM, FINISHING PU OR MATE FINISHING, SOFT CLOSING HINGES";
+            const ftSpecsTop = "KERALA TEAK WOOD, BACK - RAILING, BOX WOOD SIZE 17MM, DOOR WOOD SIZE FRAME 25MM, FINISHING PU OR MATE FINISHING, SOFT CLOSING HINGES";
+            const ftSpecsLoft = "KERALA TEAK WOOD, BOX WOOD SIZE 17MM, DOOR WOOD SIZE FRAME 25MM, FINISHING PU OR MATE FINISHING, SOFT CLOSING HINGES";
+            const ftSpecsThin = "KERALA TEAK WOOD, THICKNESS 12MM, FINISHING PU/MATE";
+            const ftSpecsPartition = "KERALA TEAK WOOD, THICKNESS 17MM, DOOR FRAME 25 MM, FINISHING PU/MATE, HINGES-HITECH/SLEEK";
+            const ftSpecsDoor = "KERALA TEAK WOOD FRAME THICKNESS 20 MM, DOOR THICKNESS 25MM/17MM, FINISHING PU/MATE/GLOSSY, HINGES - SOFT CLOSING, HITECH, SLEEK";
+
+            // Helper to add the 3 construction types to a Full Teak Wood card
+            function addFullTeakCabinet(itemName, boxBase, doorBase, partBase, boxSpecs, partSpecs, customBoxFormula = null) {
+                if (loadedFromStore) return;
+                const boxFormula = customBoxFormula || "(Length + Width) * Height / 144";
+                qualities.forEach(qual => {
+                    let factor = qual === 'Premium' ? 1.0 : (qual === 'Middle / Standard' ? 0.85 : 0.7);
+                    addMat('full_teak_wood', 'Full Teak Wood', qual, itemName, 'Box Type', boxSpecs, boxFormula, Math.round(boxBase * factor));
+                    addMat('full_teak_wood', 'Full Teak Wood', qual, itemName, 'Door Only', ftSpecsDoor, 'L * H / 144', Math.round(doorBase * factor));
+                    addMat('full_teak_wood', 'Full Teak Wood', qual, itemName, 'Partition Type', partSpecs, '(Length + Width) * Height / 144', Math.round(partBase * factor));
+                });
+            }
+
+            addFullTeakCabinet('Kitchen Bottom', 1500, 850, 1600, ftSpecsBottom, ftSpecsPartition);
+            addFullTeakCabinet('Kitchen Top Box', 1200, 800, 1200, ftSpecsTop, ftSpecsPartition);
+            addFullTeakCabinet('Kitchen Loft', 900, 750, 900, ftSpecsLoft, ftSpecsPartition);
+            addFullTeakCabinet('Kitchen Island Cabinet', 1500, 800, 1500, ftSpecsBottom, ftSpecsPartition);
+            addFullTeakCabinet('Kitchen Breakfast Table', 1400, 800, 1400, ftSpecsBottom, ftSpecsPartition);
+            addFullTeakCabinet('Kitchen Side Storage Cabinet', 1100, 900, 1100, ftSpecsTop, ftSpecsPartition);
+
+            if (!loadedFromStore) {
+                qualities.forEach(qual => {
+                    let factor = qual === 'Premium' ? 1.0 : (qual === 'Middle / Standard' ? 0.85 : 0.7);
+                    addMat('full_teak_wood', 'Full Teak Wood', qual, 'Breakfast Table Wall Paneling', 'Box Type', ftSpecsThin, 'W * H / 144', Math.round(650 * factor));
+                    addMat('full_teak_wood', 'Full Teak Wood', qual, 'Breakfast Table Beam Covering', 'Box Type', ftSpecsThin, 'W * H / 144', Math.round(600 * factor));
+                });
+            }
+
+            addFullTeakCabinet('Open Box', 750, 850, 1600, ftSpecsThin, ftSpecsPartition, '(W + Depth) * H / 144');
+            addFullTeakCabinet('Spice Rack', 800, 850, 1600, ftSpecsThin, ftSpecsPartition, '(W + Depth) * H / 144');
+            addFullTeakCabinet('Ledge', 500, 850, 1600, ftSpecsThin, ftSpecsPartition, 'L * W / 144');
+            addFullTeakCabinet('Ledge 1', 500, 850, 1600, ftSpecsThin, ftSpecsPartition, 'L * W / 144');
+            addFullTeakCabinet('Ledge 2', 500, 850, 1600, ftSpecsThin, ftSpecsPartition, 'L * W / 144');
+            addFullTeakCabinet('Kitchen & Dining Partition', 1600, 850, 1600, ftSpecsThin, ftSpecsPartition);
+
+            if (!loadedFromStore) {
+                qualities.forEach(qual => {
+                    let factor = qual === 'Premium' ? 1.0 : (qual === 'Middle / Standard' ? 0.85 : 0.7);
+                    addMat('full_teak_wood', 'Full Teak Wood', qual, 'Wall Paneling', 'Box Type', ftSpecsThin, 'W * H / 144', Math.round(700 * factor));
+                });
+            }
+
+            addFullTeakCabinet('Wash Basin', 1300, 850, 1600, ftSpecsBottom, ftSpecsPartition);
+
+            addFullTeakCabinet('Wardrobe', 1500, 850, 1600, ftSpecsBottom, ftSpecsPartition);
+            addFullTeakCabinet('Tv Unit', 1350, 850, 1600, ftSpecsBottom, ftSpecsPartition);
+            addFullTeakCabinet('Loft', 900, 750, 900, ftSpecsLoft, ftSpecsPartition);
+
+            // half_teak_wood room (Premium, Middle/Standard, Economy)
+            const htSpecsBottom = "Marineply-710 grade 16 mm, Backs TOP Seat WPC / Tech wood, Outdoor kerala teak wood, Teak wood size 17mm/25mm, Soft Closing Hinges, Sleek, hitech, finishing pu/mate, glossy";
+            const htSpecsPartition = "Frame and Partition - Marine Ply, 710 Grade, Thickness - 16 mm, Brand - Fineply / Saburi, Inner Finishing - Teak Wood Color Lamination / Half White Color Lamination, Outside Area - Full Kerala Teak Wood, Door Frame Thickness - 25 mm, Outside Finish - PU / Matte / Glossy, Hinges - Soft Closing / Hitech";
+            const htSpecsDoor = "Frame - Marine Ply, 710 Grade, Thickness - 16 mm, Brand - Fineply / Saburi, Inner Finishing - Teak Wood Color Lamination / Half White Color Lamination, Outside Door - Kerala Teak Wood, Door Thickness - 25 mm / 16 mm, Outside Finish - PU / Matte / Glossy, Hinges - Soft Closing / Hitech";
+            const htSpecsThin = "Kerala Teak Wood, Thickness - 12 mm, Finishing - PU / Matte / Glossy";
+            const htSpecsOpenBox = "Kerala Teak Wood, Thickness - 16 mm, Finishing - PU / Matte / Glossy";
+
+            // Helper to add the 3 construction types to a half teak wood item card
+            function addHalfTeakCabinet(itemName, boxBase, doorBase, partBase, boxSpecs, doorSpecs, partSpecs, customBoxFormula = null) {
+                if (loadedFromStore) return;
+                const boxFormula = customBoxFormula || "(Length + Width) * Height / 144";
+                qualities.forEach(qual => {
+                    let factor = qual === 'Premium' ? 1.0 : (qual === 'Middle / Standard' ? 0.85 : 0.7);
+                    addMat('half_teak_wood', 'Half Teak Wood', qual, itemName, 'Box Type', boxSpecs, boxFormula, Math.round(boxBase * factor));
+                    addMat('half_teak_wood', 'Half Teak Wood', qual, itemName, 'Door Only', doorSpecs, 'L * H / 144', Math.round(doorBase * factor));
+                    addMat('half_teak_wood', 'Half Teak Wood', qual, itemName, 'Partition Type', partSpecs, '(Length + Width) * Height / 144', Math.round(partBase * factor));
+                });
+            }
+
+            function addHalfTeakPanel(itemName, base, specs, formula) {
+                if (loadedFromStore) return;
+                qualities.forEach(qual => {
+                    let factor = qual === 'Premium' ? 1.0 : (qual === 'Middle / Standard' ? 0.85 : 0.7);
+                    addMat('half_teak_wood', 'Half Teak Wood', qual, itemName, 'Box Type', specs, formula, Math.round(base * factor));
+                });
+            }
+
+            addHalfTeakCabinet('Kitchen Bottom', 1100, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Kitchen Top Box', 900, 600, 900, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Kitchen Loft', 750, 550, 750, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Kitchen Island Cabinet', 1100, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Kitchen Breakfast Table', 1000, 650, 1000, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Kitchen Side Storage Cabinet', 850, 650, 850, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+
+            addHalfTeakCabinet('Open Box', 550, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition, '(W + Depth) * H / 144');
+            addHalfTeakPanel('Breakfast Table Wall Paneling', 450, htSpecsThin, 'W * H / 144');
+            addHalfTeakPanel('Breakfast Table Beam Covering', 420, htSpecsThin, 'W * H / 144');
+            addHalfTeakCabinet('Breakfast Table Open Box', 500, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition, '(W + Depth) * H / 144');
+            addHalfTeakCabinet('Spice Rack', 500, 650, 1100, htSpecsOpenBox, htSpecsDoor, htSpecsPartition, '(W + Depth) * H / 144');
+            addHalfTeakCabinet('Ledge 1', 350, 650, 1100, htSpecsOpenBox, htSpecsDoor, htSpecsPartition, 'L * W / 144');
+            addHalfTeakCabinet('Ledge 2', 350, 650, 1100, htSpecsOpenBox, htSpecsDoor, htSpecsPartition, 'L * W / 144');
+            addHalfTeakCabinet('Kitchen & Dining Partition', 1200, 650, 1100, htSpecsThin, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Wash Basin Cabinet', 900, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Wardrobe', 1100, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Tv Unit', 950, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+            addHalfTeakCabinet('Loft', 750, 650, 1100, htSpecsBottom, htSpecsDoor, htSpecsPartition);
+
+            // Accessories (applicable to all standard rooms as well as Accessories room)
+            const accOpts = [
+                { name: "Basket", base: 1200 },
+                { name: "Tandom Box", base: 3500 },
+                { name: "Oil Pull Out", base: 2200 },
+                { name: "PVC Cutlery Tray", base: 800 },
+                { name: "SS Cutlery Tray", base: 1500 },
+                { name: "Dustbin Unit", base: 1200 },
+                { name: "Detergent Holder", base: 900 },
+                { name: "GTBT", base: 2500 },
+                { name: "ROLLING SHUTTER", base: 8500 },
+                { name: "Tall Unit", base: 18000 },
+                { name: "Swing Corner", base: 7500 },
+                { name: "Magic Corner", base: 12000 },
+                { name: "PARACEL CORNER", base: 9000 },
+                { name: "D-Tray", base: 3200 },
+                { name: "Soft Closing Runner", base: 1500 },
+                { name: "Soft Closing Hinges", base: 350 },
+                { name: "Profile Handle", base: 450 }
+            ];
+
+            if (!loadedFromStore) {
+                const allAccRooms = ['accessories'];
+                allAccRooms.forEach(room => {
+                    accOpts.forEach(acc => {
+                        qualities.forEach(qual => {
+                            addMat(room, 'Accessories', qual, acc.name, 'Box Type', 'Stainless Steel Kitchen Accessories', 'QTY', acc.base, false);
+                        });
+                    });
+                });
+            }
+
+            // Sync/override rates, custom materials, custom items, and deletions from localStorage
+            const adminRates = getRates();
+
+            // 1. Sync custom rates (from admin Rates Management)
+            db.forEach(m => {
+                const targetRate = resolveRate(adminRates, m.constructionType, m.materialType);
+                if (targetRate !== undefined && targetRate !== null && targetRate !== '') {
+                    let factor = 1.0;
+                    if (adminRates[m.constructionType] === undefined) {
+                        if (m.quality === 'Middle / Standard') factor = 0.85;
+                        else if (m.quality === 'Economy' && m.itemName !== 'BED') factor = 0.70;
+                    }
+                    m.baseAmount = Math.round(parseFloat(targetRate) * factor);
+                    m.offerPrice = m.baseAmount * (1 - (m.discountPercentage || 0) / 100);
+                }
+            });
+
+            // 2. Merge custom materials added by admin to standard items
+            const customMats = localStorage.getItem('pks_custom_materials');
+            if (customMats) {
+                try {
+                    const parsedMats = JSON.parse(customMats);
+                    for (const stdItemId in parsedMats) {
+                        const itemId = parseInt(stdItemId);
+                        const options = parsedMats[stdItemId];
+                        const matchingItemKeys = new Set();
+                        db.forEach(m => {
+                            if (getStandardItemId(m.roomId, m.itemName) === itemId) {
+                                matchingItemKeys.add(`${m.roomId}||${m.itemName}||${m.materialType}`);
+                            }
+                        });
+
+                        matchingItemKeys.forEach(keyStr => {
+                            const [room, itemName, matType] = keyStr.split('||');
+                            options.forEach(opt => {
+                                qualities.forEach(qual => {
+                                    const exists = db.some(m =>
+                                        m.roomId === room &&
+                                        m.itemName === itemName &&
+                                        m.quality === qual &&
+                                        m.constructionType === opt.label
+                                    );
+                                    if (!exists) {
+                                        let formula = "L*H/144";
+                                        let fields = ["L", "H"];
+                                        if (opt.formulaType === "L*H") { fields = ["L", "H"]; formula = "L*H/144"; }
+                                        else if (opt.formulaType === "L*W") { fields = ["L", "W"]; formula = "L*W/144"; }
+                                        else if (opt.formulaType === "SQFT") { fields = ["SQFT"]; formula = "SQFT"; }
+                                        else if (opt.formulaType === "QTY") { fields = ["QTY"]; formula = "QTY"; }
+                                        else { fields = ["L", "W", "H"]; formula = "(L+W)*H/144"; }
+
+                                        const rate = rates[opt.label] !== undefined ? rates[opt.label] : (opt.rate || 0);
+
+                                        addMat(room, matType, qual, itemName, opt.label, opt.specifications || "", formula, rate);
+                                    }
+                                });
+                            });
+                        });
+                    }
+                } catch (e) { console.error("Error merging custom materials: ", e); }
+            }
+
+            // 3. Merge custom items created by admin
+            const customItemsStr = localStorage.getItem('pks_custom_items');
+            if (customItemsStr) {
+                try {
+                    const parsedItems = JSON.parse(customItemsStr);
+                    const standardRooms = ['kitchen', 'living_room', 'prayer_unit', 'bedroom', 'dining_room', 'musical_room', 'study_room', 'toilet_area', 'store_room', 'sitout'];
+                    parsedItems.forEach(item => {
+                        standardRooms.forEach(room => {
+                            qualities.forEach(qual => {
+                                // In Economy mode, table items only get Engineering Wood variants
+                                const itemUpper = item.name.toUpperCase();
+                                const isEcoTable = qual === 'Economy' &&
+                                    itemUpper.includes('TABLE') &&
+                                    !itemUpper.includes('PANEL') &&
+                                    !itemUpper.includes('BEAM') &&
+                                    !itemUpper.includes('COVERING');
+
+                                if (isEcoTable) {
+                                    // Only add the 3 Engineering Wood variants
+                                    engWoodBoxDoor.forEach(m => {
+                                        const exists = db.some(e =>
+                                            e.roomId === room &&
+                                            e.itemName === item.name &&
+                                            e.quality === qual &&
+                                            e.constructionType === m.label
+                                        );
+                                        if (!exists) {
+                                            const rate = rates[m.label] !== undefined ? rates[m.label] : m.base;
+                                            addMat(room, 'Standard', qual, item.name, m.label, "ENGINEERING WOOD THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS", m.formula, rate);
+                                        }
+                                    });
+                                    return;
+                                }
+
+                                item.options.forEach(opt => {
+                                    const exists = db.some(m =>
+                                        m.roomId === room &&
+                                        m.itemName === item.name &&
+                                        m.quality === qual &&
+                                        m.constructionType === opt.label
+                                    );
+                                    if (!exists) {
+                                        let formula = "L*H/144";
+                                        let fields = ["L", "H"];
+                                        if (opt.formulaType === "L*H") { fields = ["L", "H"]; formula = "L*H/144"; }
+                                        else if (opt.formulaType === "L*W") { fields = ["L", "W"]; formula = "L*W/144"; }
+                                        else if (opt.formulaType === "SQFT") { fields = ["SQFT"]; formula = "SQFT"; }
+                                        else if (opt.formulaType === "QTY") { fields = ["QTY"]; formula = "QTY"; }
+                                        else { fields = ["L", "W", "H"]; formula = "(L+W)*H/144"; }
+
+                                        const rate = rates[opt.label] !== undefined ? rates[opt.label] : (opt.rate || 0);
+
+                                        addMat(room, 'Standard', qual, item.name, opt.label, opt.specifications || "", formula, rate);
+                                    }
+                                });
+                            });
+                        });
+                    });
+                } catch (e) { console.error("Error merging custom items: ", e); }
+            }
+
+            // 4. Filter out deleted standard items
+            const deletedItemsStr = localStorage.getItem('pks_deleted_standard_items');
+            if (deletedItemsStr) {
+                try {
+                    const deletedItems = JSON.parse(deletedItemsStr);
+                    db = db.filter(m => {
+                        const stdItemId = getStandardItemId(m.roomId, m.itemName);
+                        return !(stdItemId && deletedItems.includes(stdItemId));
+                    });
+                } catch (e) { }
+            }
+
+            // 5. Filter out deleted standard materials
+            const deletedMatsStr = localStorage.getItem('pks_deleted_standard_materials');
+            if (deletedMatsStr) {
+                try {
+                    const deletedMats = JSON.parse(deletedMatsStr);
+                    db = db.filter(m => {
+                        const stdItemId = getStandardItemId(m.roomId, m.itemName);
+                        if (stdItemId) {
+                            const key = `${stdItemId}-${m.constructionType}`;
+                            return !deletedMats.includes(key);
+                        }
+                        return true;
+                    });
+                } catch (e) { }
+            }
+
+            // 6. Strip non-Engineering-Wood options from TABLE items in Economy mode (catches cached entries)
+            db = db.filter(m => {
+                if (m.quality !== 'Economy') return true;
+                const nameUpper = m.itemName.toUpperCase();
+                const isTable = nameUpper.includes('TABLE') &&
+                    !nameUpper.includes('PANEL') &&
+                    !nameUpper.includes('BEAM') &&
+                    !nameUpper.includes('COVERING');
+                if (!isTable) return true;
+                // Only keep Engineering Wood variants
+                return m.constructionType === 'Engineering Wood (Box Type)' ||
+                    m.constructionType === 'Engineering Wood (Door Only)' ||
+                    m.constructionType === 'Engineering Wood (Partition Type)';
+            });
+
+            localStorage.setItem('pks_materials_db', JSON.stringify(db));
+            localStorage.setItem('pks_materials_db_version', currentDbVersion);
+            return db;
+        }
+
+        const activeMaterialType = sessionStorage.getItem('pks_material_type') || 'Half Teak Wood';
+        let activeQuality = 'Premium';
+        if (pricingMode === 'medium') activeQuality = 'Middle / Standard';
+        else if (pricingMode === 'economy') activeQuality = 'Economy';
+
+        // Formula Evaluator
+        function evaluateFormula(formulaStr, values) {
+            let normalized = formulaStr.toUpperCase();
+            normalized = normalized.replace(/\bLENGTH\b/g, 'L');
+            normalized = normalized.replace(/\bWIDTH\b/g, 'W');
+            normalized = normalized.replace(/\bHEIGHT\b/g, 'H');
+            normalized = normalized.replace(/\bDEPTH\b/g, 'D');
+            normalized = normalized.replace(/\bSQFT\b/g, 'S');
+            normalized = normalized.replace(/\bQTY\b/g, 'Q');
+
+            const valMap = {
+                L: parseFloat(values.L || values.Length || 0),
+                W: parseFloat(values.W || values.Width || 0),
+                H: parseFloat(values.H || values.Height || 0),
+                D: parseFloat(values.Depth || values.D || 0),
+                S: parseFloat(values.SQFT || values.S || 0),
+                Q: parseFloat(values.QTY || values.Q || 1)
+            };
+
+            let evalStr = normalized;
+            evalStr = evalStr.replace(/\bL\b/g, valMap.L);
+            evalStr = evalStr.replace(/\bW\b/g, valMap.W);
+            evalStr = evalStr.replace(/\bH\b/g, valMap.H);
+            evalStr = evalStr.replace(/\bD\b/g, valMap.D);
+            evalStr = evalStr.replace(/\bS\b/g, valMap.S);
+            evalStr = evalStr.replace(/\bQ\b/g, valMap.Q);
+
+            evalStr = evalStr.replace(/[^0-9+\-*/().\s]/g, '');
+
+            try {
+                const res = Function(`"use strict"; return (${evalStr})`)();
+                return parseFloat(res) || 0;
+            } catch (e) {
+                console.error("Formula eval failed: ", formulaStr, evalStr, e);
+                return 0;
+            }
+        }
+
+        function getFullItemsList() {
+            const db = getOrInitMaterialsDb();
+
+            // Hardcoded specifications and formulas mapping to protect them
+            const ftSpecsBottom = "KERALA TEAK WOOD, BACKDSEAT 8 MM TEAK WOOD, BOX WOOD SIZE 17MM, DOOR WOOD SIZE FRAME 25MM, FINISHING PU OR MATE FINISHING, SOFT CLOSING HINGES";
+            const ftSpecsTop = "KERALA TEAK WOOD, BACK - RAILING, BOX WOOD SIZE 17MM, DOOR WOOD SIZE FRAME 25MM, FINISHING PU OR MATE FINISHING, SOFT CLOSING HINGES";
+            const ftSpecsLoft = "KERALA TEAK WOOD, BOX WOOD SIZE 17MM, DOOR WOOD SIZE FRAME 25MM, FINISHING PU OR MATE FINISHING, SOFT CLOSING HINGES";
+            const ftSpecsThin = "KERALA TEAK WOOD, THICKNESS 12MM, FINISHING PU/MATE";
+            const ftSpecsPartition = "KERALA TEAK WOOD, THICKNESS 17MM, DOOR FRAME 25 MM, FINISHING PU/MATE, HINGES-HITECH/SLEEK";
+            const ftSpecsDoor = "KERALA TEAK WOOD FRAME THICKNESS 20 MM, DOOR THICKNESS 25MM/17MM, FINISHING PU/MATE/GLOSSY, HINGES - SOFT CLOSING, HITECH, SLEEK";
+
+            const htSpecsBottom = "Marineply-710 grade 16 mm, Backs TOP Seat WPC / Tech wood, Outdoor kerala teak wood, Teak wood size 17mm/25mm, Soft Closing Hinges, Sleek, hitech, finishing pu/mate, glossy";
+            const htSpecsPartition = "Frame and Partition - Marine Ply, 710 Grade, Thickness - 16 mm, Brand - Fineply / Saburi, Inner Finishing - Teak Wood Color Lamination / Half White Color Lamination, Outside Area - Full Kerala Teak Wood, Door Frame Thickness - 25 mm, Outside Finish - PU / Matte / Glossy, Hinges - Soft Closing / Hitech";
+            const htSpecsDoor = "Frame - Marine Ply, 710 Grade, Thickness - 16 mm, Brand - Fineply / Saburi, Inner Finishing - Teak Wood Color Lamination / Half White Color Lamination, Outside Door - Kerala Teak Wood, Door Thickness - 25 mm / 16 mm, Outside Finish - PU / Matte / Glossy, Hinges - Soft Closing / Hitech";
+            const htSpecsThin = "Kerala Teak Wood, Thickness - 12 mm, Finishing - PU / Matte / Glossy";
+            const htSpecsOpenBox = "Kerala Teak Wood, Thickness - 16 mm, Finishing - PU / Matte / Glossy";
+
+            const formulaCab = "(Length + Width) * Height / 144";
+            const formulaDoor = "L * H / 144";
+
+            // Loop through database and override specs and formulas for teak wood items
+            db.forEach(m => {
+                const isFullTeak = (m.roomId === 'full_teak_wood' || m.constructionType.includes('Full Teak Wood'));
+                const isHalfTeak = (m.roomId === 'half_teak_wood' || m.constructionType.includes('Half Teak Wood'));
+
+                if (isFullTeak) {
+                    const cType = m.constructionType.includes('Door Only') ? 'Door Only' : (m.constructionType.includes('Partition Type') ? 'Partition Type' : 'Box Type');
+                    m.formula = formulaCab;
+                    if (cType === 'Door Only') {
+                        m.specifications = ftSpecsDoor;
+                        m.formula = formulaDoor;
+                    } else if (cType === 'Partition Type') {
+                        m.specifications = ftSpecsPartition;
+                    } else {
+                        // Box Type
+                        if (m.itemName === 'Kitchen Top Box' || m.itemName === 'Kitchen Side Storage Cabinet') {
+                            m.specifications = ftSpecsTop;
+                        } else if (m.itemName === 'Kitchen Loft' || m.itemName === 'Loft') {
+                            m.specifications = ftSpecsLoft;
+                        } else if (['Breakfast Table Wall Paneling', 'Breakfast Table Beam Covering', 'Open Box', 'Spice Rack', 'Ledge', 'Ledge 1', 'Ledge 2', 'Kitchen & Dining Partition', 'Wall Paneling'].includes(m.itemName)) {
+                            m.specifications = ftSpecsThin;
+                            if (m.itemName === 'Breakfast Table Wall Paneling' || m.itemName === 'Breakfast Table Beam Covering' || m.itemName === 'Wall Paneling') {
+                                m.formula = "W * H / 144";
+                            } else if (m.itemName === 'Open Box' || m.itemName === 'Spice Rack') {
+                                m.formula = "(W + Depth) * H / 144";
+                            } else if (m.itemName === 'Ledge' || m.itemName === 'Ledge 1' || m.itemName === 'Ledge 2') {
+                                m.formula = "L * W / 144";
+                            }
+                        } else {
+                            m.specifications = ftSpecsBottom;
+                        }
+                    }
+                } else if (isHalfTeak) {
+                    const cType = m.constructionType.includes('Door Only') ? 'Door Only' : (m.constructionType.includes('Partition Type') ? 'Partition Type' : 'Box Type');
+                    m.formula = formulaCab;
+                    if (cType === 'Door Only') {
+                        m.specifications = htSpecsDoor;
+                        m.formula = formulaDoor;
+                    } else if (cType === 'Partition Type') {
+                        m.specifications = htSpecsPartition;
+                    } else {
+                        // Box Type
+                        if (m.itemName === 'Breakfast Table Wall Paneling' || m.itemName === 'Breakfast Table Beam Covering' || m.itemName === 'Kitchen & Dining Partition') {
+                            m.specifications = htSpecsThin;
+                            if (m.itemName === 'Breakfast Table Wall Paneling' || m.itemName === 'Breakfast Table Beam Covering') {
+                                m.formula = "W * H / 144";
+                            }
+                        } else if (m.itemName === 'Open Box' || m.itemName === 'Breakfast Table Open Box' || m.itemName === 'Spice Rack' || m.itemName === 'Ledge 1' || m.itemName === 'Ledge 2') {
+                            if (m.itemName === 'Spice Rack' || m.itemName === 'Ledge 1' || m.itemName === 'Ledge 2') {
+                                m.specifications = htSpecsOpenBox;
+                            } else {
+                                m.specifications = htSpecsBottom;
+                            }
+                            if (m.itemName === 'Open Box' || m.itemName === 'Breakfast Table Open Box' || m.itemName === 'Spice Rack') {
+                                m.formula = "(W + Depth) * H / 144";
+                            } else if (m.itemName === 'Ledge 1' || m.itemName === 'Ledge 2') {
+                                m.formula = "L * W / 144";
+                            }
+                        } else {
+                            m.specifications = htSpecsBottom;
+                        }
+                    }
+                }
+            });
+
+            // Apply custom edited specifications overrides
+            let customSpecs = {};
+            const storedCustom = localStorage.getItem('pks_custom_specs_by_id');
+            if (storedCustom) {
+                try { customSpecs = JSON.parse(storedCustom); } catch (e) { }
+            }
+            db.forEach(m => {
+                if (customSpecs[m.id] !== undefined) {
+                    m.specifications = customSpecs[m.id];
+                }
+            });
+
+            // ── Apply admin-set rates to all DB entries ──────────────
+            // Rates saved by admin override the hardcoded default base rates.
+            const adminRates = getRates();
+            db.forEach(m => {
+                const targetRate = resolveRate(adminRates, m.constructionType, m.materialType);
+                if (targetRate !== undefined && targetRate !== null && targetRate !== '') {
+                    let factor = 1.0;
+                    if (adminRates[m.constructionType] === undefined) {
+                        if (m.quality === 'Middle / Standard') factor = 0.85;
+                        else if (m.quality === 'Economy' && m.itemName !== 'BED') factor = 0.70;
+                    }
+                    m.baseAmount = Math.round(parseFloat(targetRate) * factor);
+                    m.offerPrice = m.baseAmount * (1 - (m.discountPercentage || 0) / 100);
+                }
+            });
+
+            const filtered = db.filter(m =>
+                (m.roomId || '').toLowerCase() === (selectedRoom || '').toLowerCase() &&
+                (m.quality || '').toLowerCase() === (modeLabel || '').toLowerCase() &&
+                (m.status === 'ON' || !m.status)
+            );
+
+            // Group by itemName
+            const grouped = {};
+            let idx = 1;
+            filtered.forEach(m => {
+                const itemKey = m.itemName.toUpperCase();
+                if (!grouped[itemKey]) {
+                    grouped[itemKey] = {
+                        id: idx++,
+                        name: itemKey,
+                        options: []
+                    };
+                }
+
+                let fields = ['L', 'W', 'H'];
+                let formulaStr = m.formula.toUpperCase();
+                if (formulaStr.includes('QTY') || formulaStr === 'QTY') {
+                    fields = ['QTY'];
+                } else if (formulaStr.includes('L') && formulaStr.includes('W') && !formulaStr.includes('H')) {
+                    fields = ['L', 'W'];
+                } else if (formulaStr.includes('W') && formulaStr.includes('H') && !formulaStr.includes('L')) {
+                    fields = ['W', 'H'];
+                } else if (formulaStr.includes('L') && formulaStr.includes('H') && !formulaStr.includes('W')) {
+                    fields = ['L', 'H'];
+                } else if (formulaStr.includes('SQFT') || formulaStr === 'SQFT') {
+                    fields = ['SQFT'];
+                }
+
+                grouped[itemKey].options.push({
+                    label: m.constructionType,
+                    fields: fields,
+                    formulaStr: m.formula,
+                    note: m.formula,
+                    specifications: m.specifications,
+                    baseAmount: m.baseAmount,
+                    offerPrice: m.offerPrice,
+                    discountPercentage: m.discountPercentage,
+                    amountIncreasePercentage: m.amountIncreasePercentage,
+                    showSqft: m.showSqft !== false,
+                    dbId: m.id,
+                    roomId: m.roomId,
+                    materialType: m.materialType,
+                    constructionType: m.constructionType
+                });
+            });
+
+            return Object.values(grouped);
         }
 
         let ITEMS = [];
@@ -1467,13 +2288,11 @@
         let lineIdCounter = 1;
 
         function getFullRoomLabel() {
-            if (selectedRoom === 'bedroom') {
-                const floor = document.getElementById('floorSelector').value;
-                const roomNo = document.getElementById('roomNoSelector').value;
-                return `${floor} - ${selectedRoomName} ${roomNo}`;
-            } else {
-                return selectedRoomName;
-            }
+            const floorEl = document.getElementById('floorSelector');
+            const roomNoEl = document.getElementById('roomNoSelector');
+            const floor = floorEl ? floorEl.value : 'Ground Floor';
+            const roomNo = roomNoEl ? roomNoEl.value : '1';
+            return `${floor} - ${selectedRoomName} ${roomNo}`;
         }
 
         function updateRoomState(roomId, roomName) {
@@ -1482,19 +2301,16 @@
             sessionStorage.setItem('pks_selected_room', roomId);
             sessionStorage.setItem('pks_selected_room_name', roomName);
 
-            const itemsSource = isEconomyMode ? ROOM_ITEMS_ECONOMY : ROOM_ITEMS;
-            const rawItems = itemsSource[selectedRoom] || itemsSource.kitchen;
-            const deleted = getDeletedStandardItems();
-            BASE_ITEMS = rawItems.filter(item => !deleted.includes(item.id));
             ITEMS = getFullItemsList();
 
-            // Update badge in header
-            document.getElementById('roomBadge').textContent = selectedRoomName;
+            // Update badge in header if present
+            const rb = document.getElementById('roomBadge');
+            if (rb) rb.textContent = selectedRoomName;
 
-            // Toggle Floor and Room selectors ONLY for bedroom
+            // Show Floor and Room selectors
             const selectorsWrap = document.getElementById('floorSelectorsWrap');
             if (selectorsWrap) {
-                selectorsWrap.style.display = (roomId === 'bedroom') ? 'flex' : 'none';
+                selectorsWrap.style.display = 'flex';
             }
 
             renderRoomTabs();
@@ -1553,6 +2369,15 @@
         // Initialize dynamic tabs and list
         updateRoomState(selectedRoom, selectedRoomName);
 
+        ['payToken', 'payAdvance', 'paySecond', 'payFinal'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    el.dataset.userEdited = "true";
+                });
+            }
+        });
+
         // Listen for admin changes in other tabs/windows
         window.addEventListener('storage', (e) => {
             if (e.key === 'pks_rates' || e.key === 'pks_custom_materials' || e.key === 'pks_custom_items') {
@@ -1576,6 +2401,10 @@
                         <div class="field" style="flex:2">
                             <label>Description</label>
                             <input type="text" id="${buildId}-desc" placeholder="e.g. Handle upgrade">
+                        </div>
+                        <div class="field" style="flex:2">
+                            <label>Specifications</label>
+                            <input type="text" id="${buildId}-specs" placeholder="e.g. 16mm Marine Ply, SS Accessories">
                         </div>
                         <div class="field">
                             <label>Sq.Ft / Qty</label>
@@ -1609,25 +2438,81 @@
                 return;
             }
 
+            if (item.options.length === 1) {
+                wrap.innerHTML = `
+                    <div id="${buildId}-sizeArea"></div>
+                `;
+                container.appendChild(wrap);
+                openSizePanel(buildId, itemId, 0);
+                return;
+            }
+
+            container.appendChild(wrap);
+            openMaterialSelector(buildId, itemId);
+        }
+
+        function openMaterialSelector(buildId, itemId) {
+            const wrap = document.getElementById(buildId);
+            if (!wrap) return;
+
+            const item = ITEMS.find(i => i.id === itemId);
             wrap.innerHTML = `
                 <div class="step-label">Choose material</div>
                 <div class="opt-row" id="${buildId}-opts"></div>
                 <div id="${buildId}-sizeArea"></div>
             `;
-            container.appendChild(wrap);
 
             const optRow = document.getElementById(`${buildId}-opts`);
             item.options.forEach((opt, idx) => {
+                const btnWrap = document.createElement('div');
+                btnWrap.style.cssText = 'position: relative; display: inline-flex; flex-direction: column; align-items: center; gap: 3px;';
+
                 const btn = document.createElement('button');
                 btn.className = 'opt-btn';
                 btn.textContent = opt.label;
+                btn.style.paddingRight = '32px';
                 btn.onclick = () => selectMaterial(buildId, itemId, idx, btn, optRow);
-                optRow.appendChild(btn);
+
+                // Show rate badge below button
+                const rate = getFinalRateForOption(opt);
+                const rateLabel = document.createElement('span');
+                if (rate > 0) {
+                    const isQty = opt.fields && opt.fields.includes('QTY');
+                    rateLabel.textContent = isQty ? `₹${Math.round(rate).toLocaleString('en-IN')} / qty` : `₹${Math.round(rate).toLocaleString('en-IN')} / sq.ft`;
+                    rateLabel.style.cssText = 'font-size: 0.68rem; font-weight: 700; color: var(--accent); background: rgba(61,187,110,0.1); border: 1px solid rgba(61,187,110,0.25); border-radius: 20px; padding: 1px 7px; letter-spacing: 0.3px; white-space: nowrap;';
+                } else {
+                    rateLabel.textContent = '₹ — rate not set';
+                    rateLabel.style.cssText = 'font-size: 0.65rem; color: var(--muted); white-space: nowrap;';
+                }
+
+                const delBtn = document.createElement('span');
+                delBtn.innerHTML = '&times;';
+                delBtn.style.cssText = 'position: absolute; right: 8px; top: 10px; font-weight: bold; font-size: 1.1rem; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; transition: all 0.2s ease;';
+                delBtn.onmouseover = () => { delBtn.style.color = '#ff4d4d'; delBtn.style.background = 'rgba(255, 77, 77, 0.1)'; };
+                delBtn.onmouseout = () => { delBtn.style.color = 'var(--muted)'; delBtn.style.background = 'none'; };
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteMaterialOption(buildId, itemId, idx);
+                };
+
+                btnWrap.appendChild(btn);
+                btnWrap.appendChild(rateLabel);
+                btnWrap.appendChild(delBtn);
+                optRow.appendChild(btnWrap);
             });
+
+            const addBtn = document.createElement('button');
+            addBtn.type = 'button';
+            addBtn.className = 'opt-btn';
+            addBtn.style.cssText = 'border: 1px dashed var(--accent); color: var(--accent); background: none; font-weight: bold; cursor: pointer;';
+            addBtn.textContent = '+ Add Material';
+            addBtn.onclick = () => addCustomMaterialOption(buildId, itemId);
+            optRow.appendChild(addBtn);
         }
 
+
         function selectMaterial(buildId, itemId, optIdx, btnEl, optRow) {
-            [...optRow.children].forEach(b => b.classList.remove('selected'));
+            optRow.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
             btnEl.classList.add('selected');
 
             const item = ITEMS.find(i => i.id === itemId);
@@ -1639,13 +2524,261 @@
             }
         }
 
+        function getStandardItemId(room, name) {
+            const normalized = name.toUpperCase().trim();
+            if (room === 'kitchen') {
+                if (normalized.includes('BOTTOM') && !normalized.includes('STAIRCASE')) return 1;
+                if (normalized.includes('TOP')) return 2;
+                if (normalized.includes('LOFT')) return 3;
+                if (normalized.includes('ISLAND')) return 4;
+                if (normalized.includes('BREAKFAST TABLE') && !normalized.includes('PANEL') && !normalized.includes('BEAM') && !normalized.includes('BOX')) return 5;
+                if (normalized.includes('WALL PANEL')) return 6;
+                if (normalized.includes('BEAM')) return 7;
+                if (normalized.includes('OPEN BOX')) return 8;
+                if (normalized.includes('SPICE')) return 9;
+                if (normalized.includes('LEDGE')) return 10;
+                if (normalized.includes('SIDE')) return 11;
+                if (normalized.includes('PARTITION')) return 12;
+                if (normalized.includes('STAIRCASE')) return 14;
+                if (normalized.includes('ACCESSORIES')) return 13;
+            }
+            if (room === 'living_room') {
+                if (normalized.includes('TV UNIT') && normalized.includes('PANEL')) return 16;
+                if (normalized.includes('TV UNIT') && normalized.includes('BOTTOM')) return 17;
+                if (normalized.includes('TV UNIT') && normalized.includes('SIDE')) return 18;
+                if (normalized.includes('PARTITION') && normalized.includes('DINING')) return 19;
+                if (normalized.includes('WALL PANEL')) return 20;
+                if (normalized.includes('STAIRCASE')) return 21;
+                if (normalized.includes('ACCESSORIES')) return 22;
+            }
+            if (room === 'prayer_unit') {
+                if (normalized.includes('BOTTOM') || normalized.includes('PRAYER')) return 75;
+                if (normalized.includes('ACCESSORIES')) return 76;
+            }
+            if (room === 'bedroom') {
+                if (normalized.includes('WARDROBE')) return 25;
+                if (normalized.includes('BED BACK') || normalized.includes('HEADREST')) return 27;
+                if (normalized === 'BED') return 28;
+                if (normalized.includes('BAY WINDOW')) return 29;
+                if (normalized.includes('DRESSING') && normalized.includes('PANEL')) return 30;
+                if (normalized.includes('DRESSING') && normalized.includes('BOTTOM')) return 31;
+                if (normalized.includes('TV UNIT') && normalized.includes('PANEL')) return 32;
+                if (normalized.includes('TV UNIT') && normalized.includes('BOTTOM')) return 33;
+                if (normalized.includes('TV UNIT') && normalized.includes('SIDE')) return 34;
+                if (normalized === 'SIDE CABINET') return 65;
+                if (normalized.includes('CUPBOARD 1')) return 66;
+                if (normalized.includes('CUPBOARD 2')) return 67;
+                if (normalized.includes('LOFT 1')) return 68;
+                if (normalized.includes('LOFT 2')) return 69;
+                if (normalized === 'WALL PANNELING') return 70;
+                if (normalized.includes('HIDDEN DOOR')) return 71;
+                if (normalized.includes('ACCESSORIES')) return 72;
+            }
+            if (room === 'dining_room') {
+                if (normalized.includes('BOTTOM')) return 37;
+                if (normalized.includes('WALL PANEL')) return 38;
+                if (normalized.includes('CROCKERY')) return 39;
+                if (normalized.includes('ACCESSORIES')) return 40;
+            }
+            if (room === 'musical_room') {
+                if (normalized.includes('WALL PANEL')) return 80;
+                if (normalized.includes('TABLE')) return 81;
+                if (normalized.includes('ACCESSORIES')) return 82;
+            }
+            if (room === 'study_room') {
+                if (normalized.includes('BOOK')) return 85;
+                if (normalized.includes('STUDY TABLE') && !normalized.includes('TOP')) return 86;
+                if (normalized.includes('TOP BOX')) return 87;
+                if (normalized.includes('COMPUTER')) return 88;
+                if (normalized.includes('ACCESSORIES')) return 89;
+            }
+            if (room === 'toilet_area') {
+                if (normalized.includes('WASHBASIN') || normalized.includes('CABINET')) return 93;
+                if (normalized.includes('ACCESSORIES')) return 94;
+            }
+            if (room === 'store_room') {
+                if (normalized.includes('CUPBOARD') || normalized.includes('STORE')) return 96;
+                if (normalized.includes('ACCESSORIES')) return 97;
+            }
+            if (room === 'sitout') {
+                if (normalized.includes('CHAPPAL') || normalized.includes('STAND')) return 100;
+                if (normalized.includes('CEILING')) return 101;
+                if (normalized.includes('ACCESSORIES')) return 102;
+            }
+            return null;
+        }
+
+        function deleteMaterialOption(buildId, itemId, optIdx) {
+            if (!confirm("Are you sure you want to delete this material option?")) return;
+            const item = ITEMS.find(i => i.id === itemId);
+            const opt = item.options[optIdx];
+
+            let storedDb = localStorage.getItem('pks_materials_db');
+            if (storedDb) {
+                try {
+                    let db = JSON.parse(storedDb);
+                    db = db.filter(m => m.id !== opt.dbId);
+                    localStorage.setItem('pks_materials_db', JSON.stringify(db));
+                } catch (e) { }
+            }
+
+            const stdItemId = getStandardItemId(selectedRoom, item.name);
+            if (stdItemId) {
+                const storedCustom = localStorage.getItem('pks_custom_materials');
+                if (storedCustom) {
+                    try {
+                        let customMats = JSON.parse(storedCustom);
+                        if (customMats[stdItemId]) {
+                            customMats[stdItemId] = customMats[stdItemId].filter(m => m.label !== opt.label);
+                            localStorage.setItem('pks_custom_materials', JSON.stringify(customMats));
+                        }
+                    } catch (e) { }
+                }
+            }
+
+            ITEMS = getFullItemsList();
+            openMaterialSelector(buildId, itemId);
+        }
+
+        function addCustomMaterialOption(buildId, itemId) {
+            const matName = prompt("Enter new material name (e.g. Teak Wood (Box Type)):");
+            if (!matName || !matName.trim()) return;
+            const rateStr = prompt("Enter rate (₹):");
+            if (!rateStr) return;
+            const rate = parseFloat(rateStr) || 0;
+            const specs = prompt("Enter specifications (optional):") || "";
+
+            const item = ITEMS.find(i => i.id === itemId);
+            const firstOpt = item.options[0] || {};
+
+            let storedDb = localStorage.getItem('pks_materials_db');
+            if (storedDb) {
+                try {
+                    let db = JSON.parse(storedDb);
+                    const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+                    let qual = 'Premium';
+                    if (pMode === 'medium') qual = 'Middle / Standard';
+                    else if (pMode === 'economy') qual = 'Economy';
+
+                    const newId = 'mat_custom_' + Date.now();
+                    const newEntry = {
+                        id: newId,
+                        roomId: selectedRoom,
+                        materialType: firstOpt.materialType || 'Standard',
+                        quality: qual,
+                        itemName: item.name,
+                        constructionType: matName.trim(),
+                        specifications: specs || firstOpt.specifications || "",
+                        formula: firstOpt.formula || "(L+W)*H/144",
+                        baseAmount: rate,
+                        offerPrice: rate,
+                        discountPercentage: 0,
+                        amountIncreasePercentage: 0,
+                        showSqft: firstOpt.showSqft !== undefined ? firstOpt.showSqft : true,
+                        status: 'ON'
+                    };
+
+                    db.push(newEntry);
+                    localStorage.setItem('pks_materials_db', JSON.stringify(db));
+
+                    const storedRates = localStorage.getItem('pks_rates');
+                    let rates = {};
+                    if (storedRates) {
+                        try { rates = JSON.parse(storedRates); } catch (e) { }
+                    }
+                    rates[matName.trim()] = rate;
+                    localStorage.setItem('pks_rates', JSON.stringify(rates));
+
+                    const stdItemId = getStandardItemId(selectedRoom, item.name);
+                    if (stdItemId) {
+                        const storedCustom = localStorage.getItem('pks_custom_materials');
+                        let customMats = {};
+                        if (storedCustom) {
+                            try { customMats = JSON.parse(storedCustom); } catch (e) { }
+                        }
+                        if (!customMats[stdItemId]) {
+                            customMats[stdItemId] = [];
+                        }
+                        customMats[stdItemId].push({ label: matName.trim(), rate: rate, specifications: specs });
+                        localStorage.setItem('pks_custom_materials', JSON.stringify(customMats));
+                    }
+
+                    showToast("Material option added successfully!");
+                } catch (e) { }
+            }
+
+            ITEMS = getFullItemsList();
+            openMaterialSelector(buildId, itemId);
+        }
+
+        function formatSpecificationsText(specsStr, currentRoomId, currentMaterialLabel) {
+            if (!specsStr) return "";
+            specsStr = specsStr.trim();
+            if (specsStr.startsWith('[') && specsStr.endsWith(']')) {
+                try {
+                    const arr = JSON.parse(specsStr);
+                    if (Array.isArray(arr)) {
+                        const filtered = arr.filter(item => {
+                            const itemMat = (item.material || "").toLowerCase().trim();
+                            const currentMat = (currentMaterialLabel || "").toLowerCase().trim();
+
+                            let matMatch = false;
+
+                            if (currentMat.includes("wpc")) {
+                                matMatch = itemMat.includes("wpc");
+                            } else if (currentMat.includes("pvc")) {
+                                matMatch = itemMat.includes("pvc");
+                            } else if (currentMat.includes("acrylic")) {
+                                matMatch = itemMat.includes("acrylic");
+                            } else if (currentMat.includes("lamination")) {
+                                matMatch = itemMat.includes("lamination") && !itemMat.includes("wpc");
+                            } else {
+                                matMatch = currentMat.includes(itemMat) || itemMat.includes(currentMat);
+                            }
+
+                            if (!matMatch) return false;
+
+                            const itemRoom = (item.room || "").toLowerCase().trim();
+                            const roomMatch = itemRoom === 'all' || itemRoom === currentRoomId.toLowerCase().trim();
+                            return roomMatch;
+                        });
+
+                        if (filtered.length > 0) {
+                            return filtered.map(item => item.text).join('\n');
+                        }
+                    }
+                } catch (e) { }
+            }
+            return specsStr;
+        }
+
+        function getFinalRateForOption(opt) {
+            // Always read rates live from localStorage pks_rates so admin changes show immediately
+            let liveRate = null;
+            const globalStored = localStorage.getItem('pks_rates');
+            if (globalStored) {
+                try {
+                    const globalRates = JSON.parse(globalStored);
+                    const resolved = resolveRate(globalRates, opt.constructionType, opt.materialType);
+                    if (resolved !== undefined && resolved !== null && resolved !== '') {
+                        liveRate = parseFloat(resolved);
+                    }
+                } catch (e) { }
+            }
+
+            const baseAmount = (liveRate !== null) ? liveRate : (opt.baseAmount || 0);
+            const increasedRate = baseAmount * (1 + (opt.amountIncreasePercentage || 0) / 100);
+            const discountPct = opt.discountPercentage || 0;
+            const finalRate = discountPct > 0 ? (increasedRate * (1 - discountPct / 100)) : increasedRate;
+            return finalRate;
+        }
+
         function openSizePanel(buildId, itemId, optIdx) {
             const item = ITEMS.find(i => i.id === itemId);
             const opt = item.options[optIdx];
             const sizeArea = document.getElementById(`${buildId}-sizeArea`);
 
-            const rates = getRates();
-            const defaultRate = rates[opt.label] || 0;
+            const defaultRate = getFinalRateForOption(opt);
 
             const fieldsHtml = opt.fields.map(f => `
                 <div class="field">
@@ -1656,17 +2789,25 @@
 
             const defaultLabel = opt.fields.includes('QTY') ? 'Qty: <b>0</b>' : 'Sq.Ft: <b>0</b>';
 
+            const labelText = item.options.length === 1 ? item.name : opt.label;
             sizeArea.innerHTML = `
                 <div class="size-panel">
-                  <div class="step-label">Size &amp; rate — ${opt.label} <span style="text-transform:none;color:var(--muted)">(${opt.note})</span></div>
+                  <div class="step-label">Size &amp; rate — ${labelText} <span style="text-transform:none;color:var(--muted)">(${opt.note})</span></div>
+                  <div id="${buildId}-specs-block" style="font-size: 0.72rem; color: var(--muted); margin-bottom: 12px; line-height: 1.4; padding: 6px 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <strong>Specifications:</strong>
+                      <button type="button" style="background: transparent; border: none; cursor: pointer; font-size: 0.85rem; padding: 2px;" onclick="enableInlineSpecsEdit('${buildId}', ${itemId}, ${optIdx})" title="Edit Specifications">✏️</button>
+                    </div>
+                    <div id="${buildId}-specs-text" style="word-break: break-word; white-space: pre-wrap;">${formatSpecificationsText(opt.specifications, selectedRoom, opt.label) || "No specifications added. Click edit icon to add."}</div>
+                  </div>
                   <div class="field-row">
                     ${fieldsHtml}
-                    <div class="field" ${showRate ? '' : 'style="display:none;"'}>
-                      <label>Rate (₹/sq.ft) [Locked]</label>
-                      <input type="number" step="0.01" id="${buildId}-rate" value="${defaultRate}" disabled>
+                    <div class="field">
+                      <label>Rate (₹/sq.ft)</label>
+                      <input type="number" step="0.01" id="${buildId}-rate" value="${defaultRate.toFixed(2)}" disabled>
                     </div>
                   </div>
-                  <div class="calc-line" id="${buildId}-calc">${defaultLabel}${showRate ? ' &nbsp;|&nbsp; Amount: <b>₹0</b>' : ''}</div>
+                  <div class="calc-line" id="${buildId}-calc">${defaultLabel} &nbsp;|&nbsp; Amount: <b>₹0.00</b></div>
                   <div class="row-actions">
                     <button class="confirm-btn" onclick="confirmMaterial('${buildId}', ${itemId}, ${optIdx})">Add to Quote</button>
                     <button class="cancel-btn" onclick="closeBuilder('${buildId}')">Cancel</button>
@@ -1695,14 +2836,7 @@
             const opt = item.options[optIdx];
 
             // Get rate
-            let rate = 0;
-            const rateEl = document.getElementById(`${buildId}-rate`);
-            if (rateEl) {
-                rate = parseFloat(rateEl.value) || 0;
-            } else {
-                const rates = getRates();
-                rate = rates[opt.label] || 0;
-            }
+            let rate = getFinalRateForOption(opt);
 
             let sqft = 0;
             if (opt.fields.includes('SQFT')) {
@@ -1713,7 +2847,7 @@
                 sqft = parseFloat(el.value) || 0;
             } else {
                 const v = readValues(buildId, opt.fields);
-                sqft = opt.formula(v);
+                sqft = evaluateFormula(opt.formulaStr, v);
             }
 
             if (!opt.fields.includes('QTY')) {
@@ -1728,10 +2862,9 @@
             } else {
                 previewStr = `Sq.Ft: <b>${sqft}</b>`;
             }
+            document.getElementById(`${buildId}-calc`).innerHTML = `${previewStr} &nbsp;|&nbsp; Amount: <b>₹${amount.toFixed(2)}</b>`;
 
-            document.getElementById(`${buildId}-calc`).innerHTML = showRate
-                ? `${previewStr} &nbsp;|&nbsp; Amount: <b>₹${amount.toFixed(2)}</b>`
-                : `${previewStr}`;
+
         }
 
         function updateCustomCalc(buildId) {
@@ -1756,14 +2889,7 @@
             const opt = item.options[optIdx];
 
             // Get rate
-            let rate = 0;
-            const rateEl = document.getElementById(`${buildId}-rate`);
-            if (rateEl) {
-                rate = parseFloat(rateEl.value) || 0;
-            } else {
-                const rates = getRates();
-                rate = rates[opt.label] || 0;
-            }
+            let rate = getFinalRateForOption(opt);
 
             let sqft = 0;
             if (opt.fields.includes('SQFT')) {
@@ -1774,7 +2900,7 @@
                 sqft = el ? (parseFloat(el.value) || 0) : 1;
             } else {
                 const v = readValues(buildId, opt.fields);
-                sqft = opt.formula(v);
+                sqft = evaluateFormula(opt.formulaStr, v);
             }
 
             if (!opt.fields.includes('QTY')) {
@@ -1801,7 +2927,12 @@
                 itemName: item.name,
                 material: opt.label,
                 size: sizeDesc,
-                sqft, rate, amount
+                sqft,
+                rate,
+                amount,
+                enabled: true,
+                showSqft: opt.showSqft,
+                specifications: formatSpecificationsText(opt.specifications, selectedRoom, opt.label)
             });
             renderQuote();
             closeBuilder(buildId);
@@ -1810,6 +2941,7 @@
         function confirmCustom(buildId, itemId) {
             const item = ITEMS.find(i => i.id === itemId);
             const desc = document.getElementById(`${buildId}-desc`).value || 'Custom item';
+            const specs = document.getElementById(`${buildId}-specs`).value.trim();
             const sqft = Math.round(parseFloat(document.getElementById(`${buildId}-sqft`).value) || 0);
 
             let rate = 0;
@@ -1829,7 +2961,12 @@
                 itemName: item.name,
                 material: desc,
                 size: '—',
-                sqft, rate, amount
+                sqft,
+                rate,
+                amount,
+                enabled: true,
+                showSqft: true,
+                specifications: specs
             });
             renderQuote();
             closeBuilder(buildId);
@@ -1841,21 +2978,145 @@
             if (el) el.remove();
         }
 
+        let globalIncreasePercentage = 0;
+
+        function toggleGlobalMarkupDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('globalMarkupDropdown');
+            const isVisible = dropdown.style.display === 'flex';
+            dropdown.style.display = isVisible ? 'none' : 'flex';
+        }
+
+        function setGlobalMarkup(percentage) {
+            globalIncreasePercentage = percentage;
+            renderQuote();
+            document.getElementById('globalMarkupDropdown').style.display = 'none';
+        }
+
+        // Close dropdown when clicking elsewhere
+        window.addEventListener('click', () => {
+            const dropdown = document.getElementById('globalMarkupDropdown');
+            if (dropdown) dropdown.style.display = 'none';
+        });
+
+        function toggleLineActive(lineId) {
+            const line = quoteLines.find(l => l.id === lineId);
+            if (line) {
+                line.enabled = !line.enabled;
+                renderQuote();
+            }
+        }
+
+        function formatDateDMY(dateStr) {
+            if (!dateStr) return '—';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function setItemLineDiscount(lineId, pct) {
+            const line = quoteLines.find(l => l.id === lineId);
+            if (line) {
+                if (pct === 5 && (line.roomId === 'accessories' || line.roomName.toLowerCase() === 'accessories' || line.roomName.toLowerCase().includes('accessories'))) {
+                    alert("5% discount is not allowed for Accessories.");
+                    return;
+                }
+                line.discountPercentage = pct;
+                renderQuote();
+            }
+        }
+
+        function getFormattedSpecsText(lines, delimiter = '\n') {
+            const activeLines = lines.filter(l => l.enabled && l.specifications);
+            if (activeLines.length === 0) return 'NONE';
+
+            // Group by roomName
+            const rooms = {};
+            activeLines.forEach(l => {
+                const roomKey = l.roomName.toUpperCase();
+                if (!rooms[roomKey]) {
+                    rooms[roomKey] = {};
+                }
+
+                // Group by material category (determined from roomId)
+                let matCat = "Standard Modular";
+                if (l.roomId === 'full_teak_wood') {
+                    matCat = "Full Teak Wood";
+                } else if (l.roomId === 'half_teak_wood') {
+                    matCat = "Half Teak Wood";
+                } else if (l.roomId === 'accessories') {
+                    matCat = "Accessories";
+                } else {
+                    // For standard modular rooms, read quality mode
+                    matCat = `Modular — ${modeLabel}`;
+                }
+
+                if (!rooms[roomKey][matCat]) {
+                    rooms[roomKey][matCat] = {};
+                }
+
+                // Group by material + specifications to avoid duplication
+                const specKey = `${l.material.toUpperCase()}||${l.specifications.toUpperCase()}`;
+                if (!rooms[roomKey][matCat][specKey]) {
+                    rooms[roomKey][matCat][specKey] = {
+                        material: l.material.toUpperCase(),
+                        specifications: l.specifications.toUpperCase(),
+                        items: []
+                    };
+                }
+                rooms[roomKey][matCat][specKey].items.push(l.itemName.toUpperCase());
+            });
+
+            let textParts = [];
+            for (const roomName in rooms) {
+                let roomBlock = [];
+                roomBlock.push(`ROOM: ${roomName}`);
+                for (const matCat in rooms[roomName]) {
+                    roomBlock.push(`  MATERIAL CATEGORY: ${matCat.toUpperCase()}`);
+
+                    // Iterate through the unique spec combinations
+                    for (const specKey in rooms[roomName][matCat]) {
+                        const s = rooms[roomName][matCat][specKey];
+                        roomBlock.push(`    MATERIAL: ${s.material}`);
+                        roomBlock.push(`    SPECIFICATIONS: ${s.specifications}`);
+                        roomBlock.push(`    ITEMS: ${s.items.join(', ')}`);
+                    }
+                }
+                textParts.push(roomBlock.join(delimiter));
+            }
+
+            const separator = delimiter === '<br>' ? '<br><hr style="border: 0; border-top: 1px dashed #e0d6c8; margin: 8px 0;"><br>' : '\n--------------------------------------------------\n';
+            return textParts.join(separator);
+        }
+
+        function handleSqftToggle() {
+            renderQuote();
+        }
+
         function renderQuote() {
             const body = document.getElementById('quoteBody');
             const showRate = (role === 'admin');
+            
+            // Determine Sq.Ft toggle state
+            const toggleEl = document.getElementById('toggleSqft');
+            const showSizeSqft = toggleEl ? toggleEl.checked : true;
 
             // Toggle header visibility
-            document.getElementById('rateHeader').style.display = showRate ? '' : 'none';
+            const sizeHeader = document.getElementById('sizeHeader');
+            const sqftHeader = document.getElementById('sqftHeader');
+            const rateHeader = document.getElementById('rateHeader');
+            if (sizeHeader) sizeHeader.style.display = showSizeSqft ? '' : 'none';
+            if (sqftHeader) sqftHeader.style.display = showSizeSqft ? '' : 'none';
+            if (rateHeader) rateHeader.style.display = showRate ? '' : 'none';
 
             if (quoteLines.length === 0) {
-                body.innerHTML = `<tr class="empty-row"><td colspan="${showRate ? 9 : 8}">No items added yet — start with any card above.</td></tr>`;
+                body.innerHTML = `<tr class="empty-row"><td colspan="${(showSizeSqft ? 5 : 3) + (showRate ? 1 : 0) + 4}">No items added yet — start with any card above.</td></tr>`;
                 document.getElementById('grandTotal').textContent = '₹0';
-                document.getElementById('uiSpecsBlock').style.display = 'none';
                 document.querySelector('.specs-and-terms-container').style.display = 'none';
                 return;
             } else {
-                document.getElementById('uiSpecsBlock').style.display = 'block';
                 document.querySelector('.specs-and-terms-container').style.display = 'flex';
             }
 
@@ -1863,25 +3124,66 @@
             const roomLines = quoteLines.filter(l => !(l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories')));
             const accessoryLines = quoteLines.filter(l => l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories'));
 
-            const roomTotal = roomLines.reduce((s, l) => s + l.amount, 0);
-            const accessoryTotal = accessoryLines.reduce((s, l) => s + l.amount, 0);
+            const roomTotal = roomLines.reduce((s, l) => s + (l.enabled ? l.amount : 0), 0) * (1 + globalIncreasePercentage / 100);
+            const roomOfferTotal = roomLines.reduce((s, l) => s + (l.enabled ? (l.amount * (1 + globalIncreasePercentage / 100) * (1 - (l.discountPercentage || 0) / 100)) : 0), 0);
+
+            const accessoryTotal = accessoryLines.reduce((s, l) => s + (l.enabled ? l.amount : 0), 0) * (1 + globalIncreasePercentage / 100);
+            const accessoryOfferTotal = accessoryLines.reduce((s, l) => s + (l.enabled ? (l.amount * (1 + globalIncreasePercentage / 100) * (1 - (l.discountPercentage || 0) / 100)) : 0), 0);
+
             const grandTotal = roomTotal + accessoryTotal;
+            const offerGrandTotal = roomOfferTotal + accessoryOfferTotal;
 
             let html = '';
             let lineIndex = 1;
+            let lastRoomName = '';
 
             if (roomLines.length > 0) {
                 roomLines.forEach(l => {
+                    if (l.roomName !== lastRoomName) {
+                        html += `
+                            <tr class="room-header-row" style="background: var(--surface2); border-bottom: 1px solid var(--border);">
+                                <td colspan="${(showSizeSqft ? 5 : 3) + (showRate ? 1 : 0) + 4}" style="padding: 10px 14px; font-weight: 700; font-size: 0.82rem; color: var(--accent-dark); letter-spacing: 0.5px; text-transform: uppercase; text-align: left;">
+                                    🏢 ${l.roomName}
+                                </td>
+                            </tr>
+                        `;
+                        lastRoomName = l.roomName;
+                    }
+                    const displayedAmount = l.amount * (1 + globalIncreasePercentage / 100);
+                    const discountPct = l.discountPercentage || 0;
+                    const offerPrice = displayedAmount * (1 - discountPct / 100);
+                    const sizeText = l.showSqft ? l.size : '—';
+                    const sqftText = l.showSqft ? l.sqft : '—';
+                    const rateText = l.showSqft ? `₹${l.rate.toFixed(2)}` : '—';
+
                     html += `
-                        <tr>
+                        <tr class="${l.enabled ? '' : 'line-disabled'}">
                           <td>${lineIndex++}</td>
-                          <td><span class="role-badge" style="margin-left:0; background:var(--accent-light); color:var(--accent-dark); border-color:rgba(176,125,46,.4); font-size:0.65rem;">${l.roomName}</span></td>
-                          <td>${l.itemName}</td>
-                          <td>${l.material}</td>
-                          <td>${l.size}</td>
-                          <td class="num">${l.sqft}</td>
-                          ${showRate ? `<td class="num">₹${l.rate.toFixed(2)}</td>` : ''}
-                          <td class="num">₹${l.amount.toFixed(2)}</td>
+                          <td>
+                              <div style="font-weight:600; font-size:0.85rem; color:var(--text);">${l.itemName}</div>
+                          </td>
+                          <td>
+                              <div style="font-weight:600; color:var(--text);">${l.material}</div>
+                              ${l.specifications ? `<div style="font-size:0.72rem; color:var(--muted); margin-top:4px; line-height:1.3; font-weight:400; max-width:320px;">${l.specifications}</div>` : ''}
+                          </td>
+                          <td style="${showSizeSqft ? '' : 'display:none;'}">${sizeText}</td>
+                          <td class="num" style="${showSizeSqft ? '' : 'display:none;'}">${sqftText}</td>
+                          ${showRate ? `<td class="num">${rateText}</td>` : ''}
+                          <td class="num">₹${displayedAmount.toFixed(2)}</td>
+                          <td class="num" style="min-width: 130px; text-align: right;">
+                              <div style="font-weight:600; color:var(--accent);">₹${offerPrice.toFixed(2)}</div>
+                              <div class="item-discounts" style="display:flex; gap:3px; justify-content:flex-end; margin-top:4px;">
+                                  <button type="button" class="dis-btn ${discountPct === 5 ? 'selected' : ''}" onclick="setItemLineDiscount(${l.id}, 5)">-5%</button>
+                                  <button type="button" class="dis-btn ${discountPct === 10 ? 'selected' : ''}" onclick="setItemLineDiscount(${l.id}, 10)">-10%</button>
+                                  <button type="button" class="dis-btn ${discountPct === 0 ? 'selected' : ''}" onclick="setItemLineDiscount(${l.id}, 0)" style="font-size:0.58rem; padding: 2px 4px;">None</button>
+                              </div>
+                          </td>
+                          <td>
+                              <label class="switch">
+                                  <input type="checkbox" ${l.enabled ? 'checked' : ''} onchange="toggleLineActive(${l.id})">
+                                  <span class="slider"></span>
+                              </label>
+                          </td>
                           <td><button class="del-btn" onclick="deleteLine(${l.id})" title="Remove">✕</button></td>
                         </tr>
                     `;
@@ -1889,27 +3191,65 @@
 
                 html += `
                     <tr class="subtotal-row" style="background: rgba(255, 255, 255, 0.03); font-weight: 600; border-bottom: 2px solid var(--border);">
-                      <td colspan="5" style="text-align: right; color: var(--muted); font-size: 0.85rem;">Rooms Subtotal</td>
-                      <td class="num"></td>
+                      <td colspan="${showSizeSqft ? 4 : 2}" style="text-align: right; color: var(--muted); font-size: 0.85rem;">Rooms Subtotal</td>
+                      <td class="num" style="${showSizeSqft ? '' : 'display:none;'}"></td>
                       ${showRate ? '<td></td>' : ''}
                       <td class="num" style="color: var(--text);">₹${roomTotal.toFixed(2)}</td>
+                      <td class="num" style="color: var(--accent);">₹${roomOfferTotal.toFixed(2)}</td>
+                      <td></td>
                       <td></td>
                     </tr>
                 `;
             }
 
             if (accessoryLines.length > 0) {
+                lastRoomName = '';
                 accessoryLines.forEach(l => {
+                    if (l.roomName !== lastRoomName) {
+                        html += `
+                            <tr class="room-header-row" style="background: var(--surface2); border-bottom: 1px solid var(--border);">
+                                <td colspan="${(showSizeSqft ? 5 : 3) + (showRate ? 1 : 0) + 4}" style="padding: 10px 14px; font-weight: 700; font-size: 0.82rem; color: var(--accent-dark); letter-spacing: 0.5px; text-transform: uppercase; text-align: left;">
+                                    🏢 ${l.roomName}
+                                </td>
+                            </tr>
+                        `;
+                        lastRoomName = l.roomName;
+                    }
+                    const displayedAmount = l.amount * (1 + globalIncreasePercentage / 100);
+                    const discountPct = l.discountPercentage || 0;
+                    const offerPrice = displayedAmount * (1 - discountPct / 100);
+                    const sizeText = l.showSqft ? l.size : '—';
+                    const sqftText = l.showSqft ? l.sqft : '—';
+                    const rateText = l.showSqft ? `₹${l.rate.toFixed(2)}` : '—';
+
                     html += `
-                        <tr>
+                        <tr class="${l.enabled ? '' : 'line-disabled'}">
                           <td>${lineIndex++}</td>
-                          <td><span class="role-badge" style="margin-left:0; background:var(--accent-light); color:var(--accent-dark); border-color:rgba(176,125,46,.4); font-size:0.65rem;">${l.roomName}</span></td>
-                          <td>${l.itemName}</td>
-                          <td>${l.material}</td>
-                          <td>${l.size}</td>
-                          <td class="num">${l.sqft}</td>
-                          ${showRate ? `<td class="num">₹${l.rate.toFixed(2)}</td>` : ''}
-                          <td class="num">₹${l.amount.toFixed(2)}</td>
+                          <td>
+                              <div style="font-weight:600; font-size:0.85rem; color:var(--text);">${l.itemName}</div>
+                          </td>
+                          <td>
+                              <div style="font-weight:600; color:var(--text);">${l.material}</div>
+                              ${l.specifications ? `<div style="font-size:0.72rem; color:var(--muted); margin-top:4px; line-height:1.3; font-weight:400; max-width:320px;">${l.specifications}</div>` : ''}
+                          </td>
+                          <td style="${showSizeSqft ? '' : 'display:none;'}">${sizeText}</td>
+                          <td class="num" style="${showSizeSqft ? '' : 'display:none;'}">${sqftText}</td>
+                          ${showRate ? `<td class="num">${rateText}</td>` : ''}
+                          <td class="num">₹${displayedAmount.toFixed(2)}</td>
+                          <td class="num" style="min-width: 130px; text-align: right;">
+                              <div style="font-weight:600; color:var(--accent);">₹${offerPrice.toFixed(2)}</div>
+                              <div class="item-discounts" style="display:flex; gap:3px; justify-content:flex-end; margin-top:4px;">
+                                  <button type="button" class="dis-btn ${discountPct === 5 ? 'selected' : ''}" onclick="setItemLineDiscount(${l.id}, 5)">-5%</button>
+                                  <button type="button" class="dis-btn ${discountPct === 10 ? 'selected' : ''}" onclick="setItemLineDiscount(${l.id}, 10)">-10%</button>
+                                  <button type="button" class="dis-btn ${discountPct === 0 ? 'selected' : ''}" onclick="setItemLineDiscount(${l.id}, 0)" style="font-size:0.58rem; padding: 2px 4px;">None</button>
+                              </div>
+                          </td>
+                          <td>
+                              <label class="switch">
+                                  <input type="checkbox" ${l.enabled ? 'checked' : ''} onchange="toggleLineActive(${l.id})">
+                                  <span class="slider"></span>
+                              </label>
+                          </td>
                           <td><button class="del-btn" onclick="deleteLine(${l.id})" title="Remove">✕</button></td>
                         </tr>
                     `;
@@ -1917,10 +3257,12 @@
 
                 html += `
                     <tr class="subtotal-row" style="background: rgba(255, 255, 255, 0.03); font-weight: 600; border-bottom: 2px solid var(--border);">
-                      <td colspan="5" style="text-align: right; color: var(--muted); font-size: 0.85rem;">Accessories Subtotal</td>
-                      <td class="num"></td>
+                      <td colspan="${showSizeSqft ? 4 : 2}" style="text-align: right; color: var(--muted); font-size: 0.85rem;">Accessories Subtotal</td>
+                      <td class="num" style="${showSizeSqft ? '' : 'display:none;'}"></td>
                       ${showRate ? '<td></td>' : ''}
                       <td class="num" style="color: var(--text);">₹${accessoryTotal.toFixed(2)}</td>
+                      <td class="num" style="color: var(--accent);">₹${accessoryOfferTotal.toFixed(2)}</td>
+                      <td></td>
                       <td></td>
                     </tr>
                 `;
@@ -1929,16 +3271,63 @@
             body.innerHTML = html;
 
             // Render tfoot colspan based on role
+            const totalColspan = (showSizeSqft ? 5 : 3) + (showRate ? 1 : 0);
             const totalRow = document.querySelector('tfoot tr');
             totalRow.innerHTML = `
-                <td colspan="${showRate ? 7 : 6}" style="text-align:right;">Grand Total (Rooms + Accessories)</td>
-                <td class="num" id="grandTotal">₹${grandTotal.toFixed(2)}</td>
+                <td colspan="${totalColspan}" style="text-align:right;">Grand Total (Rooms + Accessories)</td>
+                <td class="num" id="grandTotal" style="font-weight:600; text-decoration: line-through; color: var(--muted);">₹${grandTotal.toFixed(2)}</td>
+                <td class="num" id="offerGrandTotal" style="color: var(--accent); font-weight: 700;">₹${offerGrandTotal.toFixed(2)}</td>
+                <td></td>
                 <td></td>
             `;
 
-            // Display dynamic specs
-            const defaultSpecs = "MARINE PLY THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS";
-            document.getElementById('uiSpecsText').textContent = (localStorage.getItem('pks_material_specs') || defaultSpecs).toUpperCase();
+            updatePaySplit();
+        }
+
+        // Auto-update Payment Split Calculator & Input Boxes whenever quote is re-rendered
+        function updatePaySplit() {
+            const offerEl = document.getElementById('offerGrandTotal');
+            const grandEl = document.getElementById('grandTotal');
+            const el = offerEl || grandEl;
+            if (!el) return;
+            const raw = el.textContent.replace(/[₹,\s]/g, '');
+            const total = parseFloat(raw) || 0;
+            const fmt = v => '₹' + Math.round(v).toLocaleString('en-IN');
+
+            const disp = document.getElementById('splitTotalDisplay');
+            if (disp) disp.textContent = fmt(total);
+
+            const v10 = total > 0 ? fmt(total * 0.10) : '';
+            const v50 = total > 0 ? fmt(total * 0.50) : '';
+            const v35 = total > 0 ? fmt(total * 0.35) : '';
+            const v5 = total > 0 ? fmt(total * 0.05) : '';
+
+            const s10 = document.getElementById('split10');
+            const s50 = document.getElementById('split50');
+            const s35 = document.getElementById('split35');
+            const s5 = document.getElementById('split5');
+            if (s10) s10.textContent = fmt(total * 0.10);
+            if (s50) s50.textContent = fmt(total * 0.50);
+            if (s35) s35.textContent = fmt(total * 0.35);
+            if (s5) s5.textContent = fmt(total * 0.05);
+
+            // Auto-populate input boxes on the left
+            const payInputs = [
+                { id: 'payToken', val: v10, placeholder: 'e.g. ₹25,000' },
+                { id: 'payAdvance', val: v50, placeholder: 'e.g. ₹1,25,000' },
+                { id: 'paySecond', val: v35, placeholder: 'e.g. ₹87,500' },
+                { id: 'payFinal', val: v5, placeholder: 'e.g. ₹12,500' }
+            ];
+
+            payInputs.forEach(item => {
+                const input = document.getElementById(item.id);
+                if (input) {
+                    if (!input.dataset.userEdited) {
+                        input.value = item.val;
+                    }
+                    input.placeholder = item.val || item.placeholder;
+                }
+            });
         }
 
         function deleteLine(id) {
@@ -1992,9 +3381,16 @@
                 document.getElementById('custAddress').value = '';
                 document.getElementById('quoteDate').valueAsDate = new Date();
 
+                if (document.getElementById('payToken')) document.getElementById('payToken').value = '';
                 document.getElementById('payAdvance').value = '';
                 document.getElementById('paySecond').value = '';
                 document.getElementById('payFinal').value = '';
+                if (document.getElementById('anyRequirements')) document.getElementById('anyRequirements').value = '';
+
+                ['payToken', 'payAdvance', 'paySecond', 'payFinal'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) delete el.dataset.userEdited;
+                });
 
                 // Reset docType
                 document.getElementById('docType').value = 'Quotation';
@@ -2041,17 +3437,39 @@
             }
 
             document.getElementById('printDivisionName').textContent = selectedDivisionName || '—';
-            document.getElementById('printQuoteDate').textContent = document.getElementById('quoteDate').value || '—';
+            document.getElementById('printQuoteDate').textContent = formatDateDMY(document.getElementById('quoteDate').value);
+
+            // Quotation Type top list
+            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            let typeLabel = 'Premium';
+            if (pMode === 'medium') typeLabel = 'Middle / Standard';
+            else if (pMode === 'economy') typeLabel = 'Economy';
+            document.getElementById('printQuotationType').textContent = typeLabel;
             document.getElementById('printCustName').textContent = document.getElementById('custName').value || '—';
             document.getElementById('printCustPhone').textContent = document.getElementById('custPhone').value || '—';
             document.getElementById('printCustAddress').textContent = document.getElementById('custAddress').value || '—';
 
-            // Populate print specs and terms
-            const defaultSpecs = "MARINE PLY THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS";
-            document.getElementById('printSpecsText').textContent = (localStorage.getItem('pks_material_specs') || defaultSpecs).toUpperCase();
-            document.getElementById('printPayAdvance').textContent = document.getElementById('payAdvance').value || '—';
-            document.getElementById('printPaySecond').textContent = document.getElementById('paySecond').value || '—';
-            document.getElementById('printPayFinal').textContent = document.getElementById('payFinal').value || '—';
+
+            const tokenVal = document.getElementById('payToken').value.trim();
+            const advVal = document.getElementById('payAdvance').value.trim();
+            const partVal = document.getElementById('paySecond').value.trim();
+            const finalVal = document.getElementById('payFinal').value.trim();
+            const reqVal = document.getElementById('anyRequirements') ? document.getElementById('anyRequirements').value.trim() : '';
+
+            document.getElementById('printPayToken').textContent = tokenVal ? ` — ${tokenVal}` : '';
+            document.getElementById('printPayAdvance').textContent = advVal ? ` — ${advVal}` : '';
+            document.getElementById('printPaySecond').textContent = partVal ? ` — ${partVal}` : '';
+            document.getElementById('printPayFinal').textContent = finalVal ? ` — ${finalVal}` : '';
+
+            const printReqBlock = document.getElementById('printAnyRequirements');
+            if (printReqBlock) {
+                if (reqVal) {
+                    printReqBlock.style.display = 'block';
+                    document.getElementById('printAnyRequirementsText').textContent = reqVal;
+                } else {
+                    printReqBlock.style.display = 'none';
+                }
+            }
 
             window.print();
         }
@@ -2107,7 +3525,13 @@
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; width: 40%; border: none;">${docType} No:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${quoteNo}</td></tr>
                             ${(docType === 'Invoice' && quoteRefNo) ? `<tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Ref No:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${quoteRefNo}</td></tr>` : ''}
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Division:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${selectedDivisionName}</td></tr>
-                            <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Date:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${quoteDate}</td></tr>
+                            <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Quotation Type:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${(() => {
+                    const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+                    if (pMode === 'medium') return 'Middle / Standard';
+                    if (pMode === 'economy') return 'Economy';
+                    return 'Premium';
+                })()}</td></tr>
+                            <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Date:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${formatDateDMY(quoteDate)}</td></tr>
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Customer:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${custName}</td></tr>
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Phone:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${custPhone}</td></tr>
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; vertical-align: top; border: none;">Address:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; line-height: 1.2; border: none;">${custAddress}</td></tr>
@@ -2117,60 +3541,119 @@
             `;
 
             // Build items table HTML
-            const roomLines = quoteLines.filter(l => !(l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories')));
-            const accessoryLines = quoteLines.filter(l => l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories'));
+            const roomLines = quoteLines.filter(l => l.enabled && !(l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories')));
+            const accessoryLines = quoteLines.filter(l => l.enabled && (l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories')));
 
-            const roomTotal = roomLines.reduce((s, l) => s + l.amount, 0);
-            const accessoryTotal = accessoryLines.reduce((s, l) => s + l.amount, 0);
+            const roomTotal = roomLines.reduce((s, l) => s + l.amount, 0) * (1 + globalIncreasePercentage / 100);
+            const roomOfferTotal = roomLines.reduce((s, l) => s + (l.amount * (1 + globalIncreasePercentage / 100) * (1 - (l.discountPercentage || 0) / 100)), 0);
+
+            const accessoryTotal = accessoryLines.reduce((s, l) => s + l.amount, 0) * (1 + globalIncreasePercentage / 100);
+            const accessoryOfferTotal = accessoryLines.reduce((s, l) => s + (l.amount * (1 + globalIncreasePercentage / 100) * (1 - (l.discountPercentage || 0) / 100)), 0);
+
             const grandTotal = roomTotal + accessoryTotal;
+            const offerGrandTotal = roomOfferTotal + accessoryOfferTotal;
+            const toggleEl = document.getElementById('toggleSqft');
+            const showSqftPdf = toggleEl ? toggleEl.checked : true;
 
             let rowsHTML = '';
             let pdfLineIndex = 1;
+            let lastPdfRoomName = '';
 
             if (roomLines.length > 0) {
                 roomLines.forEach(l => {
+                    if (l.roomName !== lastPdfRoomName) {
+                        rowsHTML += `
+                            <tr style="background: #fdfaf6; border-bottom: 1px solid #e0d6c8;">
+                                <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0) + 2}" style="padding: 8px 10px; font-weight: bold; font-size: 0.8rem; color: #b07d2e; text-transform: uppercase; border: 1px solid #e0d6c8; text-align: left;">
+                                    🏢 ${l.roomName}
+                                </td>
+                            </tr>
+                        `;
+                        lastPdfRoomName = l.roomName;
+                    }
+                    const displayedAmount = l.amount * (1 + globalIncreasePercentage / 100);
+                    const discountPct = l.discountPercentage || 0;
+                    const offerPrice = displayedAmount * (1 - discountPct / 100);
+                    const sizeText = l.showSqft ? l.size : '—';
+                    const sqftText = l.showSqft ? l.sqft : '—';
+                    const rateText = l.showSqft ? `₹${l.rate.toFixed(2)}` : '—';
+
                     rowsHTML += `
                         <tr style="border-bottom: 1px solid #e0d6c8;">
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: center; color: #1a1714; border: none;">${pdfLineIndex++}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #1a1714; border: none;"><span style="background: #f5e9d4; color: #8f6320; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.68rem; display: inline-block;">${l.roomName}</span></td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; font-weight: 600; color: #1a1714; border: none;">${l.itemName}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; border: none;">${l.material}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; font-family: monospace; border: none;">${l.size}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: none;">${l.sqft}</td>
-                            ${showRate ? `<td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: none;">₹${l.rate.toFixed(2)}</td>` : ''}
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 600; border: none;">₹${l.amount.toFixed(2)}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: center; color: #1a1714; border: 1px solid #e0d6c8;">${pdfLineIndex++}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #1a1714; border: 1px solid #e0d6c8;">
+                                <div style="font-weight: 600; font-size: 0.8rem; color: #1a1714;">${l.itemName}</div>
+                            </td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; border: 1px solid #e0d6c8;">
+                                <div style="font-weight: 600; color: #1a1714; font-size: 0.78rem;">${l.material}</div>
+                                ${l.specifications ? `<div style="font-size: 0.68rem; color: #7a6e61; margin-top: 2px; line-height: 1.3;">${l.specifications}</div>` : ''}
+                            </td>
+                            ${showSqftPdf ? `
+                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; font-family: monospace; border: 1px solid #e0d6c8;">${sizeText}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${sqftText}</td>
+                            ` : ''}
+                            ${showRate ? `<td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${rateText}</td>` : ''}
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">₹${displayedAmount.toFixed(2)}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 600; border: 1px solid #e0d6c8;">₹${offerPrice.toFixed(2)}</td>
                         </tr>
                     `;
                 });
 
                 rowsHTML += `
                     <tr style="background: #fdfaf6; font-weight: 600; border-bottom: 2px solid #b07d2e;">
-                        <td colspan="${showRate ? 7 : 6}" style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: none;">Rooms Subtotal</td>
-                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 700; border: none;">₹${roomTotal.toFixed(2)}</td>
+                        <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0)}" style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">Rooms Subtotal</td>
+                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">₹${roomTotal.toFixed(2)}</td>
+                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 700; border: 1px solid #e0d6c8;">₹${roomOfferTotal.toFixed(2)}</td>
                     </tr>
                 `;
             }
 
             if (accessoryLines.length > 0) {
+                lastPdfRoomName = '';
                 accessoryLines.forEach(l => {
+                    if (l.roomName !== lastPdfRoomName) {
+                        rowsHTML += `
+                            <tr style="background: #fdfaf6; border-bottom: 1px solid #e0d6c8;">
+                                <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0) + 2}" style="padding: 8px 10px; font-weight: bold; font-size: 0.8rem; color: #b07d2e; text-transform: uppercase; border: 1px solid #e0d6c8; text-align: left;">
+                                    🏢 ${l.roomName}
+                                </td>
+                            </tr>
+                        `;
+                        lastPdfRoomName = l.roomName;
+                    }
+                    const displayedAmount = l.amount * (1 + globalIncreasePercentage / 100);
+                    const discountPct = l.discountPercentage || 0;
+                    const offerPrice = displayedAmount * (1 - discountPct / 100);
+                    const sizeText = l.showSqft ? l.size : '—';
+                    const sqftText = l.showSqft ? l.sqft : '—';
+                    const rateText = l.showSqft ? `₹${l.rate.toFixed(2)}` : '—';
+
                     rowsHTML += `
                         <tr style="border-bottom: 1px solid #e0d6c8;">
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: center; color: #1a1714; border: none;">${pdfLineIndex++}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #1a1714; border: none;"><span style="background: #f5e9d4; color: #8f6320; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.68rem; display: inline-block;">${l.roomName}</span></td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; font-weight: 600; color: #1a1714; border: none;">${l.itemName}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; border: none;">${l.material}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; font-family: monospace; border: none;">${l.size}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: none;">${l.sqft}</td>
-                            ${showRate ? `<td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: none;">₹${l.rate.toFixed(2)}</td>` : ''}
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 600; border: none;">₹${l.amount.toFixed(2)}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: center; color: #1a1714; border: 1px solid #e0d6c8;">${pdfLineIndex++}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #1a1714; border: 1px solid #e0d6c8;">
+                                <div style="font-weight: 600; font-size: 0.8rem; color: #1a1714;">${l.itemName}</div>
+                            </td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; border: 1px solid #e0d6c8;">
+                                <div style="font-weight: 600; color: #1a1714; font-size: 0.78rem;">${l.material}</div>
+                                ${l.specifications ? `<div style="font-size: 0.68rem; color: #7a6e61; margin-top: 2px; line-height: 1.3;">${l.specifications}</div>` : ''}
+                            </td>
+                            ${showSqftPdf ? `
+                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; font-family: monospace; border: 1px solid #e0d6c8;">${sizeText}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${sqftText}</td>
+                            ` : ''}
+                            ${showRate ? `<td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${rateText}</td>` : ''}
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">₹${displayedAmount.toFixed(2)}</td>
+                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 600; border: 1px solid #e0d6c8;">₹${offerPrice.toFixed(2)}</td>
                         </tr>
                     `;
                 });
 
                 rowsHTML += `
                     <tr style="background: #fdfaf6; font-weight: 600; border-bottom: 2px solid #b07d2e;">
-                        <td colspan="${showRate ? 7 : 6}" style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: none;">Accessories Subtotal</td>
-                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 700; border: none;">₹${accessoryTotal.toFixed(2)}</td>
+                        <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0)}" style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">Accessories Subtotal</td>
+                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">₹${accessoryTotal.toFixed(2)}</td>
+                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 700; border: 1px solid #e0d6c8;">₹${accessoryOfferTotal.toFixed(2)}</td>
                     </tr>
                 `;
             }
@@ -2178,17 +3661,19 @@
             let tableHTML = `
                 <div style="margin-top: 20px;">
                     <h3 style="color: #b07d2e; font-size: 1.05rem; margin-bottom: 8px; border-bottom: 1px solid #e0d6c8; padding-bottom: 4px; font-weight: 600; font-family: sans-serif;">Quote Summary</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 8px; border: none;">
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 8px; border: 1px solid #e0d6c8;">
                         <thead>
-                            <tr style="background: #fdfaf6; border-bottom: 2px solid #b07d2e;">
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: center; width: 5%; border: none;">#</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 15%; border: none;">Room</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 20%; border: none;">Item</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 25%; border: none;">Material</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 15%; border: none;">Size</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; text-align: right; width: 10%; border: none;">Sq.Ft</th>
-                                ${showRate ? `<th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 10%; border: none;">Rate</th>` : ''}
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 15%; border: none;">Amount</th>
+                            <tr style="background: #fdfaf6;">
+                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: center; width: 5%; border: 1px solid #e0d6c8;">#</th>
+                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 25%; border: 1px solid #e0d6c8;">Room</th>
+                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 35%; border: 1px solid #e0d6c8;">Material</th>
+                                ${showSqftPdf ? `
+                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 15%; border: 1px solid #e0d6c8;">Size</th>
+                                <th style="padding: 8px 10px; font-size: 0.78rem; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Sq.Ft</th>
+                                ` : ''}
+                                ${showRate ? `<th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Rate</th>` : ''}
+                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Amount</th>
+                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Offer Price</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2196,8 +3681,9 @@
                         </tbody>
                         <tfoot>
                             <tr style="background: #fdfaf6; font-weight: 700; border-top: 2px solid #b07d2e;">
-                                <td colspan="${showRate ? 7 : 6}" style="padding: 10px; font-size: 0.82rem; text-align: right; color: #1c2820; border: none;">Grand Total (Rooms + Accessories)</td>
-                                <td style="padding: 10px; font-size: 0.85rem; text-align: right; color: #b07d2e; font-weight: 700; border: none;">₹${grandTotal.toFixed(2)}</td>
+                                <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0)}" style="padding: 10px; font-size: 0.82rem; text-align: right; color: #1c2820; border: 1px solid #e0d6c8;">Grand Total (Rooms + Accessories)</td>
+                                <td style="padding: 10px; font-size: 0.85rem; text-align: right; color: #7a6e61; font-weight: 600; text-decoration: line-through; border: 1px solid #e0d6c8;">₹${grandTotal.toFixed(2)}</td>
+                                <td style="padding: 10px; font-size: 0.85rem; text-align: right; color: #b07d2e; font-weight: 700; border: 1px solid #e0d6c8;">₹${offerGrandTotal.toFixed(2)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -2226,18 +3712,12 @@
                 </div>
             `;
 
-            // Specs and Payment Terms HTML for PDF
-            const defaultSpecs = "MARINE PLY THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS";
-            const specsText = (localStorage.getItem('pks_material_specs') || defaultSpecs).toUpperCase();
+            // Payment Terms HTML for PDF
             const payAdvance = document.getElementById('payAdvance').value || '';
             const paySecond = document.getElementById('paySecond').value || '';
             const payFinal = document.getElementById('payFinal').value || '';
 
             let specsAndTermsHTML = `
-                <div style="margin-top: 15px; padding: 10px; background: #fdfaf6; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 0.78rem; color: #1a1714; line-height: 1.4;">
-                    <strong style="color: #b07d2e; display: block; margin-bottom: 4px;">Material Specifications:</strong>
-                    <div>${specsText}</div>
-                </div>
                 <div style="margin-top: 12px; padding: 10px; background: #fdfaf6; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 0.78rem; color: #1a1714; line-height: 1.4;">
                     <strong style="color: #b07d2e; display: block; margin-bottom: 4px;">Payment Terms:</strong>
                     <ul style="margin: 0; padding-left: 15px; list-style-type: square; color: #1a1714;">
@@ -2312,9 +3792,11 @@
                 economyMode: isEconomyMode,
                 totalAmount,
                 quoteLines: [...quoteLines],
+                payToken: document.getElementById('payToken') ? document.getElementById('payToken').value : '',
                 payAdvance: document.getElementById('payAdvance').value,
                 paySecond: document.getElementById('paySecond').value,
                 payFinal: document.getElementById('payFinal').value,
+                anyRequirements: document.getElementById('anyRequirements') ? document.getElementById('anyRequirements').value : '',
                 lineIdCounter,
                 timestamp: Date.now()
             };
@@ -2439,9 +3921,22 @@
             document.getElementById('custAddress').value = quote.custAddress || '';
             document.getElementById('quoteDate').value = quote.quoteDate || '';
 
+            if (document.getElementById('payToken')) document.getElementById('payToken').value = quote.payToken || '';
             document.getElementById('payAdvance').value = quote.payAdvance || '';
             document.getElementById('paySecond').value = quote.paySecond || '';
             document.getElementById('payFinal').value = quote.payFinal || '';
+            if (document.getElementById('anyRequirements')) document.getElementById('anyRequirements').value = quote.anyRequirements || '';
+
+            ['payToken', 'payAdvance', 'paySecond', 'payFinal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value) el.dataset.userEdited = "true";
+                else if (el) delete el.dataset.userEdited;
+            });
+
+            const restoredMode = quote.pricingMode || (quote.economyMode ? 'economy' : 'premium');
+            sessionStorage.setItem('pks_pricing_mode', restoredMode);
+            sessionStorage.setItem('pks_economy_mode', restoredMode === 'economy' ? 'true' : 'false');
+            updateQualityBadges();
 
             quoteLines = [...quote.quoteLines];
             lineIdCounter = quote.lineIdCounter || (quoteLines.length > 0 ? Math.max(...quoteLines.map(l => l.id)) + 1 : 1);
@@ -2576,6 +4071,126 @@
             }
         }
 
+        function enableInlineSpecsEdit(buildId, itemId, optIdx) {
+            const item = ITEMS.find(i => i.id === itemId);
+            const opt = item.options[optIdx];
+            const specsTextBlock = document.getElementById(`${buildId}-specs-text`);
+            if (!specsTextBlock) return;
+
+            specsTextBlock.innerHTML = `
+                <textarea id="${buildId}-specs-input" style="width: 100%; min-height: 80px; margin-top: 4px; font-family: inherit; font-size: 0.72rem; padding: 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--input-bg); color: var(--text); resize: vertical;">${formatSpecificationsText(opt.specifications, selectedRoom, opt.label)}</textarea>
+                <div style="display: flex; gap: 8px; margin-top: 4px; justify-content: flex-end;">
+                    <button type="button" class="confirm-btn" style="padding: 2px 8px; font-size: 0.68rem; line-height: 1.2; border-radius: 4px;" onclick="saveInlineSpecs('${buildId}', ${itemId}, ${optIdx})">Save</button>
+                    <button type="button" class="cancel-btn" style="padding: 2px 8px; font-size: 0.68rem; line-height: 1.2; border-radius: 4px;" onclick="cancelInlineSpecs('${buildId}', ${itemId}, ${optIdx})">Cancel</button>
+                </div>
+            `;
+        }
+
+        function saveInlineSpecs(buildId, itemId, optIdx) {
+            const item = ITEMS.find(i => i.id === itemId);
+            const opt = item.options[optIdx];
+            const inputVal = document.getElementById(`${buildId}-specs-input`).value.trim();
+
+            opt.specifications = inputVal;
+
+            // Get active quality
+            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            let activeQual = 'Premium';
+            if (pMode === 'medium') activeQual = 'Middle / Standard';
+            else if (pMode === 'economy') activeQual = 'Economy';
+
+            // Save to localStorage database
+            let stored = localStorage.getItem('pks_materials_db');
+            if (stored) {
+                try {
+                    let db = JSON.parse(stored);
+                    const match = db.find(m =>
+                        m.quality === activeQual &&
+                        m.roomId === selectedRoom &&
+                        m.itemName === item.name &&
+                        m.constructionType === opt.label
+                    );
+                    if (match) {
+                        match.specifications = inputVal;
+                        localStorage.setItem('pks_materials_db', JSON.stringify(db));
+                    }
+                } catch (e) { }
+            }
+
+            // Save in the custom specs by ID map
+            let customSpecs = {};
+            const storedCustom = localStorage.getItem('pks_custom_specs_by_id');
+            if (storedCustom) {
+                try { customSpecs = JSON.parse(storedCustom); } catch (e) { }
+            }
+            customSpecs[opt.id] = inputVal;
+            localStorage.setItem('pks_custom_specs_by_id', JSON.stringify(customSpecs));
+
+            // Restore display view
+            const specsTextBlock = document.getElementById(`${buildId}-specs-text`);
+            if (specsTextBlock) {
+                specsTextBlock.textContent = formatSpecificationsText(opt.specifications, selectedRoom, opt.label) || "No specifications added. Click edit icon to add.";
+            }
+        }
+
+        function cancelInlineSpecs(buildId, itemId, optIdx) {
+            const item = ITEMS.find(i => i.id === itemId);
+            const opt = item.options[optIdx];
+            const specsTextBlock = document.getElementById(`${buildId}-specs-text`);
+            if (specsTextBlock) {
+                specsTextBlock.textContent = formatSpecificationsText(opt.specifications, selectedRoom, opt.label) || "No specifications added. Click edit icon to add.";
+            }
+        }
+
+        function switchPricingMode(mode) {
+            sessionStorage.setItem('pks_pricing_mode', mode);
+            sessionStorage.setItem('pks_economy_mode', mode === 'economy' ? 'true' : 'false');
+
+            if (mode === 'premium') activeQuality = 'Premium';
+            else if (mode === 'medium') activeQuality = 'Middle / Standard';
+            else if (mode === 'economy') activeQuality = 'Economy';
+
+            updateQualityBadges();
+            updateRoomState(selectedRoom, selectedRoomName);
+        }
+
+        function updateQualityBadges() {
+            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            let typeLabel = 'Premium';
+            if (pMode === 'medium') {
+                typeLabel = 'Middle / Standard';
+                activeQuality = 'Middle / Standard';
+            } else if (pMode === 'economy') {
+                typeLabel = 'Economy';
+                activeQuality = 'Economy';
+            } else {
+                activeQuality = 'Premium';
+            }
+
+            const qBadge = document.getElementById('qualityBadge');
+            if (qBadge) {
+                qBadge.textContent = typeLabel;
+            }
+            const printType = document.getElementById('printQuotationType');
+            if (printType) {
+                printType.textContent = typeLabel;
+            }
+
+            // Update active states on mode tabs
+            document.querySelectorAll('.mode-tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (pMode === 'premium') {
+                const btn = document.getElementById('modeBtnPremium');
+                if (btn) btn.classList.add('active');
+            } else if (pMode === 'medium') {
+                const btn = document.getElementById('modeBtnMedium');
+                if (btn) btn.classList.add('active');
+            } else if (pMode === 'economy') {
+                const btn = document.getElementById('modeBtnEconomy');
+                if (btn) btn.classList.add('active');
+            }
+        }
+
         // Initialize customer auto-fill logic
         initCustomerAutofill();
+        updateQualityBadges();
     </script>

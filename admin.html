@@ -205,6 +205,27 @@
             gap: 24px;
         }
 
+        .mode-tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .mode-tab-btn:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .mode-tab-btn.active {
+            background: var(--accent) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 10px rgba(61, 187, 110, 0.3);
+        }
+
         .tab-panel {
             display: none;
             animation: fadeIn 0.4s ease;
@@ -604,6 +625,16 @@
     <!-- Room Selector Tabs -->
     <div class="room-tabs-container-wrapper"
         style="max-width: 1200px; width: 100%; margin: 20px auto 0; padding: 0 20px;">
+        <!-- Quality/Pricing Mode Tabs -->
+        <div id="pricingModeTabsContainer" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; background: var(--surface2); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); width: fit-content;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 1px;">Pricing Mode:</div>
+            <div style="display: flex; gap: 6px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 8px;">
+                <button type="button" class="mode-tab-btn" id="modeBtnPremium" onclick="switchPricingMode('premium')">Premium</button>
+                <button type="button" class="mode-tab-btn" id="modeBtnMedium" onclick="switchPricingMode('medium')">Middle / Standard</button>
+                <button type="button" class="mode-tab-btn" id="modeBtnEconomy" onclick="switchPricingMode('economy')">Economy</button>
+            </div>
+        </div>
+
         <div class="room-tabs-container">
             <div
                 style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 12px;">
@@ -703,6 +734,11 @@
                     <div class="form-group">
                         <label for="matInitialRate">Initial Rate (₹)</label>
                         <input type="number" id="matInitialRate" placeholder="e.g. 500">
+                    </div>
+                    <div class="form-group">
+                        <label for="matSpecs">Specifications</label>
+                        <textarea id="matSpecs" rows="3" placeholder="e.g. MARINE PLY THICKNESS-16MM..." 
+                            style="background: rgba(5, 11, 7, 0.75); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 0.95rem; width: 100%; resize: vertical; font-family: var(--sans); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); transition: all 0.3s;"></textarea>
                     </div>
                     <div class="action-row">
                         <button class="btn-primary" onclick="addMaterialToItem()">Add Material Option</button>
@@ -880,7 +916,10 @@
             { id: 'study_room', name: 'Study Room', icon: '📚', active: true },
             { id: 'sitout', name: 'Sitout', icon: '🌿', active: true },
             { id: 'store_room', name: 'Store Room', icon: '📦', active: true },
-            { id: 'toilet_area', name: 'Toilet Area', icon: '🚿', active: true }
+            { id: 'toilet_area', name: 'Toilet Area', icon: '🚿', active: true },
+            { id: 'accessories', name: 'Accessories', icon: '🧺', active: true },
+            { id: 'full_teak_wood', name: 'Full Teak Wood', icon: '👑', active: true },
+            { id: 'half_teak_wood', name: 'Half Teak Wood', icon: '🪵', active: true }
         ];
 
         let selectedRoom = sessionStorage.getItem('pks_selected_room') || 'kitchen';
@@ -926,6 +965,7 @@
             "Engineering Wood (Box Type)": 280,
             "Engineering Wood (Door Type)": 280,
             "Engineering Wood (Door Only)": 280,
+            "Engineering Wood (Partition Type)": 280,
             "King Size Bed (Direct Price)": 35000,
             "Queen Size Bed (Direct Price)": 28000,
             "Glass": 350,
@@ -984,7 +1024,8 @@
                 { id: 9, name: "Spice Rack", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
                 { id: 10, name: "Ledge", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
                 { id: 11, name: "Kitchen Side Storage Cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
-                { id: 12, name: "Kitchen & Dining Partition", options: ["WPC", "Marine Plane", "Engineering Wood"] }
+                { id: 12, name: "Kitchen & Dining Partition", options: ["WPC", "Marine Plane", "Engineering Wood"] },
+                { id: 14, name: "Staircase Bottom", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
             ],
             living_room: [
                 { id: 16, name: "Tv Unit – Wall Panelling", options: ["PVC", "Lamination", "Charcoal"] },
@@ -997,7 +1038,8 @@
                 { id: 61, name: "LIVING AND KITCHEN PARTITION", options: ["WPC", "Marine Plane", "Engineering Wood"] }
             ],
             prayer_unit: [
-                { id: 75, name: "PRAYER UNIT BOTTOM CABINET", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
+                { id: 75, name: "PRAYER UNIT BOTTOM CABINET", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 76, name: "PRAYER UNIT WALL PANELING", options: ["PVC", "Lamination", "Charcoal"] }
             ],
             bedroom: [
                 { id: 25, name: "Wardrobe", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
@@ -1020,8 +1062,7 @@
             dining_room: [
                 { id: 37, name: "Wash basin unit bottom cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
                 { id: 38, name: "Wash basin unit wall paneling", options: ["PVC", "Lamination", "Charcoal"] },
-                { id: 39, name: "Dining room crockery unit", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
-                { id: 40, name: "Accessories", options: ACCESSORY_LIST }
+                { id: 39, name: "Dining room crockery unit", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
             ],
             musical_room: [
                 { id: 80, name: "WALL PANEL", options: ["PVC", "Lamination", "Charcoal"] },
@@ -1034,7 +1075,7 @@
                 { id: 88, name: "COMPUTER TABLE", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
             ],
             toilet_area: [
-                { id: 41, name: "Toilet area washbasin cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
+                { id: 41, name: "Toilet area washbasin cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
             ],
             store_room: [
                 { id: 44, name: "Store room cupboard", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] }
@@ -1042,6 +1083,66 @@
             sitout: [
                 { id: 46, name: "Chappal stand", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
                 { id: 47, name: "Sit out area ceiling", options: ["PVC", "Lamination", "Charcoal", "Wood finishing", "Veneer finishing", "PU Paint"] }
+            ],
+            accessories: [
+                { id: 90, name: "Basket", options: ["Basket"] },
+                { id: 91, name: "Tandom Box", options: ["Tandom Box"] },
+                { id: 92, name: "Oil Pull Out", options: ["Oil Pull Out"] },
+                { id: 93, name: "PVC Cutlery Tray", options: ["PVC Cutlery Tray"] },
+                { id: 94, name: "SS Cutlery Tray", options: ["SS Cutlery Tray"] },
+                { id: 95, name: "Dustbin Unit", options: ["Dustbin Unit"] },
+                { id: 96, name: "Detergent Holder", options: ["Detergent Holder"] },
+                { id: 97, name: "GTBT", options: ["GTBT"] },
+                { id: 98, name: "ROLLING SHUTTER", options: ["ROLLING SHUTTER"] },
+                { id: 99, name: "Tall Unit", options: ["Tall Unit"] },
+                { id: 100, name: "Swing Corner", options: ["Swing Corner"] },
+                { id: 101, name: "Magic Corner", options: ["Magic Corner"] },
+                { id: 102, name: "PARACEL CORNER", options: ["PARACEL CORNER"] },
+                { id: 103, name: "D-Tray", options: ["D-Tray"] },
+                { id: 104, name: "Soft Closing Runner", options: ["Soft Closing Runner"] },
+                { id: 105, name: "Soft Closing Hinges", options: ["Soft Closing Hinges"] },
+                { id: 106, name: "Profile Handle", options: ["Profile Handle"] }
+            ],
+            full_teak_wood: [
+                { id: 301, name: "Kitchen Bottom", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 302, name: "Kitchen Top Box", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 303, name: "Kitchen Loft", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 304, name: "Kitchen Island Cabinet", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 305, name: "Kitchen Breakfast Table", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 306, name: "Kitchen Side Storage Cabinet", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 307, name: "Breakfast Table Wall Paneling", options: ["Box Type"] },
+                { id: 308, name: "Breakfast Table Beam Covering", options: ["Box Type"] },
+                { id: 309, name: "Open Box", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 310, name: "Spice Rack", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 311, name: "Ledge", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 312, name: "Ledge 1", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 313, name: "Ledge 2", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 314, name: "Kitchen & Dining Partition", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 315, name: "Wall Paneling", options: ["Box Type"] },
+                { id: 316, name: "Wash Basin", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 317, name: "Wardrobe", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 318, name: "Tv Unit", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 319, name: "Loft", options: ["Box Type", "Door Only", "Partition Type"] }
+            ],
+            half_teak_wood: [
+                { id: 401, name: "Kitchen Bottom", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 402, name: "Kitchen Top Box", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 403, name: "Kitchen Loft", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 404, name: "Kitchen Island Cabinet", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 405, name: "Kitchen Breakfast Table", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 406, name: "Kitchen Side Storage Cabinet", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 407, name: "Open Box", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 408, name: "Breakfast Table Wall Paneling", options: ["Box Type"] },
+                { id: 409, name: "Breakfast Table Beam Covering", options: ["Box Type"] },
+                { id: 410, name: "Breakfast Table Open Box", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 411, name: "Spice Rack", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 412, name: "Ledge 1", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 413, name: "Ledge 2", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 414, name: "Kitchen & Dining Partition", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 415, name: "Wash Basin Cabinet", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 416, name: "Wardrobe", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 417, name: "Tv Unit", options: ["Box Type", "Door Only", "Partition Type"] },
+                { id: 418, name: "Loft", options: ["Box Type", "Door Only", "Partition Type"] }
             ]
         };
 
@@ -1053,6 +1154,7 @@
 
         let BASE_ITEMS = ROOM_ITEMS[selectedRoom] || ROOM_ITEMS.kitchen;
 
+        /* ---------- Data Loaders ---------- */
         /* ---------- Data Loaders ---------- */
         function getRates() {
             const stored = localStorage.getItem('pks_rates');
@@ -1078,7 +1180,10 @@
             const stored = localStorage.getItem('pks_custom_items');
             if (stored) {
                 try {
-                    return JSON.parse(stored);
+                    const items = JSON.parse(stored);
+                    if (Array.isArray(items)) {
+                        return items;
+                    }
                 } catch (e) { }
             }
             return [];
@@ -1120,26 +1225,141 @@
         }
 
         /* ---------- Renderers ---------- */
+        function getActiveRoomOptions() {
+            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            const roomOptions = new Set();
+
+            if (pMode === 'economy') {
+                const engWoodBoxDoor = [
+                    "Engineering Wood (Box Type)",
+                    "Engineering Wood (Door Only)",
+                    "Engineering Wood (Partition Type)"
+                ];
+                const engWoodOnly = ["Engineering Wood"];
+
+                const items = ROOM_ITEMS[selectedRoom] || [];
+                items.forEach(item => {
+                    const itemName = item.name.toUpperCase();
+
+                    // Skip accessories in non-accessories rooms
+                    if (itemName === 'ACCESSORIES') {
+                        if (selectedRoom === 'accessories') {
+                            const ACCESSORY_LIST = [
+                                "Basket", "Tandom Box", "Oil Pull Out", "PVC Cutlery Tray", "SS Cutlery Tray",
+                                "Dustbin Unit", "Detergent Holder", "GTBT", "ROLLING SHUTTER", "Tall Unit",
+                                "Swing Corner", "Magic Corner", "PARACEL CORNER", "D-Tray",
+                                "Soft Closing Runner", "Soft Closing Hinges", "Profile Handle"
+                            ];
+                            ACCESSORY_LIST.forEach(opt => roomOptions.add(opt));
+                        }
+                        return;
+                    }
+
+                    // Mirror addStd Economy logic:
+                    const isWallPanelOrCeiling = item.options.some(
+                        o => o === "PVC" || o === "Lamination" || o === "Charcoal"
+                    );
+                    
+                    const isTable = itemName.includes("TABLE") && 
+                                    !itemName.includes("PANEL") && 
+                                    !itemName.includes("BEAM") && 
+                                    !itemName.includes("COVERING");
+                    
+                    if (isWallPanelOrCeiling) {
+                        item.options.forEach(opt => roomOptions.add(opt));
+                    } else if (itemName === 'BED') {
+                        item.options.forEach(opt => roomOptions.add(opt));
+                    } else {
+                        const isCabinet = isTable ||
+                                          itemName.includes("PARTITION") || 
+                                          itemName.includes("CABINET") || 
+                                          itemName.includes("WARDROBE") || 
+                                          itemName.includes("CUPBOARD") || 
+                                          item.options.some(
+                                              o => o.includes("Box") || o.includes("Door") || o.includes("Partition") || o.includes("Framed")
+                                          );
+                        const ecoMats = isCabinet ? engWoodBoxDoor : engWoodOnly;
+                        ecoMats.forEach(opt => roomOptions.add(opt));
+
+                        // If it is kitchen, living room or a partition (excluding tables), also add standard options (skipping raw Engineering Wood)
+                        if (!isTable && (selectedRoom === 'kitchen' || selectedRoom === 'living_room' || itemName.includes('PARTITION'))) {
+                            item.options.forEach(opt => {
+                                if (opt === "Engineering Wood") return;
+                                roomOptions.add(opt);
+                            });
+                        }
+                    }
+                });
+            } else {
+                const items = ROOM_ITEMS[selectedRoom] || [];
+                items.forEach(item => {
+                    item.options.forEach(opt => roomOptions.add(opt));
+                });
+            }
+
+            return roomOptions;
+        }
+
+        function normalizeKey(str) {
+            if (!str) return '';
+            return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
         function renderRatesTable() {
             const body = document.getElementById('ratesTableBody');
             body.innerHTML = '';
 
-            // Get all unique material labels used anywhere
-            const allMaterials = new Set();
-            // Default ones
-            Object.keys(DEFAULT_RATES).forEach(k => allMaterials.add(k));
-            // Custom ones from customMaterials
-            Object.values(customMaterials).forEach(mats => {
-                mats.forEach(m => allMaterials.add(m.label));
-            });
-            // Custom ones from customItems
-            customItems.forEach(item => {
-                item.options.forEach(opt => allMaterials.add(opt.label));
+            // Get all unique material labels used in the selectedRoom
+            const roomMaterials = new Set();
+            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            
+            // 1. Get standard item options for this room based on current pricing mode
+            const activeOpts = getActiveRoomOptions();
+            activeOpts.forEach(opt => roomMaterials.add(opt));
+            
+            // 3. Add custom materials added to standard items in this room
+            const items = ROOM_ITEMS[selectedRoom] || [];
+            items.forEach(item => {
+                const customList = customMaterials[item.id] || [];
+                customList.forEach(m => roomMaterials.add(m.label));
             });
 
-            Array.from(allMaterials).sort().forEach(mat => {
+            // 4. Add custom items created for this room
+            if (selectedRoom !== 'accessories') {
+                customItems.forEach(item => {
+                    item.options.forEach(opt => roomMaterials.add(opt.label));
+                });
+            }
+
+            function resolveMatRate(mat) {
+                const normMat = normalizeKey(mat);
+                const normBase = normalizeKey(mat.replace(/\s*\([^)]*\)/g, '').trim());
+
+                function checkObj(obj) {
+                    if (!obj) return undefined;
+                    for (const k in obj) {
+                        if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '' && parseFloat(obj[k]) > 0) {
+                            const nk = normalizeKey(k);
+                            if (nk === normMat || nk === normBase) {
+                                return parseFloat(obj[k]);
+                            }
+                        }
+                    }
+                    return undefined;
+                }
+
+                let v = checkObj(currentRates);
+                if (v !== undefined) return v;
+
+                v = checkObj(DEFAULT_RATES);
+                if (v !== undefined) return v;
+
+                return 0;
+            }
+
+            Array.from(roomMaterials).sort().forEach(mat => {
                 const tr = document.createElement('tr');
-                const rateVal = currentRates[mat] !== undefined ? currentRates[mat] : 0;
+                const rateVal = resolveMatRate(mat);
                 tr.innerHTML = `
                     <td>${mat}</td>
                     <td><input type="number" data-material="${mat}" value="${rateVal}"></td>
@@ -1150,7 +1370,7 @@
 
         function saveRates() {
             const inputs = document.querySelectorAll('#ratesTableBody input');
-            const ratesObj = {};
+            const ratesObj = { ...currentRates };
             inputs.forEach(input => {
                 const mat = input.dataset.material;
                 const val = parseFloat(input.value) || 0;
@@ -1171,8 +1391,8 @@
                 localStorage.removeItem('pks_deleted_standard_materials');
                 deletedStandardMaterials = [];
                 localStorage.removeItem('pks_saved_quotes');
+                localStorage.removeItem('pks_rates');
 
-                // Set all rates in currentRates to 0
                 currentRates = {};
                 Object.keys(DEFAULT_RATES).forEach(k => {
                     currentRates[k] = 0;
@@ -1348,6 +1568,7 @@
             const label = document.getElementById('matLabel').value.trim();
             const formulaType = document.getElementById('matFormula').value;
             const initialRate = parseFloat(document.getElementById('matInitialRate').value) || 0;
+            const specifications = document.getElementById('matSpecs').value.trim();
 
             if (!label) {
                 alert("Please specify a material label.");
@@ -1368,13 +1589,13 @@
                 if (!customMaterials[itemId]) {
                     customMaterials[itemId] = [];
                 }
-                customMaterials[itemId].push({ label, fields, formulaType, note });
+                customMaterials[itemId].push({ label, fields, formulaType, note, specifications });
                 localStorage.setItem('pks_custom_materials', JSON.stringify(customMaterials));
             } else if (targetSelect.startsWith('custom-')) {
                 const itemId = parseInt(targetSelect.substring(7));
                 const item = customItems.find(i => i.id === itemId);
                 if (item) {
-                    item.options.push({ label, fields, formulaType, note });
+                    item.options.push({ label, fields, formulaType, note, specifications });
                     localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
                 }
             }
@@ -1386,6 +1607,7 @@
             // Clean inputs & redraw
             document.getElementById('matLabel').value = '';
             document.getElementById('matInitialRate').value = '';
+            document.getElementById('matSpecs').value = '';
 
             renderCurrentItemsList();
             renderCustomItemsList();
@@ -1611,17 +1833,22 @@
             sessionStorage.setItem('pks_selected_room_name', roomName);
 
             const rawItems = ROOM_ITEMS[selectedRoom] || ROOM_ITEMS.kitchen;
-            BASE_ITEMS = rawItems.filter(item => !deletedStandardItems.includes(item.id));
+            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            BASE_ITEMS = rawItems.filter(item => {
+                if (deletedStandardItems.includes(item.id)) return false;
+                if (pMode === 'economy' && roomId !== 'accessories' && item.name.toUpperCase() === 'ACCESSORIES') return false;
+                return true;
+            });
             currentRates = getRates();
             customMaterials = getCustomMaterials();
             customItems = getCustomItems();
 
             document.getElementById('roomBadge').textContent = selectedRoomName;
 
-            // Toggle Floor and Room selectors ONLY for bedroom
+            // Show Floor and Room selectors
             const selectorsWrap = document.getElementById('floorSelectorsWrap');
             if (selectorsWrap) {
-                selectorsWrap.style.display = (roomId === 'bedroom') ? 'flex' : 'none';
+                selectorsWrap.style.display = 'flex';
             }
 
             renderRoomTabs();
@@ -1824,7 +2051,32 @@
             }
         }
 
+        function switchPricingMode(mode) {
+            sessionStorage.setItem('pks_pricing_mode', mode);
+            sessionStorage.setItem('pks_economy_mode', mode === 'economy' ? 'true' : 'false');
+            updateQualityBadges();
+            updateRoomState(selectedRoom, selectedRoomName);
+        }
+
+        function updateQualityBadges() {
+            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            
+            // Update active states on mode tabs
+            document.querySelectorAll('.mode-tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (pMode === 'premium') {
+                const btn = document.getElementById('modeBtnPremium');
+                if (btn) btn.classList.add('active');
+            } else if (pMode === 'medium') {
+                const btn = document.getElementById('modeBtnMedium');
+                if (btn) btn.classList.add('active');
+            } else if (pMode === 'economy') {
+                const btn = document.getElementById('modeBtnEconomy');
+                if (btn) btn.classList.add('active');
+            }
+        }
+
         // Setup dynamic tabs and panels
+        updateQualityBadges();
         updateRoomState(selectedRoom, selectedRoomName);
     </script>
 </body>

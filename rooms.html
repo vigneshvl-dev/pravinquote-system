@@ -388,35 +388,50 @@
                 <button onclick="closeModeSelectionModal()"
                     style="background: transparent; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: var(--sans);">Cancel</button>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                <!-- Premium Option -->
+            <div style="display: flex; flex-direction: column; gap: 14px; max-height: 480px; overflow-y: auto; padding-right: 5px;">
+                <!-- Premium -->
                 <div class="room-card"
-                    style="width: 100%; text-align: left; padding: 20px; flex-direction: row; align-items: center; justify-content: space-between;"
+                    style="width: 100%; text-align: left; padding: 15px; flex-direction: row; align-items: center; justify-content: space-between;"
                     onclick="selectMode('premium')">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <span class="room-icon"
-                            style="width: 44px; height: 44px; font-size: 1.6rem; margin-right: 0;">🌟</span>
+                            style="width: 40px; height: 40px; font-size: 1.5rem; margin-right: 0;">🌟</span>
                         <div>
-                            <div class="room-name" style="font-size: 1.1rem; margin-bottom: 4px;">Premium</div>
-                            <div style="font-size: 0.78rem; color: var(--muted);">Standard pricing and materials</div>
+                            <div class="room-name" style="font-size: 1rem; margin-bottom: 2px;">Premium</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">Standard pricing and materials</div>
                         </div>
                     </div>
-                    <span style="color: var(--accent); font-size: 1.2rem;">→</span>
+                    <span style="color: var(--accent); font-size: 1.1rem;">→</span>
                 </div>
 
-                <!-- Economy Option -->
+                <!-- Middle / Standard -->
                 <div class="room-card"
-                    style="width: 100%; text-align: left; padding: 20px; flex-direction: row; align-items: center; justify-content: space-between;"
+                    style="width: 100%; text-align: left; padding: 15px; flex-direction: row; align-items: center; justify-content: space-between;"
+                    onclick="selectMode('medium')">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="room-icon"
+                            style="width: 40px; height: 40px; font-size: 1.5rem; margin-right: 0;">⚖️</span>
+                        <div>
+                            <div class="room-name" style="font-size: 1rem; margin-bottom: 2px;">Middle / Standard</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">Standard Middle pricing and half-teak</div>
+                        </div>
+                    </div>
+                    <span style="color: var(--accent); font-size: 1.1rem;">→</span>
+                </div>
+
+                <!-- Economy -->
+                <div class="room-card"
+                    style="width: 100%; text-align: left; padding: 15px; flex-direction: row; align-items: center; justify-content: space-between;"
                     onclick="selectMode('economy')">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <span class="room-icon"
-                            style="width: 44px; height: 44px; font-size: 1.6rem; margin-right: 0;">💰</span>
+                            style="width: 40px; height: 40px; font-size: 1.5rem; margin-right: 0;">💰</span>
                         <div>
-                            <div class="room-name" style="font-size: 1.1rem; margin-bottom: 4px;">Economy</div>
-                            <div style="font-size: 0.78rem; color: var(--muted);">Budget pricing & materials</div>
+                            <div class="room-name" style="font-size: 1rem; margin-bottom: 2px;">Economy</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">Budget friendly rates and half-teak</div>
                         </div>
                     </div>
-                    <span style="color: var(--accent); font-size: 1.2rem;">→</span>
+                    <span style="color: var(--accent); font-size: 1.1rem;">→</span>
                 </div>
             </div>
         </div>
@@ -495,11 +510,8 @@
         }
 
         function selectMode(mode) {
-            if (mode === 'economy') {
-                sessionStorage.setItem('pks_economy_mode', 'true');
-            } else {
-                sessionStorage.setItem('pks_economy_mode', 'false');
-            }
+            sessionStorage.setItem('pks_pricing_mode', mode);
+            sessionStorage.setItem('pks_economy_mode', mode === 'economy' ? 'true' : 'false');
             closeModeSelectionModal();
             proceedSelectDivision(tempDivId, tempDivName);
         }
