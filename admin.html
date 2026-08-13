@@ -917,6 +917,8 @@
             { id: 'sitout', name: 'Sitout', icon: '🌿', active: true },
             { id: 'store_room', name: 'Store Room', icon: '📦', active: true },
             { id: 'toilet_area', name: 'Toilet Area', icon: '🚿', active: true },
+            { id: 'passage_ceiling', name: 'Passage Ceiling', icon: '🏛️', active: true },
+            { id: 'false_ceiling', name: 'False Ceiling', icon: '✨', active: true },
             { id: 'accessories', name: 'Accessories', icon: '🧺', active: true },
             { id: 'full_teak_wood', name: 'Full Teak Wood', icon: '👑', active: true },
             { id: 'half_teak_wood', name: 'Half Teak Wood', icon: '🪵', active: true }
@@ -972,6 +974,8 @@
             "Wood finishing": 500,
             "Veneer finishing": 700,
             "PU Paint": 600,
+            "Gypsum Board": 110,
+            "POP": 120,
             "Basket": 0,
             "Tandom Box": 0,
             "Oil Pull Out": 0,
@@ -1083,6 +1087,12 @@
             sitout: [
                 { id: 46, name: "Chappal stand", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
                 { id: 47, name: "Sit out area ceiling", options: ["PVC", "Lamination", "Charcoal", "Wood finishing", "Veneer finishing", "PU Paint"] }
+            ],
+            passage_ceiling: [
+                { id: 201, name: "Passage Ceiling", options: ["Gypsum Board", "POP", "PVC", "Lamination", "Charcoal", "Wood finishing", "Veneer finishing", "PU Paint"] }
+            ],
+            false_ceiling: [
+                { id: 202, name: "False Ceiling", options: ["Gypsum Board", "POP", "PVC", "Lamination", "Charcoal", "Wood finishing", "Veneer finishing", "PU Paint"] }
             ],
             accessories: [
                 { id: 90, name: "Basket", options: ["Basket"] },
@@ -1652,9 +1662,10 @@
                 nameUpper.includes("PARACEL") || nameUpper.includes("SWING")) {
                 return { formulaType: "QTY", fields: ["QTY"], note: "qty" };
             }
-            // L*W formulas (Ledge, Sit out ceiling)
-            if (itemId === 10 || itemId === 47 || name === "Wood finishing" ||
-                name === "Veneer finishing" || name === "PU Paint") {
+            // L*W formulas (Ledge, Sit out ceiling, Passage ceiling, False ceiling)
+            if (itemId === 10 || itemId === 47 || itemId === 201 || itemId === 202 ||
+                name === "Wood finishing" || name === "Veneer finishing" || name === "PU Paint" ||
+                name === "Gypsum Board" || name === "POP") {
                 return { formulaType: "L*W", fields: ["L", "W"], note: "L×W" };
             }
             // SQFT (Spice rack)

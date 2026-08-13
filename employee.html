@@ -546,12 +546,12 @@
             border-radius: 50%;
         }
 
-        input:checked + .slider {
+        input:checked+.slider {
             background-color: var(--accent);
             border-color: var(--accent);
         }
 
-        input:checked + .slider:before {
+        input:checked+.slider:before {
             transform: translateX(14px);
             background-color: #fff;
         }
@@ -844,7 +844,7 @@
     <div class="print-invoice-header">
         <div class="invoice-left">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                <img src="logo.jpg" alt="Pravin Kitchens & Interiors Logo"
+                <img src="data:image/jpeg;base64,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" alt="Pravin Kitchens & Interiors Logo"
                     style="height: 55px; border-radius: 6px; object-fit: contain;">
                 <div>
                     <h2 style="color: var(--accent); margin: 0; font-size: 1.3rem;">Pravin Kitchens &amp; Interiors</h2>
@@ -907,7 +907,7 @@
     <header>
         <div class="header-inner">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo"
+                <img src="data:image/jpeg;base64,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" alt="Pravin Kitchens &amp; Interiors Logo"
                     style="height: 50px; border-radius: 6px; object-fit: contain;">
                 <div>
                     <h1>Pravin Kitchens &amp; Interiors
@@ -1018,7 +1018,8 @@
         <div class="quote-wrap">
             <div class="quote-title">
                 <h2>Quote Summary</h2>
-                <div class="no-print" style="display: flex; align-items: center; gap: 8px; background: var(--surface2); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-left: 10px;">
+                <div class="no-print"
+                    style="display: flex; align-items: center; gap: 8px; background: var(--surface2); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-left: 10px;">
                     <span>Show Sq.Ft &amp; Size</span>
                     <label class="switch">
                         <input type="checkbox" id="toggleSqft" checked onchange="handleSqftToggle()">
@@ -1252,6 +1253,7 @@
     </div>
 
     <script>
+        const LOGO_BASE64 = "data:image/jpeg;base64,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";
         const selectedDivision = sessionStorage.getItem('pks_selected_division') || 'marketing';
         const selectedDivisionName = sessionStorage.getItem('pks_selected_division_name') || 'Marketing';
         const isEconomyMode = sessionStorage.getItem('pks_economy_mode') === 'true';
@@ -1281,6 +1283,8 @@
             { id: 'sitout', name: 'Sitout', icon: '🌿', active: true },
             { id: 'store_room', name: 'Store Room', icon: '📦', active: true },
             { id: 'toilet_area', name: 'Toilet Area', icon: '🚿', active: true },
+            { id: 'passage_ceiling', name: 'Passage Ceiling', icon: '🏛️', active: true },
+            { id: 'false_ceiling', name: 'False Ceiling', icon: '✨', active: true },
             { id: 'accessories', name: 'Accessories', icon: '✨', active: true },
             { id: 'full_teak_wood', name: 'Full Teak Wood', icon: '👑', active: true },
             { id: 'half_teak_wood', name: 'Half Teak Wood', icon: '🪵', active: true }
@@ -1418,7 +1422,9 @@
             "Glass": 350,
             "Wood finishing": 500,
             "Veneer finishing": 700,
-            "PU Paint": 600
+            "PU Paint": 600,
+            "Gypsum Board": 110,
+            "POP": 120
         };
 
         // Load rates from localStorage or use defaults
@@ -1501,7 +1507,7 @@
 
         // Setup base database
         function getOrInitMaterialsDb() {
-            const currentDbVersion = 'v32';
+            const currentDbVersion = 'v34';
             let stored = localStorage.getItem('pks_materials_db');
             let storedVersion = localStorage.getItem('pks_materials_db_version');
 
@@ -1764,6 +1770,28 @@
             addStd('store_room', 'Store room cupboard', sideCabinetOptions);
             addStd('sitout', 'Chappal stand', sideCabinetOptions);
             addStd('sitout', 'Sit out area ceiling', [{ label: "Lamination", base: 250, formula: "L*W/144" }]);
+
+            addStd('passage_ceiling', 'Passage Ceiling', [
+                { label: "Gypsum Board", base: 110, formula: "L*W/144" },
+                { label: "POP", base: 120, formula: "L*W/144" },
+                { label: "PVC", base: 300, formula: "L*W/144" },
+                { label: "Lamination", base: 250, formula: "L*W/144" },
+                { label: "Charcoal", base: 400, formula: "L*W/144" },
+                { label: "Wood finishing", base: 500, formula: "L*W/144" },
+                { label: "Veneer finishing", base: 700, formula: "L*W/144" },
+                { label: "PU Paint", base: 600, formula: "L*W/144" }
+            ]);
+
+            addStd('false_ceiling', 'False Ceiling', [
+                { label: "Gypsum Board", base: 110, formula: "L*W/144" },
+                { label: "POP", base: 120, formula: "L*W/144" },
+                { label: "PVC", base: 300, formula: "L*W/144" },
+                { label: "Lamination", base: 250, formula: "L*W/144" },
+                { label: "Charcoal", base: 400, formula: "L*W/144" },
+                { label: "Wood finishing", base: 500, formula: "L*W/144" },
+                { label: "Veneer finishing", base: 700, formula: "L*W/144" },
+                { label: "PU Paint", base: 600, formula: "L*W/144" }
+            ]);
 
             // Economy items now auto-generated by addStd for all rooms above
 
@@ -2263,6 +2291,7 @@
                 }
 
                 grouped[itemKey].options.push({
+
                     label: m.constructionType,
                     fields: fields,
                     formulaStr: m.formula,
@@ -3098,7 +3127,7 @@
         function renderQuote() {
             const body = document.getElementById('quoteBody');
             const showRate = (role === 'admin');
-            
+
             // Determine Sq.Ft toggle state
             const toggleEl = document.getElementById('toggleSqft');
             const showSizeSqft = toggleEl ? toggleEl.checked : true;
@@ -3503,7 +3532,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #b07d2e; padding-bottom: 15px; margin-bottom: 25px;">
                     <div style="width: 50%;">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-                            <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo" style="height: 48px; border-radius: 6px; object-fit: contain;" onerror="this.style.display='none'">
+                            <img src="${LOGO_BASE64}" alt="Pravin Kitchens &amp; Interiors Logo" style="height: 48px; border-radius: 6px; object-fit: contain;">
                             <div>
                                 <h2 style="color: #b07d2e; margin: 0; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; font-family: sans-serif;">Pravin Kitchens &amp; Interiors</h2>
                                 <p style="font-weight: 600; font-size: 0.75rem; margin: 2px 0 0 0; color: #7a6e61; text-transform: uppercase; letter-spacing: 0.5px;"></p>
@@ -3730,17 +3759,27 @@
 
             element.innerHTML = letterheadHTML + tableHTML + specsAndTermsHTML + footerHTML;
 
+            // Ensure container is attached to DOM for full canvas rendering
+            element.style.position = 'fixed';
+            element.style.left = '-9999px';
+            element.style.top = '0';
+            document.body.appendChild(element);
+
             // html2pdf options
             const opt = {
                 margin: [10, 12, 10, 12], // top, left, bottom, right in mm
                 filename: `${docType}_${quoteNo}_${custName}.pdf`.replace(/[^a-z0-9]/gi, '_').toLowerCase(),
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2.5, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+                html2canvas: { scale: 2.5, useCORS: true, allowTaint: true, letterRendering: true, backgroundColor: '#ffffff' },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Run html2pdf download
-            html2pdf().set(opt).from(element).save();
+            // Run html2pdf download with safe DOM cleanup
+            html2pdf().set(opt).from(element).save().then(() => {
+                if (element.parentNode) document.body.removeChild(element);
+            }).catch(() => {
+                if (element.parentNode) document.body.removeChild(element);
+            });
         }
 
 
@@ -4142,6 +4181,48 @@
             }
         }
 
+        function recalculateQuoteLinesForMode(newMode) {
+            let targetQual = 'Premium';
+            if (newMode === 'medium') targetQual = 'Middle / Standard';
+            else if (newMode === 'economy') targetQual = 'Economy';
+
+            const adminRates = getRates();
+            const roomDb = getOrInitMaterialsDb();
+
+            quoteLines.forEach(line => {
+                const match = roomDb.find(m =>
+                    (m.roomId || '').toLowerCase() === (line.roomId || '').toLowerCase() &&
+                    (m.quality || '').toLowerCase() === targetQual.toLowerCase() &&
+                    (m.itemName || '').toUpperCase() === (line.itemName || '').toUpperCase()
+                );
+
+                if (match) {
+                    let rate = resolveRate(adminRates, match.constructionType, match.materialType);
+                    if (rate === undefined || rate === null || rate === 0) {
+                        rate = match.baseAmount;
+                    }
+                    if (rate > 0) {
+                        let factor = 1.0;
+                        if (adminRates[match.constructionType] === undefined) {
+                            if (targetQual === 'Middle / Standard') factor = 0.85;
+                            else if (targetQual === 'Economy' && match.itemName !== 'BED') factor = 0.70;
+                        }
+                        const finalRate = Math.round(rate * factor);
+                        line.rate = finalRate;
+                        line.amount = line.sqft * finalRate;
+                        if (match.constructionType) {
+                            line.material = match.constructionType;
+                        }
+                        if (match.specifications) {
+                            line.specifications = formatSpecificationsText(match.specifications, line.roomId, match.constructionType);
+                        }
+                    }
+                }
+            });
+
+            renderQuote();
+        }
+
         function switchPricingMode(mode) {
             sessionStorage.setItem('pks_pricing_mode', mode);
             sessionStorage.setItem('pks_economy_mode', mode === 'economy' ? 'true' : 'false');
@@ -4152,6 +4233,7 @@
 
             updateQualityBadges();
             updateRoomState(selectedRoom, selectedRoomName);
+            recalculateQuoteLinesForMode(mode);
         }
 
         function updateQualityBadges() {
