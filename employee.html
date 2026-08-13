@@ -830,15 +830,45 @@
                 color: #000;
             }
 
-            .invoice-meta-table tr td:last-child {
-                text-align: right;
-                font-weight: 600;
+            .print-only-cover-page {
+                display: block !important;
+                page-break-after: always;
+                text-align: center;
+                margin: 0;
+                padding: 0;
+            }
+            .print-only-cover-page img {
+                width: 100%;
+                max-width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .print-only-terms-pages {
+                display: block !important;
+            }
+            .print-terms-page {
+                page-break-before: always;
+                text-align: center;
+                margin: 0;
+                padding: 0;
+            }
+            .print-terms-page img {
+                width: 100%;
+                max-width: 100%;
+                height: auto;
+                display: block;
             }
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Print-Only Cover Page (Visible only during print) -->
+    <div class="print-only-cover-page" style="display: none;">
+        <img src="cover_brochure.png" alt="Cover Page">
+    </div>
 
     <!-- Invoice Letterhead (Visible only during print) -->
     <div class="print-invoice-header">
@@ -1202,6 +1232,15 @@
                         <strong>Requirements / Notes:</strong> <span id="printAnyRequirementsText"></span>
                     </div>
                 </div>
+            </div>
+
+            <!-- Print-Only PDF Terms Pages -->
+            <div class="print-only-terms-pages" style="display: none;">
+                <div class="print-terms-page"><img src="pdf_page1.png" alt="Terms Page 1"></div>
+                <div class="print-terms-page"><img src="pdf_page2.png" alt="Terms Page 2"></div>
+                <div class="print-terms-page"><img src="pdf_page3.png" alt="Terms Page 3"></div>
+                <div class="print-terms-page"><img src="pdf_page4.png" alt="Terms Page 4"></div>
+                <div class="print-terms-page"><img src="pdf_page5.png" alt="Terms Page 5"></div>
             </div>
 
             <div class="quote-actions">
@@ -3757,7 +3796,35 @@
                 </div>
             `;
 
-            element.innerHTML = letterheadHTML + tableHTML + specsAndTermsHTML + footerHTML;
+            let coverPageHTML = `
+                <div style="text-align: center; margin: 0; padding: 0;">
+                    <img src="cover_brochure.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                </div>
+            `;
+
+            let termsImagesHTML = `
+                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
+                    <img src="pdf_page1.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                </div>
+                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
+                    <img src="pdf_page2.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                </div>
+                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
+                    <img src="pdf_page3.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                </div>
+                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
+                    <img src="pdf_page4.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                </div>
+                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
+                    <img src="pdf_page5.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                </div>
+            `;
+
+            element.innerHTML = coverPageHTML + 
+                               `<div style="page-break-before: always;">` + 
+                               letterheadHTML + tableHTML + specsAndTermsHTML + footerHTML + 
+                               `</div>` + 
+                               termsImagesHTML;
 
             // Ensure container is attached to DOM for full canvas rendering
             element.style.position = 'fixed';
