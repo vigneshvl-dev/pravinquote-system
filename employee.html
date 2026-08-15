@@ -2594,36 +2594,29 @@
             const item = ITEMS.find(i => i.id === itemId);
             wrap.innerHTML = `
                 <div class="step-label">Choose material</div>
-                <div class="opt-row" id="${buildId}-opts"></div>
-                <div id="${buildId}-sizeArea"></div>
+                <div class="opt-row" id="${buildId}-opts" style="display: flex; flex-direction: column; gap: 8px; align-items: stretch;"></div>
+                <div id="${buildId}-sizeArea" style="display:none;"></div>
             `;
 
             const optRow = document.getElementById(`${buildId}-opts`);
             item.options.forEach((opt, idx) => {
+                const itemBlock = document.createElement('div');
+                itemBlock.className = 'material-option-block';
+                itemBlock.id = `${buildId}-optblock-${idx}`;
+                itemBlock.style.cssText = 'display: flex; flex-direction: column; width: 100%;';
+
                 const btnWrap = document.createElement('div');
-                btnWrap.style.cssText = 'position: relative; display: inline-flex; flex-direction: column; align-items: center; gap: 3px;';
+                btnWrap.style.cssText = 'position: relative; display: inline-flex; align-items: center; width: 100%;';
 
                 const btn = document.createElement('button');
                 btn.className = 'opt-btn';
                 btn.textContent = opt.label;
-                btn.style.paddingRight = '32px';
+                btn.style.cssText = 'width: 100%; text-align: left; padding-right: 36px;';
                 btn.onclick = () => selectMaterial(buildId, itemId, idx, btn, optRow);
-
-                // Show rate badge below button
-                const rate = getFinalRateForOption(opt);
-                const rateLabel = document.createElement('span');
-                if (rate > 0) {
-                    const isQty = opt.fields && opt.fields.includes('QTY');
-                    rateLabel.textContent = isQty ? `₹${Math.round(rate).toLocaleString('en-IN')} / qty` : `₹${Math.round(rate).toLocaleString('en-IN')} / sq.ft`;
-                    rateLabel.style.cssText = 'font-size: 0.68rem; font-weight: 700; color: var(--accent); background: rgba(61,187,110,0.1); border: 1px solid rgba(61,187,110,0.25); border-radius: 20px; padding: 1px 7px; letter-spacing: 0.3px; white-space: nowrap;';
-                } else {
-                    rateLabel.textContent = '₹ — rate not set';
-                    rateLabel.style.cssText = 'font-size: 0.65rem; color: var(--muted); white-space: nowrap;';
-                }
 
                 const delBtn = document.createElement('span');
                 delBtn.innerHTML = '&times;';
-                delBtn.style.cssText = 'position: absolute; right: 8px; top: 10px; font-weight: bold; font-size: 1.1rem; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; transition: all 0.2s ease;';
+                delBtn.style.cssText = 'position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-weight: bold; font-size: 1.1rem; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; transition: all 0.2s ease;';
                 delBtn.onmouseover = () => { delBtn.style.color = '#ff4d4d'; delBtn.style.background = 'rgba(255, 77, 77, 0.1)'; };
                 delBtn.onmouseout = () => { delBtn.style.color = 'var(--muted)'; delBtn.style.background = 'none'; };
                 delBtn.onclick = (e) => {
@@ -2632,24 +2625,39 @@
                 };
 
                 btnWrap.appendChild(btn);
-                btnWrap.appendChild(rateLabel);
                 btnWrap.appendChild(delBtn);
-                optRow.appendChild(btnWrap);
+                itemBlock.appendChild(btnWrap);
+
+                const optSizeContainer = document.createElement('div');
+                optSizeContainer.id = `${buildId}-opt-size-${idx}`;
+                optSizeContainer.style.cssText = 'margin-top: 8px; width: 100%; display: none;';
+                itemBlock.appendChild(optSizeContainer);
+
+                optRow.appendChild(itemBlock);
             });
 
+            const addBtnWrap = document.createElement('div');
+            addBtnWrap.style.cssText = 'display: inline-flex; width: fit-content; margin-top: 4px;';
             const addBtn = document.createElement('button');
             addBtn.type = 'button';
             addBtn.className = 'opt-btn';
             addBtn.style.cssText = 'border: 1px dashed var(--accent); color: var(--accent); background: none; font-weight: bold; cursor: pointer;';
             addBtn.textContent = '+ Add Material';
             addBtn.onclick = () => addCustomMaterialOption(buildId, itemId);
-            optRow.appendChild(addBtn);
+            addBtnWrap.appendChild(addBtn);
+            optRow.appendChild(addBtnWrap);
         }
 
 
         function selectMaterial(buildId, itemId, optIdx, btnEl, optRow) {
             optRow.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
             btnEl.classList.add('selected');
+
+            // Hide all other opt size containers in this group
+            optRow.querySelectorAll('[id^="' + buildId + '-opt-size-"]').forEach(c => {
+                c.style.display = 'none';
+                c.innerHTML = '';
+            });
 
             const item = ITEMS.find(i => i.id === itemId);
             const opt = item.options[optIdx];
@@ -2912,7 +2920,14 @@
         function openSizePanel(buildId, itemId, optIdx) {
             const item = ITEMS.find(i => i.id === itemId);
             const opt = item.options[optIdx];
-            const sizeArea = document.getElementById(`${buildId}-sizeArea`);
+            let sizeArea = document.getElementById(`${buildId}-opt-size-${optIdx}`);
+            if (sizeArea) {
+                sizeArea.style.display = 'block';
+            } else {
+                sizeArea = document.getElementById(`${buildId}-sizeArea`);
+                if (sizeArea) sizeArea.style.display = 'block';
+            }
+            if (!sizeArea) return;
 
             const defaultRate = getFinalRateForOption(opt);
 
