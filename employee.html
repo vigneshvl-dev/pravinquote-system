@@ -2523,8 +2523,19 @@
         });
 
         function openBuilder(itemId) {
-            const item = ITEMS.find(i => i.id === itemId);
             const container = document.getElementById(`builders-${itemId}`);
+            if (!container) return;
+
+            // If already open, toggle it closed to prevent repeated panels
+            if (container.children.length > 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = ''; // Ensure clean single instance
+
+            const item = ITEMS.find(i => i.id === itemId);
+            if (!item) return;
             const buildId = `b${itemId}-${Date.now()}`;
             const wrap = document.createElement('div');
             wrap.className = 'builder';
@@ -2611,21 +2622,10 @@
                 const btn = document.createElement('button');
                 btn.className = 'opt-btn';
                 btn.textContent = opt.label;
-                btn.style.cssText = 'width: 100%; text-align: left; padding-right: 36px;';
+                btn.style.cssText = 'width: 100%; text-align: left;';
                 btn.onclick = () => selectMaterial(buildId, itemId, idx, btn, optRow);
 
-                const delBtn = document.createElement('span');
-                delBtn.innerHTML = '&times;';
-                delBtn.style.cssText = 'position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-weight: bold; font-size: 1.1rem; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; transition: all 0.2s ease;';
-                delBtn.onmouseover = () => { delBtn.style.color = '#ff4d4d'; delBtn.style.background = 'rgba(255, 77, 77, 0.1)'; };
-                delBtn.onmouseout = () => { delBtn.style.color = 'var(--muted)'; delBtn.style.background = 'none'; };
-                delBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    deleteMaterialOption(buildId, itemId, idx);
-                };
-
                 btnWrap.appendChild(btn);
-                btnWrap.appendChild(delBtn);
                 itemBlock.appendChild(btnWrap);
 
                 const optSizeContainer = document.createElement('div');
@@ -2855,6 +2855,63 @@
             openMaterialSelector(buildId, itemId);
         }
 
+        function getEffectiveSpecs(roomId, itemId, materialLabel, defaultSpecs) {
+            const stored = localStorage.getItem('pks_item_specs');
+            if (stored) {
+                try {
+                    const specsMap = JSON.parse(stored);
+                    if (specsMap) {
+                        const specificKey = `${roomId}_${itemId}_${materialLabel}`;
+                        if (specsMap[specificKey] !== undefined && specsMap[specificKey] !== null && specsMap[specificKey] !== '') {
+                            return specsMap[specificKey];
+                        }
+                        const roomMatKey = `${roomId}_${materialLabel}`;
+                        if (specsMap[roomMatKey] !== undefined && specsMap[roomMatKey] !== null && specsMap[roomMatKey] !== '') {
+                            return specsMap[roomMatKey];
+                        }
+                        if (specsMap[materialLabel] !== undefined && specsMap[materialLabel] !== null && specsMap[materialLabel] !== '') {
+                            return specsMap[materialLabel];
+                        }
+                    }
+                } catch (e) { }
+            }
+
+            // Check custom materials list
+            const storedCustom = localStorage.getItem('pks_custom_materials');
+            if (storedCustom) {
+                try {
+                    const customMats = JSON.parse(storedCustom);
+                    if (customMats && customMats[itemId]) {
+                        const found = customMats[itemId].find(m => m.label === materialLabel);
+                        if (found && found.specifications) return found.specifications;
+                    }
+                } catch (e) { }
+            }
+
+            return defaultSpecs || "";
+        }
+
+        function enableInlineSpecsEdit(buildId, itemId, optIdx) {
+            const item = ITEMS.find(i => i.id === itemId);
+            const opt = item.options[optIdx];
+            const currentSpecs = getEffectiveSpecs(selectedRoom, itemId, opt.label, opt.specifications);
+            const newSpecs = prompt("Edit specifications for " + opt.label + ":", currentSpecs);
+            if (newSpecs !== null) {
+                const stored = localStorage.getItem('pks_item_specs');
+                let specsMap = {};
+                if (stored) {
+                    try { specsMap = JSON.parse(stored) || {}; } catch (e) { }
+                }
+                const specificKey = `${selectedRoom}_${itemId}_${opt.label}`;
+                specsMap[specificKey] = newSpecs.trim();
+                localStorage.setItem('pks_item_specs', JSON.stringify(specsMap));
+
+                opt.specifications = newSpecs.trim();
+                const textEl = document.getElementById(`${buildId}-specs-text`);
+                if (textEl) textEl.textContent = newSpecs.trim() || "No specifications added.";
+            }
+        }
+
         function formatSpecificationsText(specsStr, currentRoomId, currentMaterialLabel) {
             if (!specsStr) return "";
             specsStr = specsStr.trim();
@@ -2930,6 +2987,7 @@
             if (!sizeArea) return;
 
             const defaultRate = getFinalRateForOption(opt);
+            const effectiveSpecs = getEffectiveSpecs(selectedRoom, itemId, opt.label, opt.specifications);
 
             const fieldsHtml = opt.fields.map(f => `
                 <div class="field">
@@ -2943,17 +3001,17 @@
             const labelText = item.options.length === 1 ? item.name : opt.label;
             sizeArea.innerHTML = `
                 <div class="size-panel">
-                  <div class="step-label">Size &amp; rate — ${labelText} <span style="text-transform:none;color:var(--muted)">(${opt.note})</span></div>
+                  <div class="step-label">Size Details — ${labelText} <span style="text-transform:none;color:var(--muted)">(${opt.note})</span></div>
                   <div id="${buildId}-specs-block" style="font-size: 0.72rem; color: var(--muted); margin-bottom: 12px; line-height: 1.4; padding: 6px 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; gap: 4px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <strong>Specifications:</strong>
                       <button type="button" style="background: transparent; border: none; cursor: pointer; font-size: 0.85rem; padding: 2px;" onclick="enableInlineSpecsEdit('${buildId}', ${itemId}, ${optIdx})" title="Edit Specifications">✏️</button>
                     </div>
-                    <div id="${buildId}-specs-text" style="word-break: break-word; white-space: pre-wrap;">${formatSpecificationsText(opt.specifications, selectedRoom, opt.label) || "No specifications added. Click edit icon to add."}</div>
+                    <div id="${buildId}-specs-text" style="word-break: break-word; white-space: pre-wrap;">${formatSpecificationsText(effectiveSpecs, selectedRoom, opt.label) || "No specifications added. Click edit icon to add."}</div>
                   </div>
                   <div class="field-row">
                     ${fieldsHtml}
-                    <div class="field">
+                    <div class="field" style="display: none;">
                       <label>Rate (₹/sq.ft)</label>
                       <input type="number" step="0.01" id="${buildId}-rate" value="${defaultRate.toFixed(2)}" disabled>
                     </div>
@@ -3083,7 +3141,7 @@
                 amount,
                 enabled: true,
                 showSqft: opt.showSqft,
-                specifications: formatSpecificationsText(opt.specifications, selectedRoom, opt.label)
+                specifications: formatSpecificationsText(getEffectiveSpecs(selectedRoom, itemId, opt.label, opt.specifications), selectedRoom, opt.label)
             });
             renderQuote();
             closeBuilder(buildId);
@@ -4415,4 +4473,12 @@
         // Initialize customer auto-fill logic
         initCustomerAutofill();
         updateQualityBadges();
+
+        // Storage event listener to live-sync specs and rates updated from Admin panel
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'pks_item_specs' || e.key === 'pks_custom_materials' || e.key === 'pks_rates' || e.key === 'pks_materials_db') {
+                ITEMS = getFullItemsList();
+                renderItemsGrid();
+            }
+        });
     </script>

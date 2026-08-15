@@ -811,20 +811,53 @@
 
             <!-- Manage Settings & Specs Tab -->
             <div id="settings" class="tab-panel">
-                <h2>Material Specifications &amp; Terms</h2>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 15px;">
-                    Define the default list of materials / descriptions that will be printed in the quote summary after
-                    the total.
+                <h2>Item &amp; Material Specifications</h2>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;">
+                    Customize the exact specifications for each item and material. Any edits saved here are immediately updated in the Employee Panel and Quote calculations.
                 </p>
-                <div class="sub-form" style="background: none; border: none; padding: 0;">
+
+                <!-- Specific Item & Material Specs Editor Form -->
+                <div class="sub-form" style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 25px;">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                        <div class="form-group" style="flex: 1; min-width: 180px;">
+                            <label for="specsSelectRoom">Select Room</label>
+                            <select id="specsSelectRoom" onchange="onSpecsRoomChange()">
+                                <!-- populated by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label for="specsSelectItem">Select Item</label>
+                            <select id="specsSelectItem" onchange="onSpecsItemChange()">
+                                <!-- populated by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 220px;">
+                            <label for="specsSelectMaterial">Select Material Option</label>
+                            <select id="specsSelectMaterial" onchange="onSpecsMaterialChange()">
+                                <!-- populated by JS -->
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label for="materialSpecsInput">Material Specifications Text</label>
-                        <textarea id="materialSpecsInput" rows="6"
+                        <label for="specsEditorText" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Specifications (Line by line / bullet format)</span>
+                            <span id="specsEditorTargetBadge" style="font-size: 0.75rem; color: var(--accent); font-weight: 600;"></span>
+                        </label>
+                        <textarea id="specsEditorText" rows="6" placeholder="e.g.&#10;MARINE PLY THICKNESS-16MM&#10;LAMINATION THICKNESS 0.8MM&#10;HINGES-BRAND SLEEK&#10;KITCHEN HINGES SOFT CLOSING&#10;KITCHEN HANDLE PROFILE"
                             style="background: rgba(5, 11, 7, 0.75); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 0.95rem; width: 100%; resize: vertical; font-family: var(--sans); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); transition: all 0.3s;"></textarea>
                     </div>
-                    <div class="action-row">
-                        <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+                    <div class="action-row" style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+                        <button class="btn-danger" style="background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px;" onclick="resetSelectedMaterialSpecs()">Reset to Default</button>
+                        <button class="btn-primary" onclick="saveSelectedMaterialSpecs()">Save Specifications</button>
                     </div>
+                </div>
+
+                <h3 style="margin-top: 25px; margin-bottom: 12px; font-size: 1.05rem; color: var(--accent); display: flex; align-items: center; justify-content: space-between;">
+                    <span>Current Materials &amp; Specifications for <span id="specsRoomNameTitle">Kitchen</span></span>
+                </h3>
+                <div class="item-list-container" id="specsOverviewList">
+                    <!-- Populated by JS -->
                 </div>
             </div>
 
@@ -1469,6 +1502,7 @@
                     <span class="tag-pill">
                         ${opt}
                         <button class="rename-btn" onclick="renameMaterialOption(${item.id}, ${JSON.stringify(opt).replace(/"/g, '&quot;')}, 'standard')" title="Rename">✎</button>
+                        <button class="rename-btn" style="color:var(--accent);" onclick="jumpToSpecs('${selectedRoom}', ${item.id}, ${JSON.stringify(opt).replace(/"/g, '&quot;')})" title="Edit Specifications">📝</button>
                         <button onclick="removeStandardMaterial(${item.id}, ${JSON.stringify(opt).replace(/"/g, '&quot;')})">✕</button>
                     </span>
                 `).join('');
@@ -1479,6 +1513,7 @@
                     <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
                         ${m.label}
                         <button class="rename-btn" onclick="renameMaterialOption(${item.id}, ${JSON.stringify(m.label).replace(/"/g, '&quot;')}, 'custom-standard', null, ${index})" title="Rename">✎</button>
+                        <button class="rename-btn" style="color:var(--accent);" onclick="jumpToSpecs('${selectedRoom}', ${item.id}, ${JSON.stringify(m.label).replace(/"/g, '&quot;')})" title="Edit Specifications">📝</button>
                         <button onclick="removeCustomMaterial(${item.id}, ${index})">✕</button>
                     </span>
                 `).join('');
@@ -1505,6 +1540,7 @@
                         <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
                             ${opt.label}
                             <button class="rename-btn" onclick="renameMaterialOption(${item.id}, ${JSON.stringify(opt.label).replace(/"/g, '&quot;')}, 'custom-item', ${index}, ${optIdx})" title="Rename">✎</button>
+                            <button class="rename-btn" style="color:var(--accent);" onclick="jumpToSpecs('${selectedRoom}', 'custom-${item.id}', ${JSON.stringify(opt.label).replace(/"/g, '&quot;')})" title="Edit Specifications">📝</button>
                             <button onclick="removeCustomItemMaterial(${index}, ${optIdx})">✕</button>
                         </span>
                     `).join('');
@@ -2044,10 +2080,374 @@
             }
         }
 
+        /* ---------- Item & Material Specifications Management ---------- */
+        function getItemSpecsMap() {
+            const stored = localStorage.getItem('pks_item_specs');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (parsed && typeof parsed === 'object') return parsed;
+                } catch (e) { }
+            }
+            return {};
+        }
+
+        function saveItemSpecsMap(map) {
+            localStorage.setItem('pks_item_specs', JSON.stringify(map));
+            try {
+                window.dispatchEvent(new Event('storage'));
+            } catch (e) { }
+        }
+
+        function getDefaultSpecsForMaterial(roomId, materialLabel) {
+            const mat = (materialLabel || '').toLowerCase();
+            if (mat.includes('wpc')) {
+                return "WPC BOARD THICKNESS-16MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE";
+            }
+            if (mat.includes('acrylic')) {
+                return "MARINE PLY THICKNESS-16MM\nACRYLIC THICKNESS 1MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE";
+            }
+            if (mat.includes('pvc')) {
+                return "PVC BOARD THICKNESS-16MM\nSTANDARD FITTINGS";
+            }
+            if (mat.includes('teak')) {
+                return "TEAK WOOD FINISH\nPREMIUM HARDWARE & FITTINGS\nNATURAL WOOD POLISH";
+            }
+            if (roomId === 'accessories') {
+                return "SS 304 GRADE ACCESSORIES\nSOFT CLOSING RUNNERS\nPREMIUM WIRE BASKETS";
+            }
+            return "MARINE PLY THICKNESS-16MM\nLAMINATION THICKNESS 0.8MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE\nROOM HINGES NOT SOFT CLOSING\nROOM HANDLE SS";
+        }
+
+        function getEffectiveSpecsForAdmin(roomId, itemId, materialLabel) {
+            const specsMap = getItemSpecsMap();
+            const specificKey = `${roomId}_${itemId}_${materialLabel}`;
+            if (specsMap[specificKey] !== undefined && specsMap[specificKey] !== null && specsMap[specificKey] !== '') {
+                return specsMap[specificKey];
+            }
+            const roomMatKey = `${roomId}_${materialLabel}`;
+            if (specsMap[roomMatKey] !== undefined && specsMap[roomMatKey] !== null && specsMap[roomMatKey] !== '') {
+                return specsMap[roomMatKey];
+            }
+            if (specsMap[materialLabel] !== undefined && specsMap[materialLabel] !== null && specsMap[materialLabel] !== '') {
+                return specsMap[materialLabel];
+            }
+
+            // Check custom materials
+            const cMats = getCustomMaterials();
+            if (cMats[itemId]) {
+                const found = cMats[itemId].find(m => m.label === materialLabel);
+                if (found && found.specifications) return found.specifications;
+            }
+
+            return getDefaultSpecsForMaterial(roomId, materialLabel);
+        }
+
+        function initSpecsTab() {
+            const roomSelect = document.getElementById('specsSelectRoom');
+            if (!roomSelect) return;
+            roomSelect.innerHTML = '';
+
+            ROOMS.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.id;
+                opt.textContent = `${r.icon || ''} ${r.name}`;
+                if (r.id === selectedRoom) opt.selected = true;
+                roomSelect.appendChild(opt);
+            });
+
+            onSpecsRoomChange();
+        }
+
+        function onSpecsRoomChange() {
+            const roomSelect = document.getElementById('specsSelectRoom');
+            const targetRoomId = roomSelect ? roomSelect.value : selectedRoom;
+            const targetRoomObj = ROOMS.find(r => r.id === targetRoomId) || { name: 'Kitchen' };
+            
+            const titleEl = document.getElementById('specsRoomNameTitle');
+            if (titleEl) titleEl.textContent = targetRoomObj.name;
+
+            const itemSelect = document.getElementById('specsSelectItem');
+            if (!itemSelect) return;
+            itemSelect.innerHTML = '';
+
+            const rawItems = ROOM_ITEMS[targetRoomId] || ROOM_ITEMS.kitchen || [];
+            const deletedItems = getDeletedStandardItems();
+            const activeItems = rawItems.filter(i => !deletedItems.includes(i.id));
+
+            activeItems.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                opt.textContent = `${item.id}. ${item.name} (Standard)`;
+                itemSelect.appendChild(opt);
+            });
+
+            // Add custom items for this room if any
+            const cItems = getCustomItems();
+            cItems.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = `custom-${item.id}`;
+                opt.textContent = `${item.id}. ${item.name} (Custom)`;
+                itemSelect.appendChild(opt);
+            });
+
+            onSpecsItemChange();
+            renderSpecsOverviewList(targetRoomId);
+        }
+
+        function onSpecsItemChange() {
+            const roomSelect = document.getElementById('specsSelectRoom');
+            const itemSelect = document.getElementById('specsSelectItem');
+            const matSelect = document.getElementById('specsSelectMaterial');
+            if (!roomSelect || !itemSelect || !matSelect) return;
+
+            matSelect.innerHTML = '';
+            const targetRoomId = roomSelect.value;
+            const itemVal = itemSelect.value;
+
+            let optionsList = [];
+
+            if (itemVal.startsWith('custom-')) {
+                const itemId = parseInt(itemVal.substring(7));
+                const cItems = getCustomItems();
+                const foundItem = cItems.find(i => i.id === itemId);
+                if (foundItem && foundItem.options) {
+                    optionsList = foundItem.options.map(o => o.label || o);
+                }
+            } else {
+                const itemId = parseInt(itemVal);
+                const rawItems = ROOM_ITEMS[targetRoomId] || ROOM_ITEMS.kitchen || [];
+                const foundItem = rawItems.find(i => i.id === itemId);
+                if (foundItem && foundItem.options) {
+                    const deletedMats = getDeletedStandardMaterials();
+                    optionsList = foundItem.options.filter(o => !deletedMats.includes(`${itemId}-${o}`));
+                }
+
+                // Add custom materials for this item
+                const cMats = getCustomMaterials();
+                if (cMats[itemId]) {
+                    cMats[itemId].forEach(m => {
+                        if (!optionsList.includes(m.label)) optionsList.push(m.label);
+                    });
+                }
+            }
+
+            if (optionsList.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'No materials available';
+                matSelect.appendChild(opt);
+            } else {
+                optionsList.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m;
+                    matSelect.appendChild(opt);
+                });
+            }
+
+            onSpecsMaterialChange();
+        }
+
+        function onSpecsMaterialChange() {
+            const roomSelect = document.getElementById('specsSelectRoom');
+            const itemSelect = document.getElementById('specsSelectItem');
+            const matSelect = document.getElementById('specsSelectMaterial');
+            const textEl = document.getElementById('specsEditorText');
+            const badgeEl = document.getElementById('specsEditorTargetBadge');
+            if (!roomSelect || !itemSelect || !matSelect || !textEl) return;
+
+            const roomId = roomSelect.value;
+            const itemVal = itemSelect.value;
+            const matLabel = matSelect.value;
+
+            if (!matLabel) {
+                textEl.value = '';
+                if (badgeEl) badgeEl.textContent = '';
+                return;
+            }
+
+            const itemId = itemVal.startsWith('custom-') ? parseInt(itemVal.substring(7)) : parseInt(itemVal);
+            const currentSpecs = getEffectiveSpecsForAdmin(roomId, itemId, matLabel);
+            textEl.value = currentSpecs;
+
+            if (badgeEl) {
+                badgeEl.textContent = `Editing: ${matLabel}`;
+            }
+        }
+
+        function saveSelectedMaterialSpecs() {
+            const roomSelect = document.getElementById('specsSelectRoom');
+            const itemSelect = document.getElementById('specsSelectItem');
+            const matSelect = document.getElementById('specsSelectMaterial');
+            const textEl = document.getElementById('specsEditorText');
+            if (!roomSelect || !itemSelect || !matSelect || !textEl) return;
+
+            const roomId = roomSelect.value;
+            const itemVal = itemSelect.value;
+            const matLabel = matSelect.value;
+            const specs = textEl.value.trim();
+
+            if (!matLabel) {
+                alert("Please select a valid material option first.");
+                return;
+            }
+
+            const itemId = itemVal.startsWith('custom-') ? parseInt(itemVal.substring(7)) : parseInt(itemVal);
+            const specsMap = getItemSpecsMap();
+
+            const specificKey = `${roomId}_${itemId}_${matLabel}`;
+            const roomMatKey = `${roomId}_${matLabel}`;
+            specsMap[specificKey] = specs;
+            specsMap[roomMatKey] = specs;
+            specsMap[matLabel] = specs;
+
+            saveItemSpecsMap(specsMap);
+
+            // Also update in custom materials if exists
+            const cMats = getCustomMaterials();
+            if (cMats[itemId]) {
+                const found = cMats[itemId].find(m => m.label === matLabel);
+                if (found) {
+                    found.specifications = specs;
+                    localStorage.setItem('pks_custom_materials', JSON.stringify(cMats));
+                }
+            }
+
+            // Also update in custom items if exists
+            if (itemVal.startsWith('custom-')) {
+                const cItems = getCustomItems();
+                const foundItem = cItems.find(i => i.id === itemId);
+                if (foundItem && foundItem.options) {
+                    const optObj = foundItem.options.find(o => (o.label || o) === matLabel);
+                    if (optObj && typeof optObj === 'object') {
+                        optObj.specifications = specs;
+                        localStorage.setItem('pks_custom_items', JSON.stringify(cItems));
+                    }
+                }
+            }
+
+            renderSpecsOverviewList(roomId);
+            showToast(`Specifications updated for ${matLabel}!`);
+        }
+
+        function resetSelectedMaterialSpecs() {
+            const roomSelect = document.getElementById('specsSelectRoom');
+            const itemSelect = document.getElementById('specsSelectItem');
+            const matSelect = document.getElementById('specsSelectMaterial');
+            const textEl = document.getElementById('specsEditorText');
+            if (!roomSelect || !itemSelect || !matSelect || !textEl) return;
+
+            const roomId = roomSelect.value;
+            const itemVal = itemSelect.value;
+            const matLabel = matSelect.value;
+            if (!matLabel) return;
+
+            if (!confirm(`Reset specifications for "${matLabel}" to defaults?`)) return;
+
+            const itemId = itemVal.startsWith('custom-') ? parseInt(itemVal.substring(7)) : parseInt(itemVal);
+            const specsMap = getItemSpecsMap();
+            delete specsMap[`${roomId}_${itemId}_${matLabel}`];
+            delete specsMap[`${roomId}_${matLabel}`];
+            delete specsMap[matLabel];
+            saveItemSpecsMap(specsMap);
+
+            const defaultSpecs = getDefaultSpecsForMaterial(roomId, matLabel);
+            textEl.value = defaultSpecs;
+            renderSpecsOverviewList(roomId);
+            showToast(`Specifications reset to default for ${matLabel}`);
+        }
+
+        function renderSpecsOverviewList(roomId) {
+            const container = document.getElementById('specsOverviewList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const rawItems = ROOM_ITEMS[roomId] || ROOM_ITEMS.kitchen || [];
+            const deletedItems = getDeletedStandardItems();
+            const activeItems = rawItems.filter(i => !deletedItems.includes(i.id));
+
+            activeItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-manage-card';
+
+                const deletedMats = getDeletedStandardMaterials();
+                let optionsList = (item.options || []).filter(o => !deletedMats.includes(`${item.id}-${o}`));
+
+                const cMats = getCustomMaterials();
+                if (cMats[item.id]) {
+                    cMats[item.id].forEach(m => {
+                        if (!optionsList.includes(m.label)) optionsList.push(m.label);
+                    });
+                }
+
+                let matRowsHtml = optionsList.map(matLabel => {
+                    const specs = getEffectiveSpecsForAdmin(roomId, item.id, matLabel);
+                    const displaySpecs = specs ? specs.replace(/\n/g, ' • ') : '<i style="color:var(--muted)">No specifications set</i>';
+                    return `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 8px 10px; background: rgba(0,0,0,0.25); border-radius: 6px; border: 1px solid var(--border); margin-bottom: 6px;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 0.85rem; color: var(--text); margin-bottom: 3px;">${matLabel}</div>
+                                <div style="font-size: 0.76rem; color: var(--muted); line-height: 1.3; font-family: var(--sans);">${displaySpecs}</div>
+                            </div>
+                            <button type="button" class="btn-primary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; white-space: nowrap; align-self: center;" onclick="loadSpecsIntoEditor('${roomId}', '${item.id}', '${matLabel.replace(/'/g, "\\'")}')">✏️ Edit Specs</button>
+                        </div>
+                    `;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="item-manage-card-header" style="margin-bottom: 8px;">
+                        <div class="item-manage-card-title">${item.id}. ${item.name} <span class="role-badge" style="font-size:0.68rem; padding: 2px 8px; margin-left: 8px;">Standard</span></div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        ${matRowsHtml || '<span style="font-size: 0.8rem; color: var(--muted); font-style: italic;">No material options available</span>'}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function loadSpecsIntoEditor(roomId, itemId, matLabel) {
+            const roomSelect = document.getElementById('specsSelectRoom');
+            if (roomSelect) {
+                roomSelect.value = roomId;
+                onSpecsRoomChange();
+            }
+
+            const itemSelect = document.getElementById('specsSelectItem');
+            if (itemSelect) {
+                itemSelect.value = itemId;
+                onSpecsItemChange();
+            }
+
+            const matSelect = document.getElementById('specsSelectMaterial');
+            if (matSelect) {
+                matSelect.value = matLabel;
+                onSpecsMaterialChange();
+            }
+
+            const editorBox = document.getElementById('specsEditorText');
+            if (editorBox) {
+                editorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                editorBox.focus();
+            }
+        }
+
+        function jumpToSpecs(roomId, itemId, matLabel) {
+            const settingsBtn = document.querySelector('.tab-btn[onclick*="settings"]');
+            switchTab('settings', settingsBtn);
+            setTimeout(() => {
+                loadSpecsIntoEditor(roomId, itemId, matLabel);
+            }, 50);
+        }
+
         function saveSettings() {
-            const specs = document.getElementById('materialSpecsInput').value.trim().toUpperCase();
-            localStorage.setItem('pks_material_specs', specs);
-            showToast("Settings saved successfully!");
+            const input = document.getElementById('materialSpecsInput');
+            if (input) {
+                const specs = input.value.trim().toUpperCase();
+                localStorage.setItem('pks_material_specs', specs);
+                showToast("Saved successfully!");
+            }
         }
 
         /* ---------- Initialize View ---------- */
@@ -2061,8 +2461,7 @@
             } else if (tabId === 'add-div') {
                 renderDivisionsList();
             } else if (tabId === 'settings') {
-                const defaultSpecs = "MARINE PLY THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS";
-                document.getElementById('materialSpecsInput').value = (localStorage.getItem('pks_material_specs') || defaultSpecs).toUpperCase();
+                initSpecsTab();
             } else if (tabId === 'quotes-folder') {
                 renderAdminQuotes();
             }
