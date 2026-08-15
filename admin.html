@@ -216,10 +216,12 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         .mode-tab-btn:hover {
             color: var(--text);
             background: rgba(255, 255, 255, 0.05);
         }
+
         .mode-tab-btn.active {
             background: var(--accent) !important;
             color: #fff !important;
@@ -626,12 +628,18 @@
     <div class="room-tabs-container-wrapper"
         style="max-width: 1200px; width: 100%; margin: 20px auto 0; padding: 0 20px;">
         <!-- Quality/Pricing Mode Tabs -->
-        <div id="pricingModeTabsContainer" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; background: var(--surface2); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); width: fit-content;">
-            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 1px;">Pricing Mode:</div>
+        <div id="pricingModeTabsContainer"
+            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; background: var(--surface2); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); width: fit-content;">
+            <div
+                style="font-size: 0.82rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 1px;">
+                Pricing Mode:</div>
             <div style="display: flex; gap: 6px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 8px;">
-                <button type="button" class="mode-tab-btn" id="modeBtnPremium" onclick="switchPricingMode('premium')">Premium</button>
-                <button type="button" class="mode-tab-btn" id="modeBtnMedium" onclick="switchPricingMode('medium')">Middle / Standard</button>
-                <button type="button" class="mode-tab-btn" id="modeBtnEconomy" onclick="switchPricingMode('economy')">Economy</button>
+                <button type="button" class="mode-tab-btn" id="modeBtnPremium"
+                    onclick="switchPricingMode('premium')">Premium</button>
+                <button type="button" class="mode-tab-btn" id="modeBtnMedium"
+                    onclick="switchPricingMode('medium')">Middle / Standard</button>
+                <button type="button" class="mode-tab-btn" id="modeBtnEconomy"
+                    onclick="switchPricingMode('economy')">Economy</button>
             </div>
         </div>
 
@@ -737,7 +745,7 @@
                     </div>
                     <div class="form-group">
                         <label for="matSpecs">Specifications</label>
-                        <textarea id="matSpecs" rows="3" placeholder="e.g. MARINE PLY THICKNESS-16MM..." 
+                        <textarea id="matSpecs" rows="3" placeholder="e.g. MARINE PLY THICKNESS-16MM..."
                             style="background: rgba(5, 11, 7, 0.75); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 0.95rem; width: 100%; resize: vertical; font-family: var(--sans); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); transition: all 0.3s;"></textarea>
                     </div>
                     <div class="action-row">
@@ -1155,13 +1163,11 @@
                 { id: 418, name: "Loft", options: ["Box Type", "Door Only", "Partition Type"] }
             ]
         };
-
         for (const room in ROOM_ITEMS) {
             ROOM_ITEMS[room].forEach(item => {
                 if (item.name) item.name = item.name.toUpperCase();
             });
         }
-
         let BASE_ITEMS = ROOM_ITEMS[selectedRoom] || ROOM_ITEMS.kitchen;
 
         /* ---------- Data Loaders ---------- */
@@ -1269,25 +1275,25 @@
                     const isWallPanelOrCeiling = item.options.some(
                         o => o === "PVC" || o === "Lamination" || o === "Charcoal"
                     );
-                    
-                    const isTable = itemName.includes("TABLE") && 
-                                    !itemName.includes("PANEL") && 
-                                    !itemName.includes("BEAM") && 
-                                    !itemName.includes("COVERING");
-                    
+
+                    const isTable = itemName.includes("TABLE") &&
+                        !itemName.includes("PANEL") &&
+                        !itemName.includes("BEAM") &&
+                        !itemName.includes("COVERING");
+
                     if (isWallPanelOrCeiling) {
                         item.options.forEach(opt => roomOptions.add(opt));
                     } else if (itemName === 'BED') {
                         item.options.forEach(opt => roomOptions.add(opt));
                     } else {
                         const isCabinet = isTable ||
-                                          itemName.includes("PARTITION") || 
-                                          itemName.includes("CABINET") || 
-                                          itemName.includes("WARDROBE") || 
-                                          itemName.includes("CUPBOARD") || 
-                                          item.options.some(
-                                              o => o.includes("Box") || o.includes("Door") || o.includes("Partition") || o.includes("Framed")
-                                          );
+                            itemName.includes("PARTITION") ||
+                            itemName.includes("CABINET") ||
+                            itemName.includes("WARDROBE") ||
+                            itemName.includes("CUPBOARD") ||
+                            item.options.some(
+                                o => o.includes("Box") || o.includes("Door") || o.includes("Partition") || o.includes("Framed")
+                            );
                         const ecoMats = isCabinet ? engWoodBoxDoor : engWoodOnly;
                         ecoMats.forEach(opt => roomOptions.add(opt));
 
@@ -1322,11 +1328,11 @@
             // Get all unique material labels used in the selectedRoom
             const roomMaterials = new Set();
             const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
-            
+
             // 1. Get standard item options for this room based on current pricing mode
             const activeOpts = getActiveRoomOptions();
             activeOpts.forEach(opt => roomMaterials.add(opt));
-            
+
             // 3. Add custom materials added to standard items in this room
             const items = ROOM_ITEMS[selectedRoom] || [];
             items.forEach(item => {
@@ -2071,7 +2077,7 @@
 
         function updateQualityBadges() {
             const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
-            
+
             // Update active states on mode tabs
             document.querySelectorAll('.mode-tab-btn').forEach(btn => btn.classList.remove('active'));
             if (pMode === 'premium') {

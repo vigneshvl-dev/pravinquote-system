@@ -623,6 +623,8 @@
             #globalMarkupDropdown,
             .item-discounts,
             .no-print,
+            .modal-overlay,
+            #quotesFolderModal,
             th button {
                 display: none !important;
             }
@@ -639,48 +641,88 @@
             }
 
             @page {
-                margin: 20mm 15mm 20mm 15mm;
+                size: A4 portrait;
+                margin: 0;
             }
 
             body {
                 background: #fff;
                 color: #000;
-                padding-top: 15px;
+                padding-top: 0;
+                margin: 0;
             }
 
             table.quote-table {
-                background: #fff;
-                box-shadow: none;
-                color: #000;
+                background: #fff !important;
+                box-shadow: none !important;
+                color: #1a1714 !important;
                 border-collapse: collapse !important;
-                border: 1px solid #000 !important;
+                border: none !important;
                 width: 100% !important;
             }
 
+            table.quote-table thead {
+                background: #1c2820 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-bottom: 2px solid #b07d2e !important;
+            }
+
             table.quote-table th {
-                background: #f0f0f0;
-                color: #000;
-                border: 1px solid #000 !important;
+                background: #1c2820 !important;
+                color: #c99b53 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border: none !important;
+                font-size: 0.72rem !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.5px !important;
+                padding: 10px 12px !important;
+                text-transform: uppercase !important;
             }
 
             table.quote-table td {
-                border: 1px solid #000 !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                border-top: none !important;
+                border-left: none !important;
+                border-right: none !important;
+                padding: 12px 10px !important;
+                vertical-align: top !important;
+                color: #1a1714 !important;
+            }
+
+            tfoot tr {
+                background: #faf8f5 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-top: 2px solid #b07d2e !important;
+                border-bottom: none !important;
             }
 
             tfoot td {
-                background: #f0f0f0;
-                color: #000;
+                background: #faf8f5 !important;
+                color: #1c2820 !important;
+                border: none !important;
+                padding: 12px !important;
+                font-weight: 700 !important;
             }
 
-            .subtotal-row td {
-                background: #fdfaf6 !important;
-                color: #000 !important;
-                font-weight: 600 !important;
-                border-bottom: 2px solid #b07d2e !important;
+            .subtotal-row {
+                display: none !important;
+            }
+
+            .room-header-row {
+                display: none !important;
+            }
+
+            .print-room-label {
+                display: block !important;
             }
 
             .quote-wrap {
                 margin-top: 0;
+                padding: 0 12mm 12mm 12mm !important;
+                box-sizing: border-box;
             }
         }
 
@@ -802,9 +844,10 @@
                 display: flex !important;
                 justify-content: space-between;
                 border-bottom: 2px solid var(--accent);
-                padding-bottom: 20px;
-                margin-bottom: 30px;
+                padding: 12mm 12mm 15px 12mm !important;
+                margin-bottom: 20px;
                 color: #000;
+                box-sizing: border-box;
             }
 
             .invoice-left {
@@ -833,15 +876,23 @@
             .print-only-cover-page {
                 display: block !important;
                 page-break-after: always;
-                text-align: center;
-                margin: 0;
-                padding: 0;
+                break-after: page;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                text-align: left;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box;
             }
             .print-only-cover-page img {
-                width: 100%;
-                max-width: 100%;
-                height: auto;
+                width: 98% !important;
+                max-width: 98% !important;
+                max-height: 98vh;
+                object-fit: contain;
                 display: block;
+                margin: 0 auto 0 0 !important;
+                padding: 0 !important;
             }
 
             .print-only-terms-pages {
@@ -849,15 +900,23 @@
             }
             .print-terms-page {
                 page-break-before: always;
-                text-align: center;
-                margin: 0;
-                padding: 0;
+                break-before: page;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                text-align: left;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box;
             }
             .print-terms-page img {
-                width: 100%;
-                max-width: 100%;
-                height: auto;
+                width: 98% !important;
+                max-width: 98% !important;
+                max-height: 98vh;
+                object-fit: contain;
                 display: block;
+                margin: 0 auto 0 0 !important;
+                padding: 0 !important;
             }
         }
     </style>
@@ -867,14 +926,15 @@
 
     <!-- Print-Only Cover Page (Visible only during print) -->
     <div class="print-only-cover-page" style="display: none;">
-        <img src="cover_brochure.png" alt="Cover Page">
+        <img src="cover-page-1.png" alt="Cover Page" style="width:100%;height:auto;display:block;">
     </div>
+
 
     <!-- Invoice Letterhead (Visible only during print) -->
     <div class="print-invoice-header">
         <div class="invoice-left">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                <img src="data:image/jpeg;base64,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" alt="Pravin Kitchens & Interiors Logo"
+                <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo"
                     style="height: 55px; border-radius: 6px; object-fit: contain;">
                 <div>
                     <h2 style="color: var(--accent); margin: 0; font-size: 1.3rem;">Pravin Kitchens &amp; Interiors</h2>
@@ -923,10 +983,6 @@
                     <td id="printCustName">—</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: bold;">Phone:</td>
-                    <td id="printCustPhone">—</td>
-                </tr>
-                <tr>
                     <td style="font-weight: bold;">Address:</td>
                     <td id="printCustAddress">—</td>
                 </tr>
@@ -937,7 +993,7 @@
     <header>
         <div class="header-inner">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="data:image/jpeg;base64,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" alt="Pravin Kitchens &amp; Interiors Logo"
+                <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo"
                     style="height: 50px; border-radius: 6px; object-fit: contain;">
                 <div>
                     <h1>Pravin Kitchens &amp; Interiors
@@ -969,22 +1025,33 @@
 
         <!-- Customer Details (Sub-Header Row) -->
         <div class="header-inner"
-            style="margin-top: 15px; width: 100%; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
+            style="margin-top: 15px; width: 100%; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div class="cust-row"
-                style="align-items: center; width: 100%; justify-content: flex-start; flex-wrap: wrap;">
+                style="align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 10px; flex: 1;">
                 <select id="docType" style="display:none;" onchange="updateDocLabels()">
                     <option value="Quotation">Quotation</option>
                     <option value="Invoice">Invoice</option>
                 </select>
                 <input id="quoteNo" placeholder="QT NO -00001"
-                    style="background:rgba(176,125,46,0.15); border-color:rgba(176,125,46,0.4); color:#f0ebe2; font-weight:600; letter-spacing:0.5px;">
+                    style="background:rgba(176,125,46,0.15); border-color:rgba(176,125,46,0.4); color:#f0ebe2; font-weight:600; letter-spacing:0.5px;"
+                    oninput="updateQuoteNoDisplays()">
                 <input id="quoteRefNo" placeholder="Quotation Ref No." style="display: none;">
                 <input id="custName" placeholder="Customer name" list="customerNames">
-                <input id="custPhone" placeholder="Phone" list="customerPhones">
                 <input id="custAddress" placeholder="Address / Area">
                 <input id="quoteDate" type="date">
                 <datalist id="customerNames"></datalist>
-                <datalist id="customerPhones"></datalist>
+            </div>
+
+            <!-- Last Saved Quote No & Current Quote No Badges -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; color: var(--muted); display: flex; align-items: center; gap: 6px;">
+                    <span>Last Saved:</span>
+                    <strong id="lastSavedQuoteBadge" style="color: var(--accent); font-weight: 700;">—</strong>
+                </div>
+                <div style="background: rgba(176,125,46,0.15); border: 1px solid rgba(176,125,46,0.35); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; color: #f0ebe2; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--accent);">Current:</span>
+                    <strong id="currentQuoteBadge" style="color: #fff; font-weight: 700;">—</strong>
+                </div>
             </div>
         </div>
     </header>
@@ -1236,11 +1303,12 @@
 
             <!-- Print-Only PDF Terms Pages -->
             <div class="print-only-terms-pages" style="display: none;">
-                <div class="print-terms-page"><img src="pdf_page1.png" alt="Terms Page 1"></div>
-                <div class="print-terms-page"><img src="pdf_page2.png" alt="Terms Page 2"></div>
-                <div class="print-terms-page"><img src="pdf_page3.png" alt="Terms Page 3"></div>
-                <div class="print-terms-page"><img src="pdf_page4.png" alt="Terms Page 4"></div>
-                <div class="print-terms-page"><img src="pdf_page5.png" alt="Terms Page 5"></div>
+                <div class="print-terms-page"><img src="invoiceimg-2.png" alt="Invoice Page 2"></div>
+                <div class="print-terms-page"><img src="invoiceimg-3.png" alt="Invoice Page 3"></div>
+                <div class="print-terms-page"><img src="invoiceimg-4.png" alt="Invoice Page 4"></div>
+                <div class="print-terms-page"><img src="invoiceimg-5.png" alt="Invoice Page 5"></div>
+                <div class="print-terms-page"><img src="invoiceimg-6.png" alt="Invoice Page 6"></div>
+                <div class="print-terms-page"><img src="invoiceimg-7.png" alt="Invoice Page 7"></div>
             </div>
 
             <div class="quote-actions">
@@ -3228,7 +3296,8 @@
                         <tr class="${l.enabled ? '' : 'line-disabled'}">
                           <td>${lineIndex++}</td>
                           <td>
-                              <div style="font-weight:600; font-size:0.85rem; color:var(--text);">${l.itemName}</div>
+                              <div class="print-room-label" style="display:none; color:#b07d2e; font-size:0.72rem; font-weight:700; text-transform:uppercase; margin-bottom:3px; letter-spacing:0.4px;">${l.roomName}</div>
+                              <div style="font-weight:600; font-size:0.85rem; color:var(--text); text-transform: uppercase;">${l.itemName}</div>
                           </td>
                           <td>
                               <div style="font-weight:600; color:var(--text);">${l.material}</div>
@@ -3294,7 +3363,8 @@
                         <tr class="${l.enabled ? '' : 'line-disabled'}">
                           <td>${lineIndex++}</td>
                           <td>
-                              <div style="font-weight:600; font-size:0.85rem; color:var(--text);">${l.itemName}</div>
+                              <div class="print-room-label" style="display:none; color:#b07d2e; font-size:0.72rem; font-weight:700; text-transform:uppercase; margin-bottom:3px; letter-spacing:0.4px;">${l.roomName}</div>
+                              <div style="font-weight:600; font-size:0.85rem; color:var(--text); text-transform: uppercase;">${l.itemName}</div>
                           </td>
                           <td>
                               <div style="font-weight:600; color:var(--text);">${l.material}</div>
@@ -3404,37 +3474,73 @@
         }
 
         // ── Auto-incrementing Quote Number & Auto-generation ────────────────────
+        function getLastSavedQuoteNo() {
+            const stored = localStorage.getItem('pks_saved_quotes');
+            if (stored) {
+                try {
+                    const saved = JSON.parse(stored);
+                    if (Array.isArray(saved) && saved.length > 0) {
+                        const sorted = [...saved].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                        return sorted[0].quoteNo || '—';
+                    }
+                } catch (e) { }
+            }
+            return 'None';
+        }
+
         function getNextQuoteNo() {
             const stored = localStorage.getItem('pks_saved_quotes');
-            let nextNum = 1;
+            let maxNum = 0;
             if (stored) {
                 try {
                     const saved = JSON.parse(stored);
                     if (Array.isArray(saved)) {
-                        let maxNum = 0;
                         saved.forEach(q => {
-                            if (q.quoteNo && q.quoteNo.startsWith('QT-')) {
-                                const numPart = parseInt(q.quoteNo.replace('QT-', ''), 10);
-                                if (!isNaN(numPart) && numPart > maxNum) {
-                                    maxNum = numPart;
+                            if (q.quoteNo) {
+                                const match = q.quoteNo.match(/\d+/);
+                                if (match) {
+                                    const numPart = parseInt(match[0], 10);
+                                    if (!isNaN(numPart) && numPart > maxNum) {
+                                        maxNum = numPart;
+                                    }
                                 }
                             }
                         });
-                        nextNum = maxNum + 1;
                     }
                 } catch (e) { }
             }
-            return 'QT-' + String(nextNum).padStart(3, '0');
+            const nextNum = maxNum + 1;
+            return 'QT NO -' + String(nextNum).padStart(5, '0');
+        }
+
+        function updateQuoteNoDisplays() {
+            const lastSaved = getLastSavedQuoteNo();
+            const lastBadge = document.getElementById('lastSavedQuoteBadge');
+            if (lastBadge) lastBadge.textContent = lastSaved;
+
+            const quoteInput = document.getElementById('quoteNo');
+            const currentBadge = document.getElementById('currentQuoteBadge');
+            if (currentBadge) {
+                currentBadge.textContent = (quoteInput && quoteInput.value.trim()) ? quoteInput.value.trim() : (quoteInput ? quoteInput.placeholder : '—');
+            }
         }
 
         function incrementQuoteNo() {
-            document.getElementById('quoteNo').value = '';
+            const quoteInput = document.getElementById('quoteNo');
+            if (quoteInput) {
+                quoteInput.value = getNextQuoteNo();
+            }
+            updateQuoteNoDisplays();
         }
 
         function setInitialQuoteNo(force = false) {
-            if (force) {
-                document.getElementById('quoteNo').value = '';
+            const quoteInput = document.getElementById('quoteNo');
+            if (!quoteInput) return;
+            const nextNo = getNextQuoteNo();
+            if (force || !quoteInput.value) {
+                quoteInput.value = nextNo;
             }
+            updateQuoteNoDisplays();
         }
         // ──────────────────────────────────────────────────────────────────
 
@@ -3513,9 +3619,9 @@
             if (pMode === 'medium') typeLabel = 'Middle / Standard';
             else if (pMode === 'economy') typeLabel = 'Economy';
             document.getElementById('printQuotationType').textContent = typeLabel;
-            document.getElementById('printCustName').textContent = document.getElementById('custName').value || '—';
-            document.getElementById('printCustPhone').textContent = document.getElementById('custPhone').value || '—';
-            document.getElementById('printCustAddress').textContent = document.getElementById('custAddress').value || '—';
+            document.getElementById('printCustName').textContent = document.getElementById('custName')?.value || '—';
+            if (document.getElementById('printCustPhone')) document.getElementById('printCustPhone').textContent = document.getElementById('custPhone')?.value || '—';
+            document.getElementById('printCustAddress').textContent = document.getElementById('custAddress')?.value || '—';
 
 
             const tokenVal = document.getElementById('payToken').value.trim();
@@ -3560,7 +3666,8 @@
 
             // Create a clean container for PDF generation
             const element = document.createElement('div');
-            element.style.padding = '35px 40px';
+            element.style.padding = '0';
+            element.style.margin = '0';
             element.style.background = '#ffffff';
             element.style.color = '#1a1714';
             element.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
@@ -3571,7 +3678,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #b07d2e; padding-bottom: 15px; margin-bottom: 25px;">
                     <div style="width: 50%;">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-                            <img src="${LOGO_BASE64}" alt="Pravin Kitchens &amp; Interiors Logo" style="height: 48px; border-radius: 6px; object-fit: contain;">
+                            <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo" style="height: 48px; border-radius: 6px; object-fit: contain;">
                             <div>
                                 <h2 style="color: #b07d2e; margin: 0; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; font-family: sans-serif;">Pravin Kitchens &amp; Interiors</h2>
                                 <p style="font-weight: 600; font-size: 0.75rem; margin: 2px 0 0 0; color: #7a6e61; text-transform: uppercase; letter-spacing: 0.5px;"></p>
@@ -3601,14 +3708,13 @@
                 })()}</td></tr>
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Date:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${formatDateDMY(quoteDate)}</td></tr>
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Customer:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${custName}</td></tr>
-                            <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; border: none;">Phone:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; border: none;">${custPhone}</td></tr>
                             <tr><td style="padding: 2px 0; font-weight: 700; color: #7a6e61; vertical-align: top; border: none;">Address:</td><td style="padding: 2px 0; font-weight: 600; color: #1a1714; text-align: right; line-height: 1.2; border: none;">${custAddress}</td></tr>
                         </table>
                     </div>
                 </div>
             `;
 
-            // Build items table HTML
+            // Build items table HTML matching screenshot design
             const roomLines = quoteLines.filter(l => l.enabled && !(l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories')));
             const accessoryLines = quoteLines.filter(l => l.enabled && (l.roomId === 'accessories' || l.roomName.toLowerCase() === 'accessories' || l.roomName.toLowerCase().includes('accessories')));
 
@@ -3620,138 +3726,78 @@
 
             const grandTotal = roomTotal + accessoryTotal;
             const offerGrandTotal = roomOfferTotal + accessoryOfferTotal;
-            const toggleEl = document.getElementById('toggleSqft');
-            const showSqftPdf = toggleEl ? toggleEl.checked : true;
 
             let rowsHTML = '';
             let pdfLineIndex = 1;
-            let lastPdfRoomName = '';
 
-            if (roomLines.length > 0) {
-                roomLines.forEach(l => {
-                    if (l.roomName !== lastPdfRoomName) {
-                        rowsHTML += `
-                            <tr style="background: #fdfaf6; border-bottom: 1px solid #e0d6c8;">
-                                <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0) + 2}" style="padding: 8px 10px; font-weight: bold; font-size: 0.8rem; color: #b07d2e; text-transform: uppercase; border: 1px solid #e0d6c8; text-align: left;">
-                                    🏢 ${l.roomName}
-                                </td>
-                            </tr>
-                        `;
-                        lastPdfRoomName = l.roomName;
-                    }
-                    const displayedAmount = l.amount * (1 + globalIncreasePercentage / 100);
-                    const discountPct = l.discountPercentage || 0;
-                    const offerPrice = displayedAmount * (1 - discountPct / 100);
-                    const sizeText = l.showSqft ? l.size : '—';
-                    const sqftText = l.showSqft ? l.sqft : '—';
-                    const rateText = l.showSqft ? `₹${l.rate.toFixed(2)}` : '—';
+            const allActiveLines = quoteLines.filter(l => l.enabled);
+            allActiveLines.forEach(l => {
+                const displayedAmount = l.amount * (1 + globalIncreasePercentage / 100);
+                const discountPct = l.discountPercentage || 0;
+                const offerPrice = displayedAmount * (1 - discountPct / 100);
+                const sizeText = (l.showSqft !== false && l.size) ? l.size : (l.sqft ? `${l.sqft} sqft` : '—');
 
-                    rowsHTML += `
-                        <tr style="border-bottom: 1px solid #e0d6c8;">
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: center; color: #1a1714; border: 1px solid #e0d6c8;">${pdfLineIndex++}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #1a1714; border: 1px solid #e0d6c8;">
-                                <div style="font-weight: 600; font-size: 0.8rem; color: #1a1714;">${l.itemName}</div>
-                            </td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; border: 1px solid #e0d6c8;">
-                                <div style="font-weight: 600; color: #1a1714; font-size: 0.78rem;">${l.material}</div>
-                                ${l.specifications ? `<div style="font-size: 0.68rem; color: #7a6e61; margin-top: 2px; line-height: 1.3;">${l.specifications}</div>` : ''}
-                            </td>
-                            ${showSqftPdf ? `
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; font-family: monospace; border: 1px solid #e0d6c8;">${sizeText}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${sqftText}</td>
-                            ` : ''}
-                            ${showRate ? `<td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${rateText}</td>` : ''}
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">₹${displayedAmount.toFixed(2)}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 600; border: 1px solid #e0d6c8;">₹${offerPrice.toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
+                // Extract bullet items from material and specifications
+                let matBullets = [];
+                if (l.material) {
+                    matBullets.push(l.material);
+                }
+                if (l.specifications) {
+                    const rawSpecs = l.specifications.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+                    rawSpecs.forEach(sp => {
+                        const clean = sp.replace(/^[•\-\*]\s*/, '').trim();
+                        if (clean && !matBullets.includes(clean)) {
+                            matBullets.push(clean);
+                        }
+                    });
+                }
+                const matBulletsHtml = matBullets.map(b => `<div style="margin-bottom: 2px;">• ${b}</div>`).join('');
 
                 rowsHTML += `
-                    <tr style="background: #fdfaf6; font-weight: 600; border-bottom: 2px solid #b07d2e;">
-                        <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0)}" style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">Rooms Subtotal</td>
-                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">₹${roomTotal.toFixed(2)}</td>
-                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 700; border: 1px solid #e0d6c8;">₹${roomOfferTotal.toFixed(2)}</td>
+                    <tr style="border-bottom: 1px solid #e0e0e0; vertical-align: top;">
+                        <td style="padding: 12px 8px; font-size: 0.82rem; color: #777; font-weight: 600; text-align: center; border: none; vertical-align: top;">
+                            ${pdfLineIndex++}
+                        </td>
+                        <td style="padding: 12px 10px; vertical-align: top; border: none;">
+                            <div style="color: #b07d2e; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.4px;">${l.roomName}</div>
+                            <div style="color: #111; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; line-height: 1.3;">${l.itemName}</div>
+                        </td>
+                        <td style="padding: 12px 10px; font-size: 0.75rem; color: #1a1714; vertical-align: top; line-height: 1.45; border: none;">
+                            ${matBulletsHtml || `• ${l.material || 'Standard'}`}
+                        </td>
+                        <td style="padding: 12px 10px; font-size: 0.78rem; color: #1a1714; font-weight: 600; vertical-align: top; font-family: monospace, sans-serif; border: none;">
+                            ${sizeText}
+                        </td>
+                        <td style="padding: 12px 10px; font-size: 0.82rem; color: #1a1714; font-weight: 600; text-align: right; vertical-align: top; font-family: monospace, sans-serif; border: none;">
+                            ₹${offerPrice.toFixed(2)}
+                        </td>
                     </tr>
                 `;
-            }
-
-            if (accessoryLines.length > 0) {
-                lastPdfRoomName = '';
-                accessoryLines.forEach(l => {
-                    if (l.roomName !== lastPdfRoomName) {
-                        rowsHTML += `
-                            <tr style="background: #fdfaf6; border-bottom: 1px solid #e0d6c8;">
-                                <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0) + 2}" style="padding: 8px 10px; font-weight: bold; font-size: 0.8rem; color: #b07d2e; text-transform: uppercase; border: 1px solid #e0d6c8; text-align: left;">
-                                    🏢 ${l.roomName}
-                                </td>
-                            </tr>
-                        `;
-                        lastPdfRoomName = l.roomName;
-                    }
-                    const displayedAmount = l.amount * (1 + globalIncreasePercentage / 100);
-                    const discountPct = l.discountPercentage || 0;
-                    const offerPrice = displayedAmount * (1 - discountPct / 100);
-                    const sizeText = l.showSqft ? l.size : '—';
-                    const sqftText = l.showSqft ? l.sqft : '—';
-                    const rateText = l.showSqft ? `₹${l.rate.toFixed(2)}` : '—';
-
-                    rowsHTML += `
-                        <tr style="border-bottom: 1px solid #e0d6c8;">
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: center; color: #1a1714; border: 1px solid #e0d6c8;">${pdfLineIndex++}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #1a1714; border: 1px solid #e0d6c8;">
-                                <div style="font-weight: 600; font-size: 0.8rem; color: #1a1714;">${l.itemName}</div>
-                            </td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; border: 1px solid #e0d6c8;">
-                                <div style="font-weight: 600; color: #1a1714; font-size: 0.78rem;">${l.material}</div>
-                                ${l.specifications ? `<div style="font-size: 0.68rem; color: #7a6e61; margin-top: 2px; line-height: 1.3;">${l.specifications}</div>` : ''}
-                            </td>
-                            ${showSqftPdf ? `
-                            <td style="padding: 8px 10px; font-size: 0.78rem; color: #7a6e61; font-family: monospace; border: 1px solid #e0d6c8;">${sizeText}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${sqftText}</td>
-                            ` : ''}
-                            ${showRate ? `<td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">${rateText}</td>` : ''}
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #1a1714; font-weight: 500; border: 1px solid #e0d6c8;">₹${displayedAmount.toFixed(2)}</td>
-                            <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 600; border: 1px solid #e0d6c8;">₹${offerPrice.toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-
-                rowsHTML += `
-                    <tr style="background: #fdfaf6; font-weight: 600; border-bottom: 2px solid #b07d2e;">
-                        <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0)}" style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">Accessories Subtotal</td>
-                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #7a6e61; border: 1px solid #e0d6c8;">₹${accessoryTotal.toFixed(2)}</td>
-                        <td style="padding: 8px 10px; font-size: 0.78rem; text-align: right; color: #b07d2e; font-weight: 700; border: 1px solid #e0d6c8;">₹${accessoryOfferTotal.toFixed(2)}</td>
-                    </tr>
-                `;
-            }
+            });
 
             let tableHTML = `
-                <div style="margin-top: 20px;">
-                    <h3 style="color: #b07d2e; font-size: 1.05rem; margin-bottom: 8px; border-bottom: 1px solid #e0d6c8; padding-bottom: 4px; font-weight: 600; font-family: sans-serif;">Quote Summary</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 8px; border: 1px solid #e0d6c8;">
-                        <thead>
-                            <tr style="background: #fdfaf6;">
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: center; width: 5%; border: 1px solid #e0d6c8;">#</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 25%; border: 1px solid #e0d6c8;">Room</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 35%; border: 1px solid #e0d6c8;">Material</th>
-                                ${showSqftPdf ? `
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: left; width: 15%; border: 1px solid #e0d6c8;">Size</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Sq.Ft</th>
-                                ` : ''}
-                                ${showRate ? `<th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Rate</th>` : ''}
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Amount</th>
-                                <th style="padding: 8px 10px; font-size: 0.78rem; font-weight: 700; color: #1c2820; text-align: right; width: 10%; border: 1px solid #e0d6c8;">Offer Price</th>
+                <div style="margin-top: 25px;">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #1a1714; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">Quote Summary</h3>
+                        <div style="flex: 1; height: 1px; background: #cbb89d;"></div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; border: none;">
+                        <thead style="background: #1c2820; border-bottom: 2px solid #b07d2e;">
+                            <tr>
+                                <th style="padding: 10px 8px; font-size: 0.72rem; font-weight: 700; color: #c99b53; text-align: center; width: 6%; letter-spacing: 0.5px; border: none;">S.NO</th>
+                                <th style="padding: 10px 12px; font-size: 0.72rem; font-weight: 700; color: #c99b53; text-align: left; width: 26%; letter-spacing: 0.5px; border: none;">ITEM</th>
+                                <th style="padding: 10px 12px; font-size: 0.72rem; font-weight: 700; color: #c99b53; text-align: left; width: 38%; letter-spacing: 0.5px; border: none;">MATERIAL</th>
+                                <th style="padding: 10px 12px; font-size: 0.72rem; font-weight: 700; color: #c99b53; text-align: left; width: 16%; letter-spacing: 0.5px; border: none;">SIZE</th>
+                                <th style="padding: 10px 12px; font-size: 0.72rem; font-weight: 700; color: #c99b53; text-align: right; width: 14%; letter-spacing: 0.5px; border: none;">AMOUNT</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${rowsHTML}
                         </tbody>
                         <tfoot>
-                            <tr style="background: #fdfaf6; font-weight: 700; border-top: 2px solid #b07d2e;">
-                                <td colspan="${(showSqftPdf ? 5 : 3) + (showRate ? 1 : 0)}" style="padding: 10px; font-size: 0.82rem; text-align: right; color: #1c2820; border: 1px solid #e0d6c8;">Grand Total (Rooms + Accessories)</td>
-                                <td style="padding: 10px; font-size: 0.85rem; text-align: right; color: #7a6e61; font-weight: 600; text-decoration: line-through; border: 1px solid #e0d6c8;">₹${grandTotal.toFixed(2)}</td>
-                                <td style="padding: 10px; font-size: 0.85rem; text-align: right; color: #b07d2e; font-weight: 700; border: 1px solid #e0d6c8;">₹${offerGrandTotal.toFixed(2)}</td>
+                            <tr style="background: #faf8f5; font-weight: 700; border-top: 2px solid #b07d2e;">
+                                <td colspan="4" style="padding: 12px; font-size: 0.85rem; text-align: right; color: #1c2820; border: none;">Grand Total</td>
+                                <td style="padding: 12px; font-size: 0.9rem; text-align: right; color: #b07d2e; font-weight: 700; border: none; font-family: monospace, sans-serif;">₹${offerGrandTotal.toFixed(2)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -3796,35 +3842,44 @@
                 </div>
             `;
 
+            // Cover page followed by invoice
             let coverPageHTML = `
-                <div style="text-align: center; margin: 0; padding: 0;">
-                    <img src="cover_brochure.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                <div style="text-align: left; margin: 0; padding: 0; width: 100%;">
+                    <img src="cover-page-1.png" style="width: 98%; max-width: 98%; height: auto; display: block; margin: 0 auto 0 0;" />
+                </div>
+            `;
+
+            let invoiceHTML = `
+                <div style="page-break-before: always; padding: 35px 40px; box-sizing: border-box;">
+                    ${letterheadHTML}
+                    ${tableHTML}
+                    ${specsAndTermsHTML}
+                    ${footerHTML}
                 </div>
             `;
 
             let termsImagesHTML = `
-                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
-                    <img src="pdf_page1.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                <div style="page-break-before: always; margin: 0; padding: 0; text-align: left; width: 100%;">
+                    <img src="invoiceimg-2.png" style="width: 98%; max-width: 98%; height: auto; display: block; margin: 0 auto 0 0;" />
                 </div>
-                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
-                    <img src="pdf_page2.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                <div style="page-break-before: always; margin: 0; padding: 0; text-align: left; width: 100%;">
+                    <img src="invoiceimg-3.png" style="width: 98%; max-width: 98%; height: auto; display: block; margin: 0 auto 0 0;" />
                 </div>
-                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
-                    <img src="pdf_page3.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                <div style="page-break-before: always; margin: 0; padding: 0; text-align: left; width: 100%;">
+                    <img src="invoiceimg-4.png" style="width: 98%; max-width: 98%; height: auto; display: block; margin: 0 auto 0 0;" />
                 </div>
-                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
-                    <img src="pdf_page4.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                <div style="page-break-before: always; margin: 0; padding: 0; text-align: left; width: 100%;">
+                    <img src="invoiceimg-5.png" style="width: 98%; max-width: 98%; height: auto; display: block; margin: 0 auto 0 0;" />
                 </div>
-                <div style="page-break-before: always; text-align: center; margin: 0; padding: 0;">
-                    <img src="pdf_page5.png" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+                <div style="page-break-before: always; margin: 0; padding: 0; text-align: left; width: 100%;">
+                    <img src="invoiceimg-6.png" style="width: 98%; max-width: 98%; height: auto; display: block; margin: 0 auto 0 0;" />
+                </div>
+                <div style="page-break-before: always; margin: 0; padding: 0; text-align: left; width: 100%;">
+                    <img src="invoiceimg-7.png" style="width: 98%; max-width: 98%; height: auto; display: block; margin: 0 auto 0 0;" />
                 </div>
             `;
 
-            element.innerHTML = coverPageHTML + 
-                               `<div style="page-break-before: always;">` + 
-                               letterheadHTML + tableHTML + specsAndTermsHTML + footerHTML + 
-                               `</div>` + 
-                               termsImagesHTML;
+            element.innerHTML = coverPageHTML + invoiceHTML + termsImagesHTML;
 
             // Ensure container is attached to DOM for full canvas rendering
             element.style.position = 'fixed';
@@ -3834,11 +3889,12 @@
 
             // html2pdf options
             const opt = {
-                margin: [10, 12, 10, 12], // top, left, bottom, right in mm
+                margin: 0,
                 filename: `${docType}_${quoteNo}_${custName}.pdf`.replace(/[^a-z0-9]/gi, '_').toLowerCase(),
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2.5, useCORS: true, allowTaint: true, letterRendering: true, backgroundColor: '#ffffff' },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] }
             };
 
             // Run html2pdf download with safe DOM cleanup
@@ -3871,10 +3927,10 @@
         function saveCurrentQuote() {
             const docType = document.getElementById('docType').value;
             const quoteNo = document.getElementById('quoteNo').value.trim();
-            const quoteRefNo = document.getElementById('quoteRefNo').value.trim();
-            const custName = document.getElementById('custName').value.trim();
-            const custPhone = document.getElementById('custPhone').value.trim();
-            const custAddress = document.getElementById('custAddress').value.trim();
+            const quoteRefNo = document.getElementById('quoteRefNo')?.value.trim() || '';
+            const custName = document.getElementById('custName')?.value.trim() || '';
+            const custPhone = document.getElementById('custPhone')?.value.trim() || '';
+            const custAddress = document.getElementById('custAddress')?.value.trim() || '';
             const quoteDate = document.getElementById('quoteDate').value;
 
             if (!quoteNo) {
@@ -3931,6 +3987,7 @@
                 alert("Quote saved successfully!");
             }
             initCustomerAutofill();
+            updateQuoteNoDisplays();
         }
 
         function openSavedQuotesModal() {
@@ -4023,7 +4080,7 @@
             document.getElementById('quoteNo').value = quote.quoteNo;
             document.getElementById('quoteRefNo').value = quote.quoteRefNo || '';
             document.getElementById('custName').value = quote.custName || '';
-            document.getElementById('custPhone').value = quote.custPhone || '';
+            if (document.getElementById('custPhone')) document.getElementById('custPhone').value = quote.custPhone || '';
             document.getElementById('custAddress').value = quote.custAddress || '';
             document.getElementById('quoteDate').value = quote.quoteDate || '';
 
@@ -4049,6 +4106,7 @@
 
             renderQuote();
             updateDocLabels();
+            updateQuoteNoDisplays();
         }
 
         function deleteSavedQuote(quoteId) {
