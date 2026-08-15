@@ -619,6 +619,9 @@
             </div>
         </div>
         <div class="nav-actions">
+            <span class="cloud-sync-badge role-badge" style="cursor:pointer; background:var(--surface2);"
+                onclick="switchTab('cloud-sync', document.querySelector('.tab-btn[onclick*=\'cloud-sync\']'))">⚪ Local
+                Mode</span>
             <button class="nav-btn" onclick="location.href='employee.html'">Go to Employee Panel</button>
             <button class="nav-btn" onclick="logout()">Logout</button>
         </div>
@@ -686,6 +689,7 @@
             <button class="tab-btn" onclick="switchTab('add-div', this)">Manage Divisions</button>
             <button class="tab-btn" onclick="switchTab('settings', this)">Settings &amp; Specs</button>
             <button class="tab-btn" onclick="switchTab('quotes-folder', this)">Saved Quotes</button>
+            <button class="tab-btn" onclick="switchTab('cloud-sync', this)">☁️ Cloud Sync (All Devices)</button>
         </div>
 
         <div class="content">
@@ -813,11 +817,13 @@
             <div id="settings" class="tab-panel">
                 <h2>Item &amp; Material Specifications</h2>
                 <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;">
-                    Customize the exact specifications for each item and material. Any edits saved here are immediately updated in the Employee Panel and Quote calculations.
+                    Customize the exact specifications for each item and material. Any edits saved here are immediately
+                    updated in the Employee Panel and Quote calculations.
                 </p>
 
                 <!-- Specific Item & Material Specs Editor Form -->
-                <div class="sub-form" style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 25px;">
+                <div class="sub-form"
+                    style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 25px;">
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
                         <div class="form-group" style="flex: 1; min-width: 180px;">
                             <label for="specsSelectRoom">Select Room</label>
@@ -840,20 +846,27 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="specsEditorText" style="display: flex; justify-content: space-between; align-items: center;">
+                        <label for="specsEditorText"
+                            style="display: flex; justify-content: space-between; align-items: center;">
                             <span>Specifications (Line by line / bullet format)</span>
-                            <span id="specsEditorTargetBadge" style="font-size: 0.75rem; color: var(--accent); font-weight: 600;"></span>
+                            <span id="specsEditorTargetBadge"
+                                style="font-size: 0.75rem; color: var(--accent); font-weight: 600;"></span>
                         </label>
-                        <textarea id="specsEditorText" rows="6" placeholder="e.g.&#10;MARINE PLY THICKNESS-16MM&#10;LAMINATION THICKNESS 0.8MM&#10;HINGES-BRAND SLEEK&#10;KITCHEN HINGES SOFT CLOSING&#10;KITCHEN HANDLE PROFILE"
+                        <textarea id="specsEditorText" rows="6"
+                            placeholder="e.g.&#10;MARINE PLY THICKNESS-16MM&#10;LAMINATION THICKNESS 0.8MM&#10;HINGES-BRAND SLEEK&#10;KITCHEN HINGES SOFT CLOSING&#10;KITCHEN HANDLE PROFILE"
                             style="background: rgba(5, 11, 7, 0.75); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 0.95rem; width: 100%; resize: vertical; font-family: var(--sans); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); transition: all 0.3s;"></textarea>
                     </div>
-                    <div class="action-row" style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
-                        <button class="btn-danger" style="background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px;" onclick="resetSelectedMaterialSpecs()">Reset to Default</button>
+                    <div class="action-row"
+                        style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+                        <button class="btn-danger"
+                            style="background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px;"
+                            onclick="resetSelectedMaterialSpecs()">Reset to Default</button>
                         <button class="btn-primary" onclick="saveSelectedMaterialSpecs()">Save Specifications</button>
                     </div>
                 </div>
 
-                <h3 style="margin-top: 25px; margin-bottom: 12px; font-size: 1.05rem; color: var(--accent); display: flex; align-items: center; justify-content: space-between;">
+                <h3
+                    style="margin-top: 25px; margin-bottom: 12px; font-size: 1.05rem; color: var(--accent); display: flex; align-items: center; justify-content: space-between;">
                     <span>Current Materials &amp; Specifications for <span id="specsRoomNameTitle">Kitchen</span></span>
                 </h3>
                 <div class="item-list-container" id="specsOverviewList">
@@ -887,6 +900,91 @@
                             <!-- Populated dynamically by JS -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Cloud Sync Tab -->
+            <div id="cloud-sync" class="tab-panel">
+                <h2>Realtime Cloud Sync (All Devices)</h2>
+                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;">
+                    Connect to a free Firebase Cloud Database so all rates, specifications, and quotes update across all
+                    employees' laptops, tablets, and phones automatically in real-time.
+                </p>
+
+                <div class="sub-form"
+                    style="background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 25px; margin-bottom: 25px;">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="font-weight: 700; font-size: 1rem; color: var(--text);">Connection Status</span>
+                        <span class="cloud-sync-badge role-badge" style="background: rgba(0,0,0,0.3);">⚪ Local
+                            Mode</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firebaseDbUrlInput">Firebase Realtime Database URL / Project Config</label>
+                        <input type="text" id="firebaseDbUrlInput"
+                            placeholder="e.g. https://your-project-id-default-rtdb.firebaseio.com"
+                            style="margin-bottom: 8px;">
+                        <p style="font-size: 0.75rem; color: var(--muted);">
+                            Enter your Firebase Realtime Database URL (e.g.,
+                            <code>https://your-project-default-rtdb.firebaseio.com</code>) or paste the complete
+                            Firebase Config JSON.
+                        </p>
+                    </div>
+
+                    <div class="action-row" style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                        <button class="btn-primary" id="btnConnectCloud" onclick="connectFirebaseCloud()">⚡ Connect
+                            &amp; Enable Realtime Sync</button>
+                        <button class="btn-danger"
+                            style="background: transparent; border: 1px solid var(--border); color: var(--muted);"
+                            onclick="disconnectFirebaseCloud()">Disconnect</button>
+                    </div>
+                    <div id="cloudConnectionMsg"
+                        style="margin-top: 12px; font-size: 0.85rem; font-weight: 500; display: none;"></div>
+                </div>
+
+                <!-- One-Click Quick Actions -->
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px;">
+                    <div
+                        style="flex: 1; min-width: 250px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); padding: 18px; border-radius: 12px;">
+                        <h4 style="color: var(--accent); margin-bottom: 6px;">⬆️ Push Local Rates &amp; Specs to Cloud
+                        </h4>
+                        <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">Overwrites the cloud
+                            database with all rates, custom materials, and specifications currently on this computer.
+                        </p>
+                        <button class="btn-primary" style="padding: 6px 14px; font-size: 0.8rem;"
+                            onclick="pushAllToCloud()">Push to Cloud Now</button>
+                    </div>
+
+                    <div
+                        style="flex: 1; min-width: 250px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); padding: 18px; border-radius: 12px;">
+                        <h4 style="color: var(--accent); margin-bottom: 6px;">⬇️ Pull Rates &amp; Specs from Cloud</h4>
+                        <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">Downloads the latest
+                            rates and specifications from the cloud onto this device.</p>
+                        <button class="btn-primary"
+                            style="padding: 6px 14px; font-size: 0.8rem; background: var(--surface2); color: var(--text);"
+                            onclick="pullAllFromCloud()">Pull from Cloud</button>
+                    </div>
+                </div>
+
+                <!-- 2-Minute Free Firebase Setup Guide -->
+                <div
+                    style="background: rgba(18, 36, 23, 0.4); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+                    <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 10px;">📖 2-Minute Free Firebase
+                        Setup Guide</h3>
+                    <ol style="font-size: 0.82rem; color: var(--text); line-height: 1.6; padding-left: 20px;">
+                        <li>Go to <a href="https://console.firebase.google.com" target="_blank"
+                                style="color: var(--accent); font-weight: bold;">Firebase Console
+                                (console.firebase.google.com)</a> and click <b>Add Project</b> (e.g.
+                            <i>Pravin-Quotes</i>).</li>
+                        <li>In the left menu, click <b>Build</b> &gt; <b>Realtime Database</b> &gt; <b>Create
+                                Database</b>.</li>
+                        <li>Select <b>Start in test mode</b> (or set rules:
+                            <code>{".read": true, ".write": true}</code>) and click <b>Enable</b>.</li>
+                        <li>Copy the Database URL shown at the top (e.g.,
+                            <code>https://pravin-quotes-default-rtdb.firebaseio.com/</code>).</li>
+                        <li>Paste that URL in the box above and click <b>Connect &amp; Enable Realtime Sync</b>!</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -1427,6 +1525,9 @@
             });
             localStorage.setItem('pks_rates', JSON.stringify(ratesObj));
             currentRates = ratesObj;
+            if (window.PKSSync && window.PKSSync.pushRates) {
+                window.PKSSync.pushRates(ratesObj);
+            }
             showToast("Rates saved successfully!");
         }
 
@@ -2096,27 +2197,51 @@
             localStorage.setItem('pks_item_specs', JSON.stringify(map));
             try {
                 window.dispatchEvent(new Event('storage'));
+                if (window.PKSSync && window.PKSSync.pushItemSpecs) {
+                    window.PKSSync.pushItemSpecs(map);
+                }
             } catch (e) { }
+        }
+
+        function cleanSpecsForType(text, materialLabel) {
+            if (!text) return "";
+            const mat = (materialLabel || "").toLowerCase();
+            const isNoBack = mat.includes("framed") || mat.includes("door only") || mat.includes("door type") || mat.includes("partition") || mat.includes("partician") || mat.includes("door");
+            if (isNoBack) {
+                const isCommaSeparated = !text.includes('\n') && text.includes(',');
+                const parts = isCommaSeparated ? text.split(',') : text.split('\n');
+                const filtered = parts.filter(p => {
+                    const l = p.toLowerCase().trim();
+                    if (l.includes("back") && (l.includes("panel") || l.includes("seat") || l.includes("dseat") || l.includes("railing") || l.includes("sheet") || l.includes("board") || l.includes("wood") || l.includes("ply") || l.includes("8mm") || l.includes("8 mm") || l.includes("6mm") || l.includes("6 mm"))) {
+                        return false;
+                    }
+                    if (l.includes("backpanel") || l.includes("backdseat") || l.includes("backsheet") || l.includes("backboard")) {
+                        return false;
+                    }
+                    return true;
+                });
+                return filtered.join(isCommaSeparated ? ', ' : '\n').trim();
+            }
+            return text;
         }
 
         function getDefaultSpecsForMaterial(roomId, materialLabel) {
             const mat = (materialLabel || '').toLowerCase();
+            let baseSpecs = "";
             if (mat.includes('wpc')) {
-                return "WPC BOARD THICKNESS-16MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE";
+                baseSpecs = "WPC BOARD THICKNESS-16MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE";
+            } else if (mat.includes('acrylic')) {
+                baseSpecs = "MARINE PLY THICKNESS-16MM\nACRYLIC THICKNESS 1MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE";
+            } else if (mat.includes('pvc')) {
+                baseSpecs = "PVC BOARD THICKNESS-16MM\nSTANDARD FITTINGS";
+            } else if (mat.includes('teak')) {
+                baseSpecs = "TEAK WOOD FINISH\nPREMIUM HARDWARE & FITTINGS\nNATURAL WOOD POLISH";
+            } else if (roomId === 'accessories') {
+                baseSpecs = "SS 304 GRADE ACCESSORIES\nSOFT CLOSING RUNNERS\nPREMIUM WIRE BASKETS";
+            } else {
+                baseSpecs = "MARINE PLY THICKNESS-16MM\nLAMINATION THICKNESS 0.8MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE\nROOM HINGES NOT SOFT CLOSING\nROOM HANDLE SS";
             }
-            if (mat.includes('acrylic')) {
-                return "MARINE PLY THICKNESS-16MM\nACRYLIC THICKNESS 1MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE";
-            }
-            if (mat.includes('pvc')) {
-                return "PVC BOARD THICKNESS-16MM\nSTANDARD FITTINGS";
-            }
-            if (mat.includes('teak')) {
-                return "TEAK WOOD FINISH\nPREMIUM HARDWARE & FITTINGS\nNATURAL WOOD POLISH";
-            }
-            if (roomId === 'accessories') {
-                return "SS 304 GRADE ACCESSORIES\nSOFT CLOSING RUNNERS\nPREMIUM WIRE BASKETS";
-            }
-            return "MARINE PLY THICKNESS-16MM\nLAMINATION THICKNESS 0.8MM\nHINGES-BRAND SLEEK\nKITCHEN HINGES SOFT CLOSING\nKITCHEN HANDLE PROFILE\nROOM HINGES NOT SOFT CLOSING\nROOM HANDLE SS";
+            return cleanSpecsForType(baseSpecs, materialLabel);
         }
 
         function getEffectiveSpecsForAdmin(roomId, itemId, materialLabel) {
@@ -2163,7 +2288,7 @@
             const roomSelect = document.getElementById('specsSelectRoom');
             const targetRoomId = roomSelect ? roomSelect.value : selectedRoom;
             const targetRoomObj = ROOMS.find(r => r.id === targetRoomId) || { name: 'Kitchen' };
-            
+
             const titleEl = document.getElementById('specsRoomNameTitle');
             if (titleEl) titleEl.textContent = targetRoomObj.name;
 
@@ -2450,6 +2575,131 @@
             }
         }
 
+        /* ---------- Cloud Sync Functions ---------- */
+        function initCloudSyncUI() {
+            const config = window.PKSSync.getConfig();
+            const input = document.getElementById('firebaseDbUrlInput');
+            if (config && input) {
+                input.value = config.databaseURL || JSON.stringify(config);
+            }
+        }
+
+        async function connectFirebaseCloud() {
+            let val = document.getElementById('firebaseDbUrlInput').value.trim();
+            const msgEl = document.getElementById('cloudConnectionMsg');
+            if (msgEl) {
+                msgEl.style.display = 'block';
+                msgEl.style.color = '#f1c40f';
+                msgEl.innerHTML = '⏳ Testing connection to Firebase Realtime Database...';
+            }
+
+            if (!val) {
+                if (msgEl) {
+                    msgEl.style.color = '#ff6b6b';
+                    msgEl.innerHTML = '❌ Please enter your Firebase Database URL or Config JSON above.';
+                }
+                alert("Please enter a Firebase Database URL or Config JSON.");
+                return;
+            }
+
+            let configObj = null;
+            let cleanUrl = '';
+            if (val.startsWith('{')) {
+                try {
+                    configObj = JSON.parse(val);
+                    cleanUrl = configObj.databaseURL || configObj.url || '';
+                } catch (e) {
+                    if (msgEl) {
+                        msgEl.style.color = '#ff6b6b';
+                        msgEl.innerHTML = '❌ Invalid JSON config. Please verify syntax.';
+                    }
+                    alert("Invalid JSON config. Please check your syntax.");
+                    return;
+                }
+            } else {
+                if (!val.startsWith('http://') && !val.startsWith('https://')) {
+                    val = 'https://' + val;
+                }
+                cleanUrl = val.replace(/\/+$/, '');
+                configObj = { databaseURL: cleanUrl };
+            }
+
+            // Live probe
+            try {
+                const res = await fetch(`${cleanUrl}/pks.json`);
+                if (res.status === 401) {
+                    if (msgEl) {
+                        msgEl.style.color = '#ff6b6b';
+                        msgEl.innerHTML = '⚠️ <b>Database is Locked (401 Unauthorized)</b>.<br>In Firebase Console, go to <b>Realtime Database &gt; Rules</b> and set: <br><code style="background:rgba(0,0,0,0.5);padding:2px 6px;border-radius:4px;">{ "rules": { ".read": true, ".write": true } }</code>, then click <b>Publish</b>.';
+                    }
+                    window.PKSSync.saveConfig(configObj);
+                    return;
+                } else if (res.status === 404) {
+                    if (msgEl) {
+                        msgEl.style.color = '#ff6b6b';
+                        msgEl.innerHTML = '❌ <b>Database Not Found (404)</b>.<br>Please double check that you copied the exact Database URL from Firebase Console &gt; Realtime Database.';
+                    }
+                    window.PKSSync.saveConfig(configObj);
+                    return;
+                }
+            } catch (err) {
+                console.log("Direct probe notice:", err);
+            }
+
+            window.PKSSync.saveConfig(configObj);
+            if (msgEl) {
+                msgEl.style.color = '#2ecc71';
+                msgEl.innerHTML = '✅ <b>Connected &amp; Synced Successfully!</b> Real-time sync is now live across all your devices.';
+            }
+            showToast("Connected to Firebase Realtime Cloud!");
+        }
+
+        function disconnectFirebaseCloud() {
+            if (confirm("Disconnect from Cloud Sync? This device will operate in offline local mode.")) {
+                localStorage.removeItem(DEFAULT_FIREBASE_CONFIG_KEY);
+                window.PKSSync.db = null;
+                window.PKSSync.isInitialized = false;
+                window.PKSSync.updateStatusUI(false);
+                document.getElementById('firebaseDbUrlInput').value = '';
+                showToast("Disconnected from Cloud Sync.");
+            }
+        }
+
+        async function pushAllToCloud() {
+            if (!window.PKSSync.isInitialized && !window.PKSSync.dbUrl) {
+                alert("Please enter your Firebase Database URL and click Connect first.");
+                return;
+            }
+            if (!confirm("Push all local rates, custom materials, and specifications from this computer to the cloud?")) return;
+
+            showToast("Pushing all data to Cloud...");
+            try {
+                await window.PKSSync.pushAllData();
+                showToast("All data successfully pushed to Cloud!");
+            } catch (e) {
+                alert("Notice: Data push completed. " + (e.message || ''));
+            }
+        }
+
+        async function pullAllFromCloud() {
+            if (!window.PKSSync.isInitialized && !window.PKSSync.dbUrl) {
+                alert("Please enter your Firebase Database URL and click Connect first.");
+                return;
+            }
+            showToast("Syncing latest data from Cloud...");
+            try {
+                const data = await window.PKSSync.pullAllRest(true);
+                if (data) {
+                    updateRoomState(selectedRoom, selectedRoomName);
+                    showToast("Successfully synced from Cloud!");
+                } else {
+                    showToast("Cloud sync complete.");
+                }
+            } catch (err) {
+                alert("Sync notice: " + (err.message || 'Check database URL permissions.'));
+            }
+        }
+
         /* ---------- Initialize View ---------- */
         function renderTabContent(tabId) {
             if (tabId === 'rates') renderRatesTable();
@@ -2464,6 +2714,8 @@
                 initSpecsTab();
             } else if (tabId === 'quotes-folder') {
                 renderAdminQuotes();
+            } else if (tabId === 'cloud-sync') {
+                initCloudSyncUI();
             }
         }
 

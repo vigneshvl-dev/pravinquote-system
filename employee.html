@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pravin Kitchens &amp; Interiors — Employee Quote System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-sync.js"></script>
     <style>
         :root {
             --bg: #f2ede6;
@@ -1011,6 +1013,10 @@
 
             <!-- Top Right Page Actions -->
             <div style="display: flex; gap: 10px; align-items: center;">
+                <span class="cloud-sync-badge role-badge" style="background: rgba(255,255,255,0.08); font-size: 0.75rem; padding: 4px 8px; border-radius: 6px;">⚪ Local Mode</span>
+                <button id="adminPanelNavBtn" class="back-btn"
+                    style="display:none; padding: 8px 14px; font-size: 0.8rem; border-radius: 8px; font-weight: 600; cursor: pointer; background: var(--accent); border: none; color: #ffffff !important;"
+                    onclick="location.href='admin.html'">Admin Panel</button>
                 <button class="back-btn"
                     style="background: var(--accent); border: none; padding: 0; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 40px; height: 40px; min-width: 40px;"
                     onclick="openSavedQuotesModal()" title="Saved Quotes Folder">📂</button>
@@ -1376,6 +1382,10 @@
         const role = sessionStorage.getItem('pks_role');
         if (!role) {
             location.href = 'index.html';
+        }
+        if (role === 'admin') {
+            const adminBtn = document.getElementById('adminPanelNavBtn');
+            if (adminBtn) adminBtn.style.display = 'inline-flex';
         }
         const showRate = (role === 'admin');
 
@@ -2912,9 +2922,32 @@
             }
         }
 
+        function cleanSpecsForType(text, materialLabel) {
+            if (!text) return "";
+            const mat = (materialLabel || "").toLowerCase();
+            const isNoBack = mat.includes("framed") || mat.includes("door only") || mat.includes("door type") || mat.includes("partition") || mat.includes("partician") || mat.includes("door");
+            if (isNoBack) {
+                const isCommaSeparated = !text.includes('\n') && text.includes(',');
+                const parts = isCommaSeparated ? text.split(',') : text.split('\n');
+                const filtered = parts.filter(p => {
+                    const l = p.toLowerCase().trim();
+                    if (l.includes("back") && (l.includes("panel") || l.includes("seat") || l.includes("dseat") || l.includes("railing") || l.includes("sheet") || l.includes("board") || l.includes("wood") || l.includes("ply") || l.includes("8mm") || l.includes("8 mm") || l.includes("6mm") || l.includes("6 mm"))) {
+                        return false;
+                    }
+                    if (l.includes("backpanel") || l.includes("backdseat") || l.includes("backsheet") || l.includes("backboard")) {
+                        return false;
+                    }
+                    return true;
+                });
+                return filtered.join(isCommaSeparated ? ', ' : '\n').trim();
+            }
+            return text;
+        }
+
         function formatSpecificationsText(specsStr, currentRoomId, currentMaterialLabel) {
             if (!specsStr) return "";
             specsStr = specsStr.trim();
+            let resultText = specsStr;
             if (specsStr.startsWith('[') && specsStr.endsWith(']')) {
                 try {
                     const arr = JSON.parse(specsStr);
@@ -2945,12 +2978,12 @@
                         });
 
                         if (filtered.length > 0) {
-                            return filtered.map(item => item.text).join('\n');
+                            resultText = filtered.map(item => item.text).join('\n');
                         }
                     }
                 } catch (e) { }
             }
-            return specsStr;
+            return cleanSpecsForType(resultText, currentMaterialLabel);
         }
 
         function getFinalRateForOption(opt) {
