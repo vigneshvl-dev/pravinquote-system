@@ -651,6 +651,14 @@
             sessionStorage.clear();
             location.href = 'index.html';
         }
+
+        // Live sync listener for incoming quotes from other devices
+        window.addEventListener('storage', () => {
+            const modal = document.getElementById('quotesFolderModal');
+            if (modal && modal.style.display === 'flex') {
+                renderSavedQuotes();
+            }
+        });
     </script>
 </body>
 

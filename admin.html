@@ -600,6 +600,9 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-sync.js"></script>
 </head>
 
 <body>
@@ -695,8 +698,8 @@
         <div class="content">
             <!-- Rates Management Tab -->
             <div id="rates" class="tab-panel active">
-                <h2>Default &amp; Custom Rates</h2>
-                <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 15px;">
+                <h2 id="ratesHeader">Default &amp; Custom Rates</h2>
+                <p id="ratesSubtext" style="font-size: 0.85rem; color: var(--muted); margin-bottom: 15px;">
                     Set standard pricing per square foot for all materials. These rates will automatically lock on the
                     employee screen.
                 </p>
@@ -705,11 +708,12 @@
                         <thead>
                             <tr>
                                 <th>Material Name</th>
-                                <th>Rate (₹)</th>
+                                <th>Premium Rate (₹)</th>
+                                <th>Middle / Standard Rate (₹)</th>
+                                <th>Economy Rate (₹)</th>
                             </tr>
                         </thead>
                         <tbody id="ratesTableBody">
-                            <!-- populated by js -->
                         </tbody>
                     </table>
                 </div>
@@ -976,13 +980,16 @@
                         <li>Go to <a href="https://console.firebase.google.com" target="_blank"
                                 style="color: var(--accent); font-weight: bold;">Firebase Console
                                 (console.firebase.google.com)</a> and click <b>Add Project</b> (e.g.
-                            <i>Pravin-Quotes</i>).</li>
+                            <i>Pravin-Quotes</i>).
+                        </li>
                         <li>In the left menu, click <b>Build</b> &gt; <b>Realtime Database</b> &gt; <b>Create
                                 Database</b>.</li>
                         <li>Select <b>Start in test mode</b> (or set rules:
-                            <code>{".read": true, ".write": true}</code>) and click <b>Enable</b>.</li>
+                            <code>{".read": true, ".write": true}</code>) and click <b>Enable</b>.
+                        </li>
                         <li>Copy the Database URL shown at the top (e.g.,
-                            <code>https://pravin-quotes-default-rtdb.firebaseio.com/</code>).</li>
+                            <code>https://pravin-quotes-default-rtdb.firebaseio.com/</code>).
+                        </li>
                         <li>Paste that URL in the box above and click <b>Connect &amp; Enable Realtime Sync</b>!</li>
                     </ol>
                 </div>
@@ -993,6 +1000,19 @@
     <div class="toast" id="toast">Saved successfully!</div>
 
     <script>
+        // Debounced Cloud Sync for localStorage changes starting with pks_
+        const originalSetItem = localStorage.setItem;
+        localStorage.setItem = function (key, value) {
+            originalSetItem.apply(this, arguments);
+            if (key && key.startsWith('pks_') && key !== 'pks_firebase_config' && key !== 'pks_admin_auth' && key !== 'pks_materials_db' && key !== 'pks_materials_db_version') {
+                try {
+                    if (window.PKSSync && window.PKSSync.debouncedPush && !window.PKSSync.isSyncing) {
+                        window.PKSSync.debouncedPush();
+                    }
+                } catch (e) { }
+            }
+        };
+
         // Check admin session
         if (sessionStorage.getItem('pks_admin_auth') !== 'true') {
             location.href = 'index.html';
@@ -1074,39 +1094,13 @@
         /* ---------- Base Materials & Defaults ---------- */
         const DEFAULT_RATES = {
             "Marine Ply – Lamination": 450,
-            "Marine Ply – Lamination (Box Type)": 450,
-            "Marine Ply – Lamination (Door Type)": 450,
-            "Marine Ply – Lamination (Door Only)": 450,
-            "Marine Ply – Lamination (Partition Type)": 450,
-            "Marine Ply – Lamination (Framed)": 450,
-            "Marine Ply – Lamination (Box)": 450,
-            "Marine Ply (Box Type)": 450,
-            "Marine Ply (Door Type)": 450,
-
             "Marine Ply – Acrylic": 650,
-            "Marine Ply – Acrylic (Box Type)": 650,
-            "Marine Ply – Acrylic (Door Type)": 650,
-            "Marine Ply – Acrylic (Door Only)": 650,
-            "Marine Ply – Acrylic (Partition Type)": 650,
-            "Marine Ply – Acrylic (Framed)": 650,
-            "Marine Ply – Acrylic (Box)": 650,
-
             "WPC": 550,
-            "WPC (Box Type)": 550,
-            "WPC (Door Type)": 550,
-            "WPC (Door Only)": 550,
-            "WPC (Partition Type)": 550,
-            "WPC (Framed)": 550,
-            "WPC (Box)": 550,
             "PVC": 300,
             "Lamination": 250,
             "Charcoal": 400,
             "Marine Plane": 350,
             "Engineering Wood": 280,
-            "Engineering Wood (Box Type)": 280,
-            "Engineering Wood (Door Type)": 280,
-            "Engineering Wood (Door Only)": 280,
-            "Engineering Wood (Partition Type)": 280,
             "King Size Bed (Direct Price)": 35000,
             "Queen Size Bed (Direct Price)": 28000,
             "Glass": 350,
@@ -1115,6 +1109,9 @@
             "PU Paint": 600,
             "Gypsum Board": 110,
             "POP": 120,
+            "Box Type": 1500,
+            "Door Only": 850,
+            "Partition Type": 1600,
             "Basket": 0,
             "Tandom Box": 0,
             "Oil Pull Out": 0,
@@ -1159,11 +1156,11 @@
                 { id: 1, name: "Kitchen Bottom", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Partition Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Partition Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Partition Type)", "WPC (Door Only)"] },
                 { id: 2, name: "Kitchen Top Box", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
                 { id: 3, name: "Kitchen Loft", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Framed)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Framed)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Framed)", "WPC (Door Only)"] },
-                { id: 4, name: "Kitchen – Island Cabin", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
-                { id: 5, name: "Kitchen – Breakfast Table", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
-                { id: 6, name: "Breakfast Table – Wall Panelling", options: ["PVC", "Lamination", "Charcoal"] },
-                { id: 7, name: "Breakfast Table – Beam Covering", options: ["Lamination"] },
-                { id: 8, name: "Breakfast Table – Open Box", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
+                { id: 4, name: "Kitchen Island Cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
+                { id: 5, name: "Kitchen Breakfast Table", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Only)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Only)", "WPC (Box Type)", "WPC (Door Only)"] },
+                { id: 6, name: "Breakfast Table Wall Paneling", options: ["PVC", "Lamination", "Charcoal"] },
+                { id: 7, name: "Breakfast Table Beam Covering", options: ["Lamination"] },
+                { id: 8, name: "Open Box", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
                 { id: 9, name: "Spice Rack", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
                 { id: 10, name: "Ledge", options: ["Marine Ply – Lamination", "Marine Ply – Acrylic", "WPC"] },
                 { id: 11, name: "Kitchen Side Storage Cabinet", options: ["Marine Ply – Lamination (Box Type)", "Marine Ply – Lamination (Door Type)", "Marine Ply – Acrylic (Box Type)", "Marine Ply – Acrylic (Door Type)", "WPC (Box Type)", "WPC (Door Type)"] },
@@ -1452,45 +1449,138 @@
             return str.toLowerCase().replace(/[^a-z0-9]/g, '');
         }
 
+        function cleanRateMaterialName(name, roomId) {
+            if (!name) return '';
+            const trimmed = name.trim();
+            if (roomId === 'full_teak_wood' || roomId === 'half_teak_wood') {
+                return trimmed;
+            }
+            if (trimmed.includes('Direct Price')) {
+                return trimmed;
+            }
+            // Strip any subtype in parentheses such as (Box Type), (Door Type), (Door Only), (Partition Type), (Framed), (Box)
+            const base = trimmed.replace(/\s*\((Box Type|Door Type|Door Only|Partition Type|Framed|Box)\)/gi, '').trim();
+            return base || trimmed;
+        }
+
         function renderRatesTable() {
             const body = document.getElementById('ratesTableBody');
             body.innerHTML = '';
 
-            // Get all unique material labels used in the selectedRoom
-            const roomMaterials = new Set();
-            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            customMaterials = getCustomMaterials();
+            customItems = getCustomItems();
+            currentRates = getRates();
 
-            // 1. Get standard item options for this room based on current pricing mode
+            // Normalized map to guarantee absolutely zero duplicate entries
+            const materialMap = new Map();
+
+            function addMaterial(label) {
+                if (!label || typeof label !== 'string') return;
+                const clean = label.trim();
+                const norm = normalizeKey(clean);
+                if (!norm) return;
+
+                if (!materialMap.has(norm)) {
+                    materialMap.set(norm, clean);
+                } else {
+                    const current = materialMap.get(norm);
+                    if (current === current.toUpperCase() && clean !== clean.toUpperCase()) {
+                        materialMap.set(norm, clean);
+                    } else if (current.includes('-') && clean.includes('–')) {
+                        materialMap.set(norm, clean);
+                    }
+                }
+            }
+
+            // 1. Get standard item options for this room
             const activeOpts = getActiveRoomOptions();
-            activeOpts.forEach(opt => roomMaterials.add(opt));
+            activeOpts.forEach(opt => addMaterial(opt));
 
-            // 3. Add custom materials added to standard items in this room
+            // 2. Add custom materials added to standard items in this room
             const items = ROOM_ITEMS[selectedRoom] || [];
             items.forEach(item => {
                 const customList = customMaterials[item.id] || [];
-                customList.forEach(m => roomMaterials.add(m.label));
+                customList.forEach(m => {
+                    if (m && m.label) addMaterial(m.label);
+                });
             });
 
-            // 4. Add custom items created for this room
+            // 3. Add custom items created for this room
             if (selectedRoom !== 'accessories') {
                 customItems.forEach(item => {
-                    item.options.forEach(opt => roomMaterials.add(opt.label));
+                    (item.options || []).forEach(opt => {
+                        const lbl = opt.label || opt;
+                        if (lbl) addMaterial(lbl);
+                    });
                 });
             }
 
-            function resolveMatRate(mat) {
+            // 4. Add any custom materials from Employee Panel stored in pks_materials_db for this room
+            let storedDb = localStorage.getItem('pks_materials_db');
+            if (storedDb) {
+                try {
+                    let db = JSON.parse(storedDb);
+                    db.forEach(m => {
+                        if ((m.roomId || '').toLowerCase() === (selectedRoom || '').toLowerCase() && m.constructionType) {
+                            addMaterial(m.constructionType);
+                        }
+                    });
+                } catch (e) { }
+            }
+
+            const ratesH2 = document.getElementById('ratesHeader');
+            if (ratesH2) ratesH2.textContent = `Rates for ${selectedRoomName || selectedRoom}`;
+            const ratesP = document.getElementById('ratesSubtext');
+            if (ratesP) ratesP.textContent = `Set room-specific rates per square foot for ${selectedRoomName || selectedRoom}. These rates apply specifically to this room without overriding other rooms.`;
+
+            function resolveMatRate(mat, qual = 'premium') {
                 const normMat = normalizeKey(mat);
                 const normBase = normalizeKey(mat.replace(/\s*\([^)]*\)/g, '').trim());
+                const curRoom = (selectedRoom || '').toLowerCase();
+                const curDiv = (selectedDivision || '').toLowerCase();
+                const qualKey = qual.toLowerCase();
 
                 function checkObj(obj) {
                     if (!obj) return undefined;
+                    const normMap = {};
                     for (const k in obj) {
                         if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '' && parseFloat(obj[k]) > 0) {
-                            const nk = normalizeKey(k);
-                            if (nk === normMat || nk === normBase) {
-                                return parseFloat(obj[k]);
-                            }
+                            normMap[normalizeKey(k)] = parseFloat(obj[k]);
                         }
+                    }
+
+                    const candidates = [];
+                    // 1. Room + Mode candidates
+                    if (curDiv && curRoom && mat) candidates.push(`${curDiv}_${curRoom}_${mat}_${qualKey}`);
+                    if (curRoom && mat) candidates.push(`${curRoom}_${mat}_${qualKey}`);
+                    if (curDiv && curRoom && normBase) candidates.push(`${curDiv}_${curRoom}_${normBase}_${qualKey}`);
+                    if (curRoom && normBase) candidates.push(`${curRoom}_${normBase}_${qualKey}`);
+
+                    // 2. Room Base candidates (only for premium)
+                    if (qualKey === 'premium') {
+                        if (curDiv && curRoom && mat) candidates.push(`${curDiv}_${curRoom}_${mat}`);
+                        if (curRoom && mat) candidates.push(`${curRoom}_${mat}`);
+                        if (curDiv && curRoom && normBase) candidates.push(`${curDiv}_${curRoom}_${normBase}`);
+                        if (curRoom && normBase) candidates.push(`${curRoom}_${normBase}`);
+                    }
+
+                    // 3. Global Mode candidates
+                    if (curDiv && mat) candidates.push(`${curDiv}_${mat}_${qualKey}`);
+                    if (mat) candidates.push(`${mat}_${qualKey}`);
+                    if (curDiv && normBase) candidates.push(`${curDiv}_${normBase}_${qualKey}`);
+                    if (normBase) candidates.push(`${normBase}_${qualKey}`);
+
+                    // 4. Global Base candidates (only for premium)
+                    if (qualKey === 'premium') {
+                        if (curDiv && mat) candidates.push(`${curDiv}_${mat}`);
+                        if (mat) candidates.push(mat);
+                        if (curDiv && normBase) candidates.push(`${curDiv}_${normBase}`);
+                        if (normBase) candidates.push(normBase);
+                    }
+
+                    for (const cand of candidates) {
+                        const k = normalizeKey(cand);
+                        if (normMap[k] !== undefined) return normMap[k];
                     }
                     return undefined;
                 }
@@ -1498,18 +1588,25 @@
                 let v = checkObj(currentRates);
                 if (v !== undefined) return v;
 
-                v = checkObj(DEFAULT_RATES);
-                if (v !== undefined) return v;
+                if (qualKey === 'premium') {
+                    v = checkObj(DEFAULT_RATES);
+                    if (v !== undefined) return v;
+                }
 
-                return 0;
+                return undefined;
             }
 
-            Array.from(roomMaterials).sort().forEach(mat => {
+            const uniqueMaterials = Array.from(materialMap.values()).sort((a, b) => a.localeCompare(b));
+            uniqueMaterials.forEach(mat => {
                 const tr = document.createElement('tr');
-                const rateVal = resolveMatRate(mat);
+                const premVal = resolveMatRate(mat, 'premium');
+                const midVal = resolveMatRate(mat, 'medium');
+                const ecoVal = resolveMatRate(mat, 'economy');
                 tr.innerHTML = `
-                    <td>${mat}</td>
-                    <td><input type="number" data-material="${mat}" value="${rateVal}"></td>
+                    <td style="font-weight: 500;">${mat}</td>
+                    <td><input type="number" data-material="${mat}" data-qual="premium" value="${premVal !== undefined ? premVal : ''}" placeholder="Premium ₹"></td>
+                    <td><input type="number" data-material="${mat}" data-qual="medium" value="${midVal !== undefined ? midVal : ''}" placeholder="Middle ₹"></td>
+                    <td><input type="number" data-material="${mat}" data-qual="economy" value="${ecoVal !== undefined ? ecoVal : ''}" placeholder="Economy ₹"></td>
                 `;
                 body.appendChild(tr);
             });
@@ -1518,17 +1615,43 @@
         function saveRates() {
             const inputs = document.querySelectorAll('#ratesTableBody input');
             const ratesObj = { ...currentRates };
+            const curRoom = (selectedRoom || '').toLowerCase();
+            const curDiv = (selectedDivision || '').toLowerCase();
+
             inputs.forEach(input => {
                 const mat = input.dataset.material;
-                const val = parseFloat(input.value) || 0;
-                ratesObj[mat] = val;
+                const qual = input.dataset.qual;
+                const valStr = input.value.trim();
+                if (!mat) return;
+
+                const val = parseFloat(valStr);
+                const keySuffix = qual ? `_${qual}` : '';
+
+                if (!isNaN(val)) {
+                    if (curRoom) {
+                        if (curDiv) {
+                            ratesObj[`${curDiv}_${curRoom}_${mat}${keySuffix}`] = val;
+                        }
+                        ratesObj[`${curRoom}_${mat}${keySuffix}`] = val;
+
+                        const baseName = mat.replace(/\s*\([^)]*\)/g, '').trim();
+                        if (baseName) {
+                            if (curDiv) ratesObj[`${curDiv}_${curRoom}_${baseName}${keySuffix}`] = val;
+                            ratesObj[`${curRoom}_${baseName}${keySuffix}`] = val;
+                        }
+                    } else {
+                        ratesObj[`${mat}${keySuffix}`] = val;
+                        const baseName = mat.replace(/\s*\([^)]*\)/g, '').trim();
+                        if (baseName) ratesObj[`${baseName}${keySuffix}`] = val;
+                    }
+                }
             });
             localStorage.setItem('pks_rates', JSON.stringify(ratesObj));
             currentRates = ratesObj;
             if (window.PKSSync && window.PKSSync.pushRates) {
                 window.PKSSync.pushRates(ratesObj);
             }
-            showToast("Rates saved successfully!");
+            showToast(`Rates saved for ${selectedRoomName || selectedRoom}!`);
         }
 
         function resetAllDefaults() {
@@ -1591,6 +1714,11 @@
         function renderCurrentItemsList() {
             const container = document.getElementById('currentItemsList');
             container.innerHTML = '';
+
+            customMaterials = getCustomMaterials();
+            customItems = getCustomItems();
+            deletedStandardMaterials = getDeletedStandardMaterials();
+            deletedStandardItems = getDeletedStandardItems();
 
             // Render Standard items with custom modifications
             BASE_ITEMS.forEach(item => {
@@ -1662,6 +1790,11 @@
         function renderCustomItemsList() {
             const container = document.getElementById('customCreatedItemsList');
             container.innerHTML = '';
+
+            customMaterials = getCustomMaterials();
+            customItems = getCustomItems();
+            deletedStandardMaterials = getDeletedStandardMaterials();
+            deletedStandardItems = getDeletedStandardItems();
 
             // 1. Render Standard items that are NOT deleted
             BASE_ITEMS.forEach(item => {
@@ -2590,15 +2723,15 @@
             if (msgEl) {
                 msgEl.style.display = 'block';
                 msgEl.style.color = '#f1c40f';
-                msgEl.innerHTML = '⏳ Testing connection to Firebase Realtime Database...';
+                msgEl.innerHTML = '⏳ Connecting to Cloud Database...';
             }
 
             if (!val) {
                 if (msgEl) {
                     msgEl.style.color = '#ff6b6b';
-                    msgEl.innerHTML = '❌ Please enter your Firebase Database URL or Config JSON above.';
+                    msgEl.innerHTML = '❌ Please enter your Firebase Database URL above.';
                 }
-                alert("Please enter a Firebase Database URL or Config JSON.");
+                alert("Please enter a Firebase Database URL.");
                 return;
             }
 
@@ -2611,9 +2744,9 @@
                 } catch (e) {
                     if (msgEl) {
                         msgEl.style.color = '#ff6b6b';
-                        msgEl.innerHTML = '❌ Invalid JSON config. Please verify syntax.';
+                        msgEl.innerHTML = '❌ Invalid JSON config. Please check syntax.';
                     }
-                    alert("Invalid JSON config. Please check your syntax.");
+                    alert("Invalid JSON config. Please check syntax.");
                     return;
                 }
             } else {
@@ -2624,32 +2757,36 @@
                 configObj = { databaseURL: cleanUrl };
             }
 
-            // Live probe
+            // Immediately save configuration and initialize sync
+            window.PKSSync.saveConfig(configObj);
+
+            // Fast Probe with 2.5 second timeout
             try {
-                const res = await fetch(`${cleanUrl}/pks.json`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2500);
+                const res = await fetch(`${cleanUrl}/pks.json`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
                 if (res.status === 401) {
                     if (msgEl) {
                         msgEl.style.color = '#ff6b6b';
-                        msgEl.innerHTML = '⚠️ <b>Database is Locked (401 Unauthorized)</b>.<br>In Firebase Console, go to <b>Realtime Database &gt; Rules</b> and set: <br><code style="background:rgba(0,0,0,0.5);padding:2px 6px;border-radius:4px;">{ "rules": { ".read": true, ".write": true } }</code>, then click <b>Publish</b>.';
+                        msgEl.innerHTML = '⚠️ <b>Database is Locked (401 Unauthorized)</b>.<br>In Firebase Console, open <b>Realtime Database &gt; Rules</b>, set <code style="background:rgba(0,0,0,0.5);padding:2px 6px;border-radius:4px;">{ "rules": { ".read": true, ".write": true } }</code>, and click <b>Publish</b>.';
                     }
-                    window.PKSSync.saveConfig(configObj);
                     return;
                 } else if (res.status === 404) {
                     if (msgEl) {
                         msgEl.style.color = '#ff6b6b';
-                        msgEl.innerHTML = '❌ <b>Database Not Found (404)</b>.<br>Please double check that you copied the exact Database URL from Firebase Console &gt; Realtime Database.';
+                        msgEl.innerHTML = '❌ <b>Database Not Found (404)</b>.<br>Please verify your Database URL from Firebase Console &gt; Realtime Database.';
                     }
-                    window.PKSSync.saveConfig(configObj);
                     return;
                 }
             } catch (err) {
-                console.log("Direct probe notice:", err);
+                console.log("Probe notice (SDK active):", err.message);
             }
 
-            window.PKSSync.saveConfig(configObj);
             if (msgEl) {
                 msgEl.style.color = '#2ecc71';
-                msgEl.innerHTML = '✅ <b>Connected &amp; Synced Successfully!</b> Real-time sync is now live across all your devices.';
+                msgEl.innerHTML = '✅ <b>Connected &amp; Synced Successfully!</b> Real-time sync is active.';
             }
             showToast("Connected to Firebase Realtime Cloud!");
         }
@@ -2746,6 +2883,28 @@
         // Setup dynamic tabs and panels
         updateQualityBadges();
         updateRoomState(selectedRoom, selectedRoomName);
+
+        // Sync updates from other devices / Cloud Sync automatically
+        function handleAdminExternalSync(key) {
+            if (!key || key === 'pks_item_specs' || key === 'pks_custom_specs_by_id' || key === 'pks_custom_materials' || key === 'pks_rates' || key === 'pks_custom_items' || key === 'pks_divisions' || key === 'pks_deleted_standard_materials' || key === 'pks_deleted_standard_items') {
+                updateRoomState(selectedRoom, selectedRoomName);
+                const activeTab = document.querySelector('.tab-btn.active');
+                if (activeTab) {
+                    const match = activeTab.getAttribute('onclick').match(/switchTab\('([^']+)'/);
+                    if (match && match[1]) {
+                        renderTabContent(match[1]);
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('storage', (e) => {
+            handleAdminExternalSync(e.key);
+        });
+
+        window.addEventListener('pks_cloud_synced', (e) => {
+            handleAdminExternalSync(e.detail && e.detail.key);
+        });
     </script>
 </body>
 

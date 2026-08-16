@@ -887,6 +887,7 @@
                 width: 100% !important;
                 box-sizing: border-box;
             }
+
             .print-only-cover-page img {
                 width: 98% !important;
                 max-width: 98% !important;
@@ -900,6 +901,7 @@
             .print-only-terms-pages {
                 display: block !important;
             }
+
             .print-terms-page {
                 page-break-before: always;
                 break-before: page;
@@ -911,6 +913,7 @@
                 width: 100% !important;
                 box-sizing: border-box;
             }
+
             .print-terms-page img {
                 width: 98% !important;
                 max-width: 98% !important;
@@ -1013,7 +1016,9 @@
 
             <!-- Top Right Page Actions -->
             <div style="display: flex; gap: 10px; align-items: center;">
-                <span class="cloud-sync-badge role-badge" style="background: rgba(255,255,255,0.08); font-size: 0.75rem; padding: 4px 8px; border-radius: 6px;">⚪ Local Mode</span>
+                <span class="cloud-sync-badge role-badge"
+                    style="background: rgba(255,255,255,0.08); font-size: 0.75rem; padding: 4px 8px; border-radius: 6px;">⚪
+                    Local Mode</span>
                 <button id="adminPanelNavBtn" class="back-btn"
                     style="display:none; padding: 8px 14px; font-size: 0.8rem; border-radius: 8px; font-weight: 600; cursor: pointer; background: var(--accent); border: none; color: #ffffff !important;"
                     onclick="location.href='admin.html'">Admin Panel</button>
@@ -1050,11 +1055,13 @@
 
             <!-- Last Saved Quote No & Current Quote No Badges -->
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; color: var(--muted); display: flex; align-items: center; gap: 6px;">
+                <div
+                    style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; color: var(--muted); display: flex; align-items: center; gap: 6px;">
                     <span>Last Saved:</span>
                     <strong id="lastSavedQuoteBadge" style="color: var(--accent); font-weight: 700;">—</strong>
                 </div>
-                <div style="background: rgba(176,125,46,0.15); border: 1px solid rgba(176,125,46,0.35); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; color: #f0ebe2; display: flex; align-items: center; gap: 6px;">
+                <div
+                    style="background: rgba(176,125,46,0.15); border: 1px solid rgba(176,125,46,0.35); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; color: #f0ebe2; display: flex; align-items: center; gap: 6px;">
                     <span style="color: var(--accent);">Current:</span>
                     <strong id="currentQuoteBadge" style="color: #fff; font-weight: 700;">—</strong>
                 </div>
@@ -1367,6 +1374,19 @@
 
     <script>
         const LOGO_BASE64 = "data:image/jpeg;base64,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";
+        // Debounced Cloud Sync for localStorage changes starting with pks_
+        const originalSetItem = localStorage.setItem;
+        localStorage.setItem = function (key, value) {
+            originalSetItem.apply(this, arguments);
+            if (key && key.startsWith('pks_') && key !== 'pks_firebase_config' && key !== 'pks_admin_auth' && key !== 'pks_materials_db' && key !== 'pks_materials_db_version') {
+                try {
+                    if (window.PKSSync && window.PKSSync.debouncedPush && !window.PKSSync.isSyncing) {
+                        window.PKSSync.debouncedPush();
+                    }
+                } catch (e) { }
+            }
+        };
+
         const selectedDivision = sessionStorage.getItem('pks_selected_division') || 'marketing';
         const selectedDivisionName = sessionStorage.getItem('pks_selected_division_name') || 'Marketing';
         const isEconomyMode = sessionStorage.getItem('pks_economy_mode') === 'true';
@@ -1530,10 +1550,6 @@
             "Charcoal": 400,
             "Marine Plane": 350,
             "Engineering Wood": 280,
-            "Engineering Wood (Box Type)": 280,
-            "Engineering Wood (Door Type)": 280,
-            "Engineering Wood (Door Only)": 280,
-            "Engineering Wood (Partition Type)": 280,
             "King Size Bed (Direct Price)": 35000,
             "Queen Size Bed (Direct Price)": 28000,
             "Glass": 350,
@@ -1541,7 +1557,10 @@
             "Veneer finishing": 700,
             "PU Paint": 600,
             "Gypsum Board": 110,
-            "POP": 120
+            "POP": 120,
+            "Box Type": 1500,
+            "Door Only": 850,
+            "Partition Type": 1600
         };
 
         // Load rates from localStorage or use defaults
@@ -1560,7 +1579,15 @@
             return str.toLowerCase().replace(/[^a-z0-9]/g, '');
         }
 
-        function resolveRate(ratesObj, constType, matType) {
+        function resolveRate(ratesObj, constType, matType, roomId, divId, qual) {
+            const curRoom = (roomId || selectedRoom || '').toLowerCase();
+            const curDiv = (divId || selectedDivision || '').toLowerCase();
+            const rawQual = qual || (typeof activeQuality !== 'undefined' ? activeQuality : '') || sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            let qualKey = 'premium';
+            const normQ = rawQual.toLowerCase();
+            if (normQ.includes('middle') || normQ.includes('medium') || normQ.includes('standard')) qualKey = 'medium';
+            else if (normQ.includes('economy')) qualKey = 'economy';
+
             function singleLookup(obj) {
                 if (!obj) return undefined;
 
@@ -1571,18 +1598,48 @@
                     }
                 }
 
-                // 1. Check exact constType
-                const k1 = normalizeKey(constType);
-                if (normMap[k1] !== undefined) return normMap[k1];
-
-                // 2. Check base constType (without parentheses)
                 const baseName = constType ? constType.replace(/\s*\([^)]*\)/g, '').trim() : '';
-                const k2 = normalizeKey(baseName);
-                if (k2 && normMap[k2] !== undefined) return normMap[k2];
 
-                // 3. Check matType
-                const k3 = normalizeKey(matType);
-                if (k3 && normMap[k3] !== undefined) return normMap[k3];
+                const candidateStrings = [];
+                // 1. Room + Mode candidates
+                if (curDiv && curRoom && constType) candidateStrings.push(`${curDiv}_${curRoom}_${constType}_${qualKey}`);
+                if (curRoom && constType) candidateStrings.push(`${curRoom}_${constType}_${qualKey}`);
+                if (curDiv && curRoom && baseName) candidateStrings.push(`${curDiv}_${curRoom}_${baseName}_${qualKey}`);
+                if (curRoom && baseName) candidateStrings.push(`${curRoom}_${baseName}_${qualKey}`);
+                if (curDiv && curRoom && matType) candidateStrings.push(`${curDiv}_${curRoom}_${matType}_${qualKey}`);
+                if (curRoom && matType) candidateStrings.push(`${curRoom}_${matType}_${qualKey}`);
+
+                // 2. Room Base candidates (only for premium)
+                if (qualKey === 'premium') {
+                    if (curDiv && curRoom && constType) candidateStrings.push(`${curDiv}_${curRoom}_${constType}`);
+                    if (curRoom && constType) candidateStrings.push(`${curRoom}_${constType}`);
+                    if (curDiv && curRoom && baseName) candidateStrings.push(`${curDiv}_${curRoom}_${baseName}`);
+                    if (curRoom && baseName) candidateStrings.push(`${curRoom}_${baseName}`);
+                    if (curDiv && curRoom && matType) candidateStrings.push(`${curDiv}_${curRoom}_${matType}`);
+                    if (curRoom && matType) candidateStrings.push(`${curRoom}_${matType}`);
+                }
+                // 3. Global Mode candidates
+                if (curDiv && constType) candidateStrings.push(`${curDiv}_${constType}_${qualKey}`);
+                if (constType) candidateStrings.push(`${constType}_${qualKey}`);
+                if (curDiv && baseName) candidateStrings.push(`${curDiv}_${baseName}_${qualKey}`);
+                if (baseName) candidateStrings.push(`${baseName}_${qualKey}`);
+                if (curDiv && matType) candidateStrings.push(`${curDiv}_${matType}_${qualKey}`);
+                if (matType) candidateStrings.push(`${matType}_${qualKey}`);
+
+                // 4. Global Base candidates (only for premium)
+                if (qualKey === 'premium') {
+                    if (curDiv && constType) candidateStrings.push(`${curDiv}_${constType}`);
+                    if (constType) candidateStrings.push(constType);
+                    if (curDiv && baseName) candidateStrings.push(`${curDiv}_${baseName}`);
+                    if (baseName) candidateStrings.push(baseName);
+                    if (curDiv && matType) candidateStrings.push(`${curDiv}_${matType}`);
+                    if (matType) candidateStrings.push(matType);
+                }
+
+                for (const cand of candidateStrings) {
+                    const k = normalizeKey(cand);
+                    if (normMap[k] !== undefined) return normMap[k];
+                }
 
                 return undefined;
             }
@@ -1591,7 +1648,7 @@
             let rateVal = singleLookup(ratesObj);
             if (rateVal !== undefined) return rateVal;
 
-            // 2. Fallback to global pks_rates (rates added in admin panel previously)
+            // 2. Fallback to global pks_rates
             const globalStored = localStorage.getItem('pks_rates');
             if (globalStored) {
                 try {
@@ -1601,9 +1658,11 @@
                 } catch (e) { }
             }
 
-            // 3. Fallback to DEFAULT_RATES
-            rateVal = singleLookup(DEFAULT_RATES);
-            if (rateVal !== undefined) return rateVal;
+            // 3. Fallback to DEFAULT_RATES (only for premium)
+            if (qualKey === 'premium') {
+                rateVal = singleLookup(DEFAULT_RATES);
+                if (rateVal !== undefined) return rateVal;
+            }
 
             return undefined;
         }
@@ -1622,9 +1681,19 @@
             return [];
         }
 
+        // In-memory caching for materials DB and processed items list
+        let _materialsDbCache = null;
+        let _itemsListCache = {};
+
+        function invalidateMaterialsCache() {
+            _materialsDbCache = null;
+            _itemsListCache = {};
+        }
+
         // Setup base database
         function getOrInitMaterialsDb() {
-            const currentDbVersion = 'v34';
+            if (_materialsDbCache) return _materialsDbCache;
+            const currentDbVersion = 'v35';
             let stored = localStorage.getItem('pks_materials_db');
             let storedVersion = localStorage.getItem('pks_materials_db_version');
 
@@ -1910,8 +1979,6 @@
                 { label: "PU Paint", base: 600, formula: "L*W/144" }
             ]);
 
-            // Economy items now auto-generated by addStd for all rooms above
-
             // 2. NEW WOOD ROOMS: Full Teak Wood and Half Teak Wood
             // full_teak_wood room (Premium only)
             const ftSpecsBottom = "KERALA TEAK WOOD, BACKDSEAT 8 MM TEAK WOOD, BOX WOOD SIZE 17MM, DOOR WOOD SIZE FRAME 25MM, FINISHING PU OR MATE FINISHING, SOFT CLOSING HINGES";
@@ -1963,7 +2030,6 @@
             }
 
             addFullTeakCabinet('Wash Basin', 1300, 850, 1600, ftSpecsBottom, ftSpecsPartition);
-
             addFullTeakCabinet('Wardrobe', 1500, 850, 1600, ftSpecsBottom, ftSpecsPartition);
             addFullTeakCabinet('Tv Unit', 1350, 850, 1600, ftSpecsBottom, ftSpecsPartition);
             addFullTeakCabinet('Loft', 900, 750, 900, ftSpecsLoft, ftSpecsPartition);
@@ -2047,24 +2113,7 @@
                 });
             }
 
-            // Sync/override rates, custom materials, custom items, and deletions from localStorage
-            const adminRates = getRates();
-
-            // 1. Sync custom rates (from admin Rates Management)
-            db.forEach(m => {
-                const targetRate = resolveRate(adminRates, m.constructionType, m.materialType);
-                if (targetRate !== undefined && targetRate !== null && targetRate !== '') {
-                    let factor = 1.0;
-                    if (adminRates[m.constructionType] === undefined) {
-                        if (m.quality === 'Middle / Standard') factor = 0.85;
-                        else if (m.quality === 'Economy' && m.itemName !== 'BED') factor = 0.70;
-                    }
-                    m.baseAmount = Math.round(parseFloat(targetRate) * factor);
-                    m.offerPrice = m.baseAmount * (1 - (m.discountPercentage || 0) / 100);
-                }
-            });
-
-            // 2. Merge custom materials added by admin to standard items
+            // 1. Merge custom materials added by admin to standard items
             const customMats = localStorage.getItem('pks_custom_materials');
             if (customMats) {
                 try {
@@ -2098,9 +2147,9 @@
                                         else if (opt.formulaType === "QTY") { fields = ["QTY"]; formula = "QTY"; }
                                         else { fields = ["L", "W", "H"]; formula = "(L+W)*H/144"; }
 
-                                        const rate = rates[opt.label] !== undefined ? rates[opt.label] : (opt.rate || 0);
+                                        const qualRate = resolveRate(rates, opt.label, matType, room, selectedDivision, qual) || opt.rate || 0;
 
-                                        addMat(room, matType, qual, itemName, opt.label, opt.specifications || "", formula, rate);
+                                        addMat(room, matType, qual, itemName, opt.label, opt.specifications || "", formula, qualRate);
                                     }
                                 });
                             });
@@ -2109,7 +2158,7 @@
                 } catch (e) { console.error("Error merging custom materials: ", e); }
             }
 
-            // 3. Merge custom items created by admin
+            // 2. Merge custom items created by admin
             const customItemsStr = localStorage.getItem('pks_custom_items');
             if (customItemsStr) {
                 try {
@@ -2118,7 +2167,6 @@
                     parsedItems.forEach(item => {
                         standardRooms.forEach(room => {
                             qualities.forEach(qual => {
-                                // In Economy mode, table items only get Engineering Wood variants
                                 const itemUpper = item.name.toUpperCase();
                                 const isEcoTable = qual === 'Economy' &&
                                     itemUpper.includes('TABLE') &&
@@ -2127,7 +2175,6 @@
                                     !itemUpper.includes('COVERING');
 
                                 if (isEcoTable) {
-                                    // Only add the 3 Engineering Wood variants
                                     engWoodBoxDoor.forEach(m => {
                                         const exists = db.some(e =>
                                             e.roomId === room &&
@@ -2136,8 +2183,8 @@
                                             e.constructionType === m.label
                                         );
                                         if (!exists) {
-                                            const rate = rates[m.label] !== undefined ? rates[m.label] : m.base;
-                                            addMat(room, 'Standard', qual, item.name, m.label, "ENGINEERING WOOD THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS", m.formula, rate);
+                                            const qualRate = resolveRate(rates, m.label, 'Standard', room, selectedDivision, qual) || m.base || 0;
+                                            addMat(room, 'Standard', qual, item.name, m.label, "ENGINEERING WOOD THICKNESS-16MM,LAMINATION THICKNESS 0.8MM,HINGES-BRAND SLEEK,KITCHEN HINGES SOFT CLOSING,KITCHEN HANDLE PROFILE,ROOM HINGES NOT SOFT CLOSING,ROOM HANDLE SS", m.formula, qualRate);
                                         }
                                     });
                                     return;
@@ -2159,9 +2206,9 @@
                                         else if (opt.formulaType === "QTY") { fields = ["QTY"]; formula = "QTY"; }
                                         else { fields = ["L", "W", "H"]; formula = "(L+W)*H/144"; }
 
-                                        const rate = rates[opt.label] !== undefined ? rates[opt.label] : (opt.rate || 0);
+                                        const qualRate = resolveRate(rates, opt.label, 'Standard', room, selectedDivision, qual) || opt.rate || 0;
 
-                                        addMat(room, 'Standard', qual, item.name, opt.label, opt.specifications || "", formula, rate);
+                                        addMat(room, 'Standard', qual, item.name, opt.label, opt.specifications || "", formula, qualRate);
                                     }
                                 });
                             });
@@ -2169,6 +2216,16 @@
                     });
                 } catch (e) { console.error("Error merging custom items: ", e); }
             }
+
+            // 3. Sync/override rates from admin Rates Management across all DB entries
+            const adminRates = getRates();
+            db.forEach(m => {
+                const targetRate = resolveRate(adminRates, m.constructionType, m.materialType, m.roomId, selectedDivision, m.quality);
+                if (targetRate !== undefined && targetRate !== null && targetRate !== '') {
+                    m.baseAmount = parseFloat(targetRate);
+                    m.offerPrice = m.baseAmount * (1 - (m.discountPercentage || 0) / 100);
+                }
+            });
 
             // 4. Filter out deleted standard items
             const deletedItemsStr = localStorage.getItem('pks_deleted_standard_items');
@@ -2207,14 +2264,19 @@
                     !nameUpper.includes('BEAM') &&
                     !nameUpper.includes('COVERING');
                 if (!isTable) return true;
-                // Only keep Engineering Wood variants
                 return m.constructionType === 'Engineering Wood (Box Type)' ||
                     m.constructionType === 'Engineering Wood (Door Only)' ||
                     m.constructionType === 'Engineering Wood (Partition Type)';
             });
 
-            localStorage.setItem('pks_materials_db', JSON.stringify(db));
-            localStorage.setItem('pks_materials_db_version', currentDbVersion);
+            if (!loadedFromStore) {
+                try {
+                    localStorage.setItem('pks_materials_db', JSON.stringify(db));
+                    localStorage.setItem('pks_materials_db_version', currentDbVersion);
+                } catch (e) { }
+            }
+
+            _materialsDbCache = db;
             return db;
         }
 
@@ -2225,6 +2287,7 @@
 
         // Formula Evaluator
         function evaluateFormula(formulaStr, values) {
+            if (!formulaStr) return 0;
             let normalized = formulaStr.toUpperCase();
             normalized = normalized.replace(/\bLENGTH\b/g, 'L');
             normalized = normalized.replace(/\bWIDTH\b/g, 'W');
@@ -2234,12 +2297,12 @@
             normalized = normalized.replace(/\bQTY\b/g, 'Q');
 
             const valMap = {
-                L: parseFloat(values.L || values.Length || 0),
-                W: parseFloat(values.W || values.Width || 0),
-                H: parseFloat(values.H || values.Height || 0),
-                D: parseFloat(values.Depth || values.D || 0),
-                S: parseFloat(values.SQFT || values.S || 0),
-                Q: parseFloat(values.QTY || values.Q || 1)
+                L: parseFloat(values && (values.L || values.Length) || 0) || 0,
+                W: parseFloat(values && (values.W || values.Width) || 0) || 0,
+                H: parseFloat(values && (values.H || values.Height) || 0) || 0,
+                D: parseFloat(values && (values.Depth || values.D) || 0) || 0,
+                S: parseFloat(values && (values.SQFT || values.S) || 0) || 0,
+                Q: parseFloat(values && (values.QTY || values.Q) || 1) || 1
             };
 
             let evalStr = normalized;
@@ -2256,12 +2319,16 @@
                 const res = Function(`"use strict"; return (${evalStr})`)();
                 return parseFloat(res) || 0;
             } catch (e) {
-                console.error("Formula eval failed: ", formulaStr, evalStr, e);
                 return 0;
             }
         }
 
         function getFullItemsList() {
+            const cacheKey = `${(selectedRoom || '').toLowerCase()}__${(modeLabel || '').toLowerCase()}`;
+            if (_itemsListCache[cacheKey]) {
+                return _itemsListCache[cacheKey];
+            }
+
             const db = getOrInitMaterialsDb();
 
             // Hardcoded specifications and formulas mapping to protect them
@@ -2346,29 +2413,44 @@
                 }
             });
 
-            // Apply custom edited specifications overrides
+            // Apply custom edited specifications overrides from pks_item_specs & pks_custom_specs_by_id
+            let itemSpecsMap = {};
+            const storedItemSpecs = localStorage.getItem('pks_item_specs');
+            if (storedItemSpecs) {
+                try { itemSpecsMap = JSON.parse(storedItemSpecs) || {}; } catch (e) { }
+            }
+
             let customSpecs = {};
             const storedCustom = localStorage.getItem('pks_custom_specs_by_id');
             if (storedCustom) {
-                try { customSpecs = JSON.parse(storedCustom); } catch (e) { }
+                try { customSpecs = JSON.parse(storedCustom) || {}; } catch (e) { }
             }
+
             db.forEach(m => {
-                if (customSpecs[m.id] !== undefined) {
+                const stdItemId = getStandardItemId(m.roomId, m.itemName);
+                const specKey1 = `${m.roomId}_${stdItemId}_${m.constructionType}`;
+                const specKey2 = `${m.roomId}_${m.constructionType}`;
+                const specKey3 = m.constructionType;
+
+                if (itemSpecsMap[specKey1] !== undefined && itemSpecsMap[specKey1] !== '') {
+                    m.specifications = itemSpecsMap[specKey1];
+                } else if (itemSpecsMap[specKey2] !== undefined && itemSpecsMap[specKey2] !== '') {
+                    m.specifications = itemSpecsMap[specKey2];
+                } else if (itemSpecsMap[specKey3] !== undefined && itemSpecsMap[specKey3] !== '') {
+                    m.specifications = itemSpecsMap[specKey3];
+                } else if (customSpecs[m.id] !== undefined) {
                     m.specifications = customSpecs[m.id];
                 }
             });
 
-            // ── Apply admin-set rates to all DB entries ──────────────
-            // Rates saved by admin override the hardcoded default base rates.
+            // Apply admin-set rates to all DB entries
             const adminRates = getRates();
             db.forEach(m => {
-                const targetRate = resolveRate(adminRates, m.constructionType, m.materialType);
+                const targetRate = resolveRate(adminRates, m.constructionType, m.materialType, m.roomId, selectedDivision);
                 if (targetRate !== undefined && targetRate !== null && targetRate !== '') {
                     let factor = 1.0;
-                    if (adminRates[m.constructionType] === undefined) {
-                        if (m.quality === 'Middle / Standard') factor = 0.85;
-                        else if (m.quality === 'Economy' && m.itemName !== 'BED') factor = 0.70;
-                    }
+                    if (m.quality === 'Middle / Standard') factor = 0.85;
+                    else if (m.quality === 'Economy' && m.itemName !== 'BED') factor = 0.70;
                     m.baseAmount = Math.round(parseFloat(targetRate) * factor);
                     m.offerPrice = m.baseAmount * (1 - (m.discountPercentage || 0) / 100);
                 }
@@ -2394,7 +2476,7 @@
                 }
 
                 let fields = ['L', 'W', 'H'];
-                let formulaStr = m.formula.toUpperCase();
+                let formulaStr = (m.formula || '').toUpperCase();
                 if (formulaStr.includes('QTY') || formulaStr === 'QTY') {
                     fields = ['QTY'];
                 } else if (formulaStr.includes('L') && formulaStr.includes('W') && !formulaStr.includes('H')) {
@@ -2408,7 +2490,6 @@
                 }
 
                 grouped[itemKey].options.push({
-
                     label: m.constructionType,
                     fields: fields,
                     formulaStr: m.formula,
@@ -2422,11 +2503,15 @@
                     dbId: m.id,
                     roomId: m.roomId,
                     materialType: m.materialType,
-                    constructionType: m.constructionType
+                    constructionType: m.constructionType,
+                    quality: m.quality,
+                    itemName: m.itemName
                 });
             });
 
-            return Object.values(grouped);
+            const result = Object.values(grouped);
+            _itemsListCache[cacheKey] = result;
+            return result;
         }
 
         let ITEMS = [];
@@ -2524,14 +2609,6 @@
             }
         });
 
-        // Listen for admin changes in other tabs/windows
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'pks_rates' || e.key === 'pks_custom_materials' || e.key === 'pks_custom_items') {
-                ITEMS = getFullItemsList();
-                renderItemsGrid();
-            }
-        });
-
         function openBuilder(itemId) {
             const container = document.getElementById(`builders-${itemId}`);
             if (!container) return;
@@ -2585,11 +2662,13 @@
                 container.appendChild(wrap);
                 if (showRate) {
                     ['sqft', 'rate'].forEach(f => {
-                        document.getElementById(`${buildId}-${f}`).addEventListener('input', () => updateCustomCalc(buildId));
+                        const el = document.getElementById(`${buildId}-${f}`);
+                        if (el) el.addEventListener('input', () => updateCustomCalc(buildId));
                     });
                 } else {
                     ['sqft', 'amount'].forEach(f => {
-                        document.getElementById(`${buildId}-${f}`).addEventListener('input', () => updateCustomCalc(buildId));
+                        const el = document.getElementById(`${buildId}-${f}`);
+                        if (el) el.addEventListener('input', () => updateCustomCalc(buildId));
                     });
                 }
                 return;
@@ -2613,6 +2692,7 @@
             if (!wrap) return;
 
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item) return;
             wrap.innerHTML = `
                 <div class="step-label">Choose material</div>
                 <div class="opt-row" id="${buildId}-opts" style="display: flex; flex-direction: column; gap: 8px; align-items: stretch;"></div>
@@ -2658,7 +2738,6 @@
             optRow.appendChild(addBtnWrap);
         }
 
-
         function selectMaterial(buildId, itemId, optIdx, btnEl, optRow) {
             optRow.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
             btnEl.classList.add('selected');
@@ -2670,6 +2749,7 @@
             });
 
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item || !item.options || !item.options[optIdx]) return;
             const opt = item.options[optIdx];
             if (opt.label === "Soft Closing Hinges" || opt.label === "Profile Handle") {
                 confirmMaterial(buildId, itemId, optIdx);
@@ -2679,7 +2759,7 @@
         }
 
         function getStandardItemId(room, name) {
-            const normalized = name.toUpperCase().trim();
+            const normalized = (name || '').toUpperCase().trim();
             if (room === 'kitchen') {
                 if (normalized.includes('BOTTOM') && !normalized.includes('STAIRCASE')) return 1;
                 if (normalized.includes('TOP')) return 2;
@@ -2765,6 +2845,7 @@
         function deleteMaterialOption(buildId, itemId, optIdx) {
             if (!confirm("Are you sure you want to delete this material option?")) return;
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item || !item.options || !item.options[optIdx]) return;
             const opt = item.options[optIdx];
 
             let storedDb = localStorage.getItem('pks_materials_db');
@@ -2790,6 +2871,7 @@
                 }
             }
 
+            invalidateMaterialsCache();
             ITEMS = getFullItemsList();
             openMaterialSelector(buildId, itemId);
         }
@@ -2803,6 +2885,7 @@
             const specs = prompt("Enter specifications (optional):") || "";
 
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item) return;
             const firstOpt = item.options[0] || {};
 
             let storedDb = localStorage.getItem('pks_materials_db');
@@ -2835,32 +2918,57 @@
                     db.push(newEntry);
                     localStorage.setItem('pks_materials_db', JSON.stringify(db));
 
+                    // 1. Save rate in pks_rates with mode key
                     const storedRates = localStorage.getItem('pks_rates');
                     let rates = {};
                     if (storedRates) {
                         try { rates = JSON.parse(storedRates); } catch (e) { }
                     }
+                    rates[`${matName.trim()}_${pMode}`] = rate;
                     rates[matName.trim()] = rate;
                     localStorage.setItem('pks_rates', JSON.stringify(rates));
 
+                    // 2. Save in pks_custom_materials so Admin Panel sees it immediately
                     const stdItemId = getStandardItemId(selectedRoom, item.name);
-                    if (stdItemId) {
+                    const targetKey = stdItemId || itemId;
+                    if (targetKey) {
                         const storedCustom = localStorage.getItem('pks_custom_materials');
                         let customMats = {};
                         if (storedCustom) {
-                            try { customMats = JSON.parse(storedCustom); } catch (e) { }
+                            try { customMats = JSON.parse(storedCustom) || {}; } catch (e) { }
                         }
-                        if (!customMats[stdItemId]) {
-                            customMats[stdItemId] = [];
+                        if (!customMats[targetKey]) {
+                            customMats[targetKey] = [];
                         }
-                        customMats[stdItemId].push({ label: matName.trim(), rate: rate, specifications: specs });
+                        customMats[targetKey].push({ label: matName.trim(), rate: rate, specifications: specs });
                         localStorage.setItem('pks_custom_materials', JSON.stringify(customMats));
                     }
+
+                    // 3. If specs provided, save in pks_item_specs
+                    if (specs) {
+                        let specsMap = {};
+                        const storedSpecs = localStorage.getItem('pks_item_specs');
+                        if (storedSpecs) {
+                            try { specsMap = JSON.parse(storedSpecs) || {}; } catch (e) { }
+                        }
+                        specsMap[`${selectedRoom}_${itemId}_${matName.trim()}`] = specs;
+                        specsMap[`${selectedRoom}_${matName.trim()}`] = specs;
+                        specsMap[matName.trim()] = specs;
+                        localStorage.setItem('pks_item_specs', JSON.stringify(specsMap));
+                    }
+
+                    // 4. Trigger cloud sync to propagate to admin panel and all devices
+                    try {
+                        if (window.PKSSync && window.PKSSync.debouncedPush) {
+                            window.PKSSync.debouncedPush(100);
+                        }
+                    } catch (e) { }
 
                     showToast("Material option added successfully!");
                 } catch (e) { }
             }
 
+            invalidateMaterialsCache();
             ITEMS = getFullItemsList();
             openMaterialSelector(buildId, itemId);
         }
@@ -2886,6 +2994,23 @@
                 } catch (e) { }
             }
 
+            // Check custom specs by DB ID or room-material identifier
+            const storedCustomSpecs = localStorage.getItem('pks_custom_specs_by_id');
+            if (storedCustomSpecs) {
+                try {
+                    const customSpecs = JSON.parse(storedCustomSpecs);
+                    if (customSpecs) {
+                        const roomMatKey = `mat_${roomId}_${materialLabel}`;
+                        if (customSpecs[roomMatKey]) return customSpecs[roomMatKey];
+                        for (const key in customSpecs) {
+                            if (key.includes(roomId) && key.includes((materialLabel || '').replace(/\s+/g, '_').toLowerCase())) {
+                                return customSpecs[key];
+                            }
+                        }
+                    }
+                } catch (e) { }
+            }
+
             // Check custom materials list
             const storedCustom = localStorage.getItem('pks_custom_materials');
             if (storedCustom) {
@@ -2899,27 +3024,6 @@
             }
 
             return defaultSpecs || "";
-        }
-
-        function enableInlineSpecsEdit(buildId, itemId, optIdx) {
-            const item = ITEMS.find(i => i.id === itemId);
-            const opt = item.options[optIdx];
-            const currentSpecs = getEffectiveSpecs(selectedRoom, itemId, opt.label, opt.specifications);
-            const newSpecs = prompt("Edit specifications for " + opt.label + ":", currentSpecs);
-            if (newSpecs !== null) {
-                const stored = localStorage.getItem('pks_item_specs');
-                let specsMap = {};
-                if (stored) {
-                    try { specsMap = JSON.parse(stored) || {}; } catch (e) { }
-                }
-                const specificKey = `${selectedRoom}_${itemId}_${opt.label}`;
-                specsMap[specificKey] = newSpecs.trim();
-                localStorage.setItem('pks_item_specs', JSON.stringify(specsMap));
-
-                opt.specifications = newSpecs.trim();
-                const textEl = document.getElementById(`${buildId}-specs-text`);
-                if (textEl) textEl.textContent = newSpecs.trim() || "No specifications added.";
-            }
         }
 
         function cleanSpecsForType(text, materialLabel) {
@@ -2987,21 +3091,23 @@
         }
 
         function getFinalRateForOption(opt) {
+            if (!opt) return 0;
+            const qual = opt.quality || modeLabel || 'Premium';
             // Always read rates live from localStorage pks_rates so admin changes show immediately
             let liveRate = null;
             const globalStored = localStorage.getItem('pks_rates');
             if (globalStored) {
                 try {
                     const globalRates = JSON.parse(globalStored);
-                    const resolved = resolveRate(globalRates, opt.constructionType, opt.materialType);
+                    const resolved = resolveRate(globalRates, opt.constructionType, opt.materialType, opt.roomId || selectedRoom, selectedDivision, qual);
                     if (resolved !== undefined && resolved !== null && resolved !== '') {
                         liveRate = parseFloat(resolved);
                     }
                 } catch (e) { }
             }
 
-            const baseAmount = (liveRate !== null) ? liveRate : (opt.baseAmount || 0);
-            const increasedRate = baseAmount * (1 + (opt.amountIncreasePercentage || 0) / 100);
+            let baseRate = (liveRate !== null) ? liveRate : (opt.baseAmount || 0);
+            const increasedRate = baseRate * (1 + (opt.amountIncreasePercentage || 0) / 100);
             const discountPct = opt.discountPercentage || 0;
             const finalRate = discountPct > 0 ? (increasedRate * (1 - discountPct / 100)) : increasedRate;
             return finalRate;
@@ -3009,6 +3115,7 @@
 
         function openSizePanel(buildId, itemId, optIdx) {
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item || !item.options || !item.options[optIdx]) return;
             const opt = item.options[optIdx];
             let sizeArea = document.getElementById(`${buildId}-opt-size-${optIdx}`);
             if (sizeArea) {
@@ -3059,22 +3166,28 @@
 
             const allInputs = [...opt.fields];
             allInputs.forEach(f => {
-                document.getElementById(`${buildId}-${f}`).addEventListener('input', () => updateCalc(buildId, itemId, optIdx));
+                const el = document.getElementById(`${buildId}-${f}`);
+                if (el) {
+                    el.addEventListener('input', () => updateCalc(buildId, itemId, optIdx));
+                }
             });
             updateCalc(buildId, itemId, optIdx);
         }
 
         function readValues(buildId, fields) {
             const v = {};
-            fields.forEach(f => {
-                const el = document.getElementById(`${buildId}-${f}`);
-                if (el) v[f] = parseFloat(el.value) || 0;
-            });
+            if (Array.isArray(fields)) {
+                fields.forEach(f => {
+                    const el = document.getElementById(`${buildId}-${f}`);
+                    if (el) v[f] = parseFloat(el.value) || 0;
+                });
+            }
             return v;
         }
 
         function updateCalc(buildId, itemId, optIdx) {
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item || !item.options || !item.options[optIdx]) return;
             const opt = item.options[optIdx];
 
             // Get rate
@@ -3083,10 +3196,10 @@
             let sqft = 0;
             if (opt.fields.includes('SQFT')) {
                 const el = document.getElementById(`${buildId}-SQFT`);
-                sqft = parseFloat(el.value) || 0;
+                sqft = el ? (parseFloat(el.value) || 0) : 0;
             } else if (opt.fields.includes('QTY')) {
                 const el = document.getElementById(`${buildId}-QTY`);
-                sqft = parseFloat(el.value) || 0;
+                sqft = el ? (parseFloat(el.value) || 0) : 0;
             } else {
                 const v = readValues(buildId, opt.fields);
                 sqft = evaluateFormula(opt.formulaStr, v);
@@ -3104,9 +3217,10 @@
             } else {
                 previewStr = `Sq.Ft: <b>${sqft}</b>`;
             }
-            document.getElementById(`${buildId}-calc`).innerHTML = `${previewStr} &nbsp;|&nbsp; Amount: <b>₹${amount.toFixed(2)}</b>`;
-
-
+            const calcEl = document.getElementById(`${buildId}-calc`);
+            if (calcEl) {
+                calcEl.innerHTML = `${previewStr} &nbsp;|&nbsp; Amount: <b>₹${amount.toFixed(2)}</b>`;
+            }
         }
 
         function updateCustomCalc(buildId) {
@@ -4358,53 +4472,79 @@
 
         function saveInlineSpecs(buildId, itemId, optIdx) {
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item || !item.options || !item.options[optIdx]) return;
             const opt = item.options[optIdx];
-            const inputVal = document.getElementById(`${buildId}-specs-input`).value.trim();
+            const inputEl = document.getElementById(`${buildId}-specs-input`);
+            if (!inputEl) return;
+            const inputVal = inputEl.value.trim();
 
             opt.specifications = inputVal;
 
-            // Get active quality
-            const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
-            let activeQual = 'Premium';
-            if (pMode === 'medium') activeQual = 'Middle / Standard';
-            else if (pMode === 'economy') activeQual = 'Economy';
+            // 1. Save to pks_item_specs map (Cloud-synced across all devices)
+            let specsMap = {};
+            const storedSpecs = localStorage.getItem('pks_item_specs');
+            if (storedSpecs) {
+                try { specsMap = JSON.parse(storedSpecs) || {}; } catch (e) { }
+            }
+            const specificKey = `${selectedRoom}_${itemId}_${opt.label}`;
+            const roomMatKey = `${selectedRoom}_${opt.label}`;
+            specsMap[specificKey] = inputVal;
+            specsMap[roomMatKey] = inputVal;
+            localStorage.setItem('pks_item_specs', JSON.stringify(specsMap));
 
-            // Save to localStorage database
+            // 2. Save in custom_specs_by_id map (Cloud-synced)
+            let customSpecs = {};
+            const storedCustom = localStorage.getItem('pks_custom_specs_by_id');
+            if (storedCustom) {
+                try { customSpecs = JSON.parse(storedCustom) || {}; } catch (e) { }
+            }
+            if (opt.id || opt.dbId) {
+                customSpecs[opt.id || opt.dbId] = inputVal;
+            }
+            customSpecs[`mat_${selectedRoom}_${opt.label}`] = inputVal;
+            localStorage.setItem('pks_custom_specs_by_id', JSON.stringify(customSpecs));
+
+            // 3. Save to localStorage database
             let stored = localStorage.getItem('pks_materials_db');
             if (stored) {
                 try {
                     let db = JSON.parse(stored);
-                    const match = db.find(m =>
-                        m.quality === activeQual &&
-                        m.roomId === selectedRoom &&
-                        m.itemName === item.name &&
-                        m.constructionType === opt.label
-                    );
-                    if (match) {
-                        match.specifications = inputVal;
-                        localStorage.setItem('pks_materials_db', JSON.stringify(db));
-                    }
+                    db.forEach(m => {
+                        if (m.roomId === selectedRoom && (m.itemName === item.name || m.itemName.toUpperCase() === item.name.toUpperCase()) && m.constructionType === opt.label) {
+                            m.specifications = inputVal;
+                        }
+                    });
+                    localStorage.setItem('pks_materials_db', JSON.stringify(db));
                 } catch (e) { }
             }
 
-            // Save in the custom specs by ID map
-            let customSpecs = {};
-            const storedCustom = localStorage.getItem('pks_custom_specs_by_id');
-            if (storedCustom) {
-                try { customSpecs = JSON.parse(storedCustom); } catch (e) { }
-            }
-            customSpecs[opt.id] = inputVal;
-            localStorage.setItem('pks_custom_specs_by_id', JSON.stringify(customSpecs));
+            invalidateMaterialsCache();
+            ITEMS = getFullItemsList();
 
             // Restore display view
             const specsTextBlock = document.getElementById(`${buildId}-specs-text`);
             if (specsTextBlock) {
                 specsTextBlock.textContent = formatSpecificationsText(opt.specifications, selectedRoom, opt.label) || "No specifications added. Click edit icon to add.";
             }
+
+            // Immediately broadcast & push to Firebase Realtime Database
+            try {
+                if (window.PKSSync) {
+                    if (window.PKSSync.pushItemSpecs) {
+                        window.PKSSync.pushItemSpecs(specsMap);
+                    }
+                    if (window.PKSSync.debouncedPush) {
+                        window.PKSSync.debouncedPush(100);
+                    }
+                }
+            } catch (e) { }
+
+            showToast("Specifications saved & synced to all devices!");
         }
 
         function cancelInlineSpecs(buildId, itemId, optIdx) {
             const item = ITEMS.find(i => i.id === itemId);
+            if (!item || !item.options || !item.options[optIdx]) return;
             const opt = item.options[optIdx];
             const specsTextBlock = document.getElementById(`${buildId}-specs-text`);
             if (specsTextBlock) {
@@ -4428,25 +4568,17 @@
                 );
 
                 if (match) {
-                    let rate = resolveRate(adminRates, match.constructionType, match.materialType);
-                    if (rate === undefined || rate === null || rate === 0) {
-                        rate = match.baseAmount;
-                    }
-                    if (rate > 0) {
-                        let factor = 1.0;
-                        if (adminRates[match.constructionType] === undefined) {
-                            if (targetQual === 'Middle / Standard') factor = 0.85;
-                            else if (targetQual === 'Economy' && match.itemName !== 'BED') factor = 0.70;
-                        }
-                        const finalRate = Math.round(rate * factor);
+                    let rawRate = resolveRate(adminRates, match.constructionType, match.materialType, line.roomId || match.roomId, selectedDivision, targetQual);
+                    let finalRate = (rawRate !== undefined && rawRate !== null && rawRate > 0) ? parseFloat(rawRate) : (match.baseAmount || 0);
+                    if (finalRate > 0) {
                         line.rate = finalRate;
                         line.amount = line.sqft * finalRate;
-                        if (match.constructionType) {
-                            line.material = match.constructionType;
-                        }
-                        if (match.specifications) {
-                            line.specifications = formatSpecificationsText(match.specifications, line.roomId, match.constructionType);
-                        }
+                    }
+                    if (match.constructionType) {
+                        line.material = match.constructionType;
+                    }
+                    if (match.specifications) {
+                        line.specifications = formatSpecificationsText(match.specifications, line.roomId, match.constructionType);
                     }
                 }
             });
@@ -4462,6 +4594,7 @@
             else if (mode === 'medium') activeQuality = 'Middle / Standard';
             else if (mode === 'economy') activeQuality = 'Economy';
 
+            invalidateMaterialsCache();
             updateQualityBadges();
             updateRoomState(selectedRoom, selectedRoomName);
             recalculateQuoteLinesForMode(mode);
@@ -4473,11 +4606,19 @@
             if (pMode === 'medium') {
                 typeLabel = 'Middle / Standard';
                 activeQuality = 'Middle / Standard';
+                modeLabel = 'Middle / Standard';
             } else if (pMode === 'economy') {
                 typeLabel = 'Economy';
                 activeQuality = 'Economy';
+                modeLabel = 'Economy';
             } else {
                 activeQuality = 'Premium';
+                modeLabel = 'Premium';
+            }
+
+            const divBadge = document.getElementById('divisionBadge');
+            if (divBadge) {
+                divBadge.textContent = `${selectedDivisionName} (${modeLabel})`;
             }
 
             const qBadge = document.getElementById('qualityBadge');
@@ -4507,11 +4648,23 @@
         initCustomerAutofill();
         updateQualityBadges();
 
-        // Storage event listener to live-sync specs and rates updated from Admin panel
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'pks_item_specs' || e.key === 'pks_custom_materials' || e.key === 'pks_rates' || e.key === 'pks_materials_db') {
+        // Consolidated live-sync listener for updates from Admin panel or Cloud Sync
+        function handleExternalDataSync(key) {
+            if (!key || key === 'pks_rates' || key === 'pks_custom_materials' || key === 'pks_custom_items' || key === 'pks_item_specs' || key === 'pks_custom_specs_by_id' || key === 'pks_deleted_standard_materials' || key === 'pks_deleted_standard_items') {
+                invalidateMaterialsCache();
                 ITEMS = getFullItemsList();
-                renderItemsGrid();
+                const activeBuilders = document.querySelectorAll('.builder');
+                if (activeBuilders.length === 0) {
+                    renderItemsGrid();
+                }
             }
+        }
+
+        window.addEventListener('storage', (e) => {
+            handleExternalDataSync(e.key);
+        });
+
+        window.addEventListener('pks_cloud_synced', (e) => {
+            handleExternalDataSync(e.detail && e.detail.key);
         });
     </script>
