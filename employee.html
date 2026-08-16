@@ -373,6 +373,24 @@
             font-family: var(--sans);
         }
 
+        .quote-mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .quote-mode-btn.active, .quote-mode-btn:hover {
+            background: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
         /* Quote section */
         .quote-wrap {
             margin-top: 40px;
@@ -496,6 +514,43 @@
             background: transparent;
             border: 1px solid var(--danger);
             color: var(--danger);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        button,
+        input,
+        select,
+        textarea,
+        .room-card,
+        .option-card,
+        .back-btn,
+        .action-btn {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        button:hover,
+        .room-card:hover,
+        .option-card:hover {
+            transform: translateY(-1px) translateZ(0);
+        }
+
+        button:active {
+            transform: translateY(0) scale(0.98) translateZ(0);
+        }
+
+        div[style*="overflow-y: auto"],
+        div[style*="overflow-x: auto"] {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
         }
 
         .back-btn {
@@ -1126,6 +1181,28 @@
         <div class="items-grid" id="itemsGrid"></div>
 
         <div class="quote-wrap">
+            <!-- Quote Mode Conversion Bar above Quote Summary -->
+            <div class="no-print" id="quoteModeTabsContainer"
+                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; background: var(--surface2); padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div
+                        style="font-size: 0.82rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px;">
+                        Quote Mode:
+                    </div>
+                    <div
+                        style="display: flex; gap: 6px; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 8px;">
+                        <button type="button" class="quote-mode-btn" id="quoteModeBtnPremium"
+                            onclick="convertQuoteSummaryMode('premium')"
+                            style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700;">✨ Premium</button>
+                        <button type="button" class="quote-mode-btn" id="quoteModeBtnMedium"
+                            onclick="convertQuoteSummaryMode('medium')"
+                            style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700;">⚖️ Middle / Standard</button>
+                        <button type="button" class="quote-mode-btn" id="quoteModeBtnEconomy"
+                            onclick="convertQuoteSummaryMode('economy')"
+                            style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700;">💡 Economy</button>
+                    </div>
+                </div>
+            </div>
             <div class="quote-title">
                 <h2>Quote Summary</h2>
                 <div class="no-print"
@@ -2428,11 +2505,27 @@
 
             db.forEach(m => {
                 const stdItemId = getStandardItemId(m.roomId, m.itemName);
+                const rawQ = m.quality || (typeof activeQuality !== 'undefined' ? activeQuality : '') || sessionStorage.getItem('pks_pricing_mode') || 'premium';
+                const normQ = rawQ.toLowerCase();
+                let qualKey = 'premium';
+                if (normQ.includes('middle') || normQ.includes('medium') || normQ.includes('standard')) qualKey = 'medium';
+                else if (normQ.includes('economy')) qualKey = 'economy';
+
+                const specKeyQual1 = `${m.roomId}_${stdItemId}_${m.constructionType}_${qualKey}`;
+                const specKeyQual2 = `${m.roomId}_${m.constructionType}_${qualKey}`;
+                const specKeyQual3 = `${m.constructionType}_${qualKey}`;
+
                 const specKey1 = `${m.roomId}_${stdItemId}_${m.constructionType}`;
                 const specKey2 = `${m.roomId}_${m.constructionType}`;
                 const specKey3 = m.constructionType;
 
-                if (itemSpecsMap[specKey1] !== undefined && itemSpecsMap[specKey1] !== '') {
+                if (itemSpecsMap[specKeyQual1] !== undefined && itemSpecsMap[specKeyQual1] !== '') {
+                    m.specifications = itemSpecsMap[specKeyQual1];
+                } else if (itemSpecsMap[specKeyQual2] !== undefined && itemSpecsMap[specKeyQual2] !== '') {
+                    m.specifications = itemSpecsMap[specKeyQual2];
+                } else if (itemSpecsMap[specKeyQual3] !== undefined && itemSpecsMap[specKeyQual3] !== '') {
+                    m.specifications = itemSpecsMap[specKeyQual3];
+                } else if (itemSpecsMap[specKey1] !== undefined && itemSpecsMap[specKey1] !== '') {
                     m.specifications = itemSpecsMap[specKey1];
                 } else if (itemSpecsMap[specKey2] !== undefined && itemSpecsMap[specKey2] !== '') {
                     m.specifications = itemSpecsMap[specKey2];
@@ -2973,12 +3066,31 @@
             openMaterialSelector(buildId, itemId);
         }
 
-        function getEffectiveSpecs(roomId, itemId, materialLabel, defaultSpecs) {
+        function getEffectiveSpecs(roomId, itemId, materialLabel, defaultSpecs, qual) {
+            const curQual = qual || (typeof activeQuality !== 'undefined' ? activeQuality : '') || sessionStorage.getItem('pks_pricing_mode') || 'premium';
+            const normQ = curQual.toLowerCase();
+            let qualKey = 'premium';
+            if (normQ.includes('middle') || normQ.includes('medium') || normQ.includes('standard')) qualKey = 'medium';
+            else if (normQ.includes('economy')) qualKey = 'economy';
+
             const stored = localStorage.getItem('pks_item_specs');
             if (stored) {
                 try {
                     const specsMap = JSON.parse(stored);
                     if (specsMap) {
+                        const specificKeyQual = `${roomId}_${itemId}_${materialLabel}_${qualKey}`;
+                        if (specsMap[specificKeyQual] !== undefined && specsMap[specificKeyQual] !== null && specsMap[specificKeyQual] !== '') {
+                            return specsMap[specificKeyQual];
+                        }
+                        const roomMatKeyQual = `${roomId}_${materialLabel}_${qualKey}`;
+                        if (specsMap[roomMatKeyQual] !== undefined && specsMap[roomMatKeyQual] !== null && specsMap[roomMatKeyQual] !== '') {
+                            return specsMap[roomMatKeyQual];
+                        }
+                        const matKeyQual = `${materialLabel}_${qualKey}`;
+                        if (specsMap[matKeyQual] !== undefined && specsMap[matKeyQual] !== null && specsMap[matKeyQual] !== '') {
+                            return specsMap[matKeyQual];
+                        }
+
                         const specificKey = `${roomId}_${itemId}_${materialLabel}`;
                         if (specsMap[specificKey] !== undefined && specsMap[specificKey] !== null && specsMap[specificKey] !== '') {
                             return specsMap[specificKey];
@@ -4561,29 +4673,54 @@
             const roomDb = getOrInitMaterialsDb();
 
             quoteLines.forEach(line => {
+                const normRoomId = (line.roomId || '').toLowerCase();
+                const normItemName = (line.itemName || '').toUpperCase().trim();
+
+                // Find matching material in roomDb for target quality mode
                 const match = roomDb.find(m =>
-                    (m.roomId || '').toLowerCase() === (line.roomId || '').toLowerCase() &&
+                    (m.roomId || '').toLowerCase() === normRoomId &&
                     (m.quality || '').toLowerCase() === targetQual.toLowerCase() &&
-                    (m.itemName || '').toUpperCase() === (line.itemName || '').toUpperCase()
+                    (m.itemName || '').toUpperCase().trim() === normItemName
                 );
 
-                if (match) {
-                    let rawRate = resolveRate(adminRates, match.constructionType, match.materialType, line.roomId || match.roomId, selectedDivision, targetQual);
-                    let finalRate = (rawRate !== undefined && rawRate !== null && rawRate > 0) ? parseFloat(rawRate) : (match.baseAmount || 0);
-                    if (finalRate > 0) {
-                        line.rate = finalRate;
-                        line.amount = line.sqft * finalRate;
+                let matName = match ? (match.constructionType || line.material) : line.material;
+                let matType = match ? (match.materialType || line.materialType) : line.materialType;
+
+                line.material = matName;
+                if (matType) line.materialType = matType;
+
+                let rawRate = resolveRate(adminRates, matName, matType || '', line.roomId, selectedDivision, targetQual);
+                if (rawRate === undefined || rawRate === null || parseFloat(rawRate) <= 0) {
+                    if (match && match.baseAmount) {
+                        rawRate = match.baseAmount;
                     }
-                    if (match.constructionType) {
-                        line.material = match.constructionType;
-                    }
-                    if (match.specifications) {
-                        line.specifications = formatSpecificationsText(match.specifications, line.roomId, match.constructionType);
-                    }
+                }
+
+                if (rawRate !== undefined && rawRate !== null && parseFloat(rawRate) > 0) {
+                    line.rate = parseFloat(rawRate);
+                    line.amount = line.sqft * line.rate;
+                }
+
+                const effSpecs = getEffectiveSpecs(line.roomId, line.stdItemId || 0, matName, (match ? match.specifications : line.specifications), targetQual);
+                if (effSpecs) {
+                    line.specifications = formatSpecificationsText(effSpecs, line.roomId, matName);
                 }
             });
 
             renderQuote();
+        }
+
+        function convertQuoteSummaryMode(mode) {
+            document.querySelectorAll('.quote-mode-btn').forEach(btn => btn.classList.remove('active'));
+            let activeId = 'quoteModeBtnPremium';
+            if (mode === 'medium') activeId = 'quoteModeBtnMedium';
+            else if (mode === 'economy') activeId = 'quoteModeBtnEconomy';
+            
+            const btn = document.getElementById(activeId);
+            if (btn) btn.classList.add('active');
+
+            recalculateQuoteLinesForMode(mode);
+            showToast(`Quote Summary converted to ${mode === 'premium' ? 'Premium' : (mode === 'medium' ? 'Middle / Standard' : 'Economy')} mode!`);
         }
 
         function switchPricingMode(mode) {
