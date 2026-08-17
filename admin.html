@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pravin Kitchens & Interiors — Admin Panel</title>
+    <title>Pravin Kitchen & Interiors — Admin Panel</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono&display=swap');
 
@@ -634,10 +634,10 @@
 <body>
     <header>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo"
+            <img src="logo.jpg" alt="Pravin Kitchen &amp; Interiors Logo"
                 style="height: 50px; border-radius: 6px; object-fit: contain;">
             <div>
-                <h1>Pravin Kitchens &amp; Interiors
+                <h1>Pravin Kitchen &amp; Interiors
                     <span class="role-badge">Admin Panel</span>
                     <span class="role-badge" id="divisionBadge"
                         style="background:var(--surface2);color:var(--accent);border-color:var(--accent);">Marketing</span>
@@ -717,6 +717,7 @@
                                 <th>Premium Rate (₹)</th>
                                 <th>Middle / Standard Rate (₹)</th>
                                 <th>Economy Rate (₹)</th>
+                                <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="ratesTableBody">
@@ -1631,9 +1632,108 @@
                     <td><input type="number" data-material="${mat}" data-qual="premium" value="${premVal !== undefined ? premVal : ''}" placeholder="Premium ₹"></td>
                     <td><input type="number" data-material="${mat}" data-qual="medium" value="${midVal !== undefined ? midVal : ''}" placeholder="Middle ₹"></td>
                     <td><input type="number" data-material="${mat}" data-qual="economy" value="${ecoVal !== undefined ? ecoVal : ''}" placeholder="Economy ₹"></td>
+                    <td style="text-align: center;">
+                        <button type="button" onclick="deleteMaterialFromRatesTable('${selectedRoom}', '${mat.replace(/'/g, "\\'")}')" 
+                            title="Delete material option from all devices" 
+                            style="background: rgba(255, 68, 68, 0.15); border: 1px solid rgba(255, 68, 68, 0.4); color: #ff6b6b; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight: 500;">
+                            🗑️ Delete
+                        </button>
+                    </td>
                 `;
                 body.appendChild(tr);
             });
+        }
+
+        function deleteMaterialFromRatesTable(roomId, materialLabel) {
+            if (!confirm(`Are you sure you want to delete material option "${materialLabel}" across all devices?`)) return;
+
+            // 1. Mark standard material option as deleted for item cards
+            let deletedMats = getDeletedStandardMaterials();
+            const itemsInRoom = ROOM_ITEMS[roomId] || ROOM_ITEMS.kitchen || [];
+            
+            itemsInRoom.forEach(item => {
+                const matKey = `${item.id}-${materialLabel}`;
+                if (!deletedMats.includes(matKey)) {
+                    deletedMats.push(matKey);
+                }
+            });
+            for (const rKey in ROOM_ITEMS) {
+                (ROOM_ITEMS[rKey] || []).forEach(item => {
+                    if (item.options && item.options.includes(materialLabel)) {
+                        const matKey = `${item.id}-${materialLabel}`;
+                        if (!deletedMats.includes(matKey)) {
+                            deletedMats.push(matKey);
+                        }
+                    }
+                });
+            }
+            localStorage.setItem('pks_deleted_standard_materials', JSON.stringify(deletedMats));
+
+            // 2. Remove from customMaterials
+            customMaterials = getCustomMaterials();
+            let customChanged = false;
+            for (const itemId in customMaterials) {
+                if (Array.isArray(customMaterials[itemId])) {
+                    const origLen = customMaterials[itemId].length;
+                    customMaterials[itemId] = customMaterials[itemId].filter(m => m.label !== materialLabel);
+                    if (customMaterials[itemId].length !== origLen) customChanged = true;
+                    if (customMaterials[itemId].length === 0) delete customMaterials[itemId];
+                }
+            }
+            if (customChanged) {
+                localStorage.setItem('pks_custom_materials', JSON.stringify(customMaterials));
+            }
+
+            // 3. Remove from customItems
+            customItems = getCustomItems();
+            let customItemsChanged = false;
+            customItems.forEach(cItem => {
+                if (cItem.options && Array.isArray(cItem.options)) {
+                    const origLen = cItem.options.length;
+                    cItem.options = cItem.options.filter(o => (o.label || o) !== materialLabel);
+                    if (cItem.options.length !== origLen) customItemsChanged = true;
+                }
+            });
+            if (customItemsChanged) {
+                localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+            }
+
+            // 4. Remove rate entries
+            currentRates = getRates();
+            const normMat = normalizeKey(materialLabel);
+            for (const k in currentRates) {
+                if (k === materialLabel || normalizeKey(k).includes(normMat)) {
+                    delete currentRates[k];
+                }
+            }
+            localStorage.setItem('pks_rates', JSON.stringify(currentRates));
+
+            // 5. Remove from pks_materials_db
+            let storedDb = localStorage.getItem('pks_materials_db');
+            if (storedDb) {
+                try {
+                    let db = JSON.parse(storedDb);
+                    db = db.filter(m => m.constructionType !== materialLabel);
+                    localStorage.setItem('pks_materials_db', JSON.stringify(db));
+                } catch (e) { }
+            }
+
+            // 6. Broadcast cloud sync update to all devices
+            try {
+                if (window.PKSSync) {
+                    if (window.PKSSync.pushCustomMaterials) window.PKSSync.pushCustomMaterials(customMaterials);
+                    if (window.PKSSync.pushCustomItems) window.PKSSync.pushCustomItems(customItems);
+                    if (window.PKSSync.pushDeletedStandardMaterials) window.PKSSync.pushDeletedStandardMaterials(getDeletedStandardMaterials());
+                    if (window.PKSSync.pushRates) window.PKSSync.pushRates(currentRates);
+                    if (window.PKSSync.debouncedPush) window.PKSSync.debouncedPush(50);
+                }
+            } catch (e) { }
+
+            // 7. Refresh UI
+            renderCurrentItemsList();
+            renderCustomItemsList();
+            renderRatesTable();
+            showToast(`Material "${materialLabel}" deleted across all devices!`);
         }
 
         function saveRates() {
@@ -1825,11 +1925,25 @@
                 const div = document.createElement('div');
                 div.className = 'item-manage-card';
 
-                let matTags = item.options.map(opt => `<span class="tag-pill">${opt}</span>`).join('');
+                const deletedMats = getDeletedStandardMaterials();
+                let filteredOptions = (item.options || []).filter(o => !deletedMats.includes(`${item.id}-${o}`));
+
+                let matTags = filteredOptions.map(opt => `
+                    <span class="tag-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; margin: 3px;">
+                        <span>${opt}</span>
+                        <button type="button" onclick="deleteMaterialOptionFromAdmin('${selectedRoom}', ${item.id}, '${opt.replace(/'/g, "\\'")}', false)" 
+                            title="Delete material option" 
+                            style="background: rgba(255, 68, 68, 0.15); border: 1px solid rgba(255, 68, 68, 0.4); color: #ff6b6b; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.65rem; padding: 0; cursor: pointer; line-height: 1;">✕</button>
+                    </span>
+                `).join('');
+
                 const customList = customMaterials[item.id] || [];
                 let customTags = customList.map((m, index) => `
-                    <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
-                        ${m.label}
+                    <span class="tag-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; margin: 3px; border: 1px solid var(--accent); color: var(--accent);">
+                        <span>${m.label}</span>
+                        <button type="button" onclick="deleteMaterialOptionFromAdmin('${selectedRoom}', ${item.id}, '${m.label.replace(/'/g, "\\'")}', true, ${index})" 
+                            title="Delete material option" 
+                            style="background: rgba(255, 68, 68, 0.15); border: 1px solid rgba(255, 68, 68, 0.4); color: #ff6b6b; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.65rem; padding: 0; cursor: pointer; line-height: 1;">✕</button>
                     </span>
                 `).join('');
 
@@ -1838,7 +1952,7 @@
                         <div class="item-manage-card-title">${item.id}. ${item.name} <span class="role-badge" style="font-size:0.68rem; padding: 2px 8px; margin-left: 8px;">Standard</span></div>
                         <button class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteStandardItem(${item.id})">Delete Card</button>
                     </div>
-                    <div class="tags-row" style="margin-bottom: 10px;">
+                    <div class="tags-row" style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
                         ${matTags}
                         ${customTags}
                     </div>
@@ -1852,9 +1966,12 @@
                     const div = document.createElement('div');
                     div.className = 'item-manage-card';
 
-                    let optTags = item.options.map((opt, optIdx) => `
-                        <span class="tag-pill" style="border: 1px solid var(--accent); color: var(--accent);">
-                            ${opt.label}
+                    let optTags = (item.options || []).map((opt, optIdx) => `
+                        <span class="tag-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; margin: 3px; border: 1px solid var(--accent); color: var(--accent);">
+                            <span>${opt.label || opt}</span>
+                            <button type="button" onclick="deleteCustomItemMaterialFromAdmin(${item.id}, ${optIdx})" 
+                                title="Delete material option" 
+                                style="background: rgba(255, 68, 68, 0.15); border: 1px solid rgba(255, 68, 68, 0.4); color: #ff6b6b; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.65rem; padding: 0; cursor: pointer; line-height: 1;">✕</button>
                         </span>
                     `).join('');
 
@@ -1863,7 +1980,7 @@
                             <div class="item-manage-card-title">${item.id}. ${item.name.toUpperCase()} <span class="role-badge" style="font-size:0.68rem; padding: 2px 8px; margin-left: 8px; background: rgba(61, 187, 110, 0.15);">Custom</span></div>
                             <button class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteCustomItem(${index})">Delete Card</button>
                         </div>
-                        <div class="tags-row" style="margin-bottom: 10px;">
+                        <div class="tags-row" style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
                             ${optTags || '<span style="font-size: 0.8rem; color: var(--muted); font-style: italic;">No materials added yet</span>'}
                         </div>
                     `;
@@ -1946,6 +2063,71 @@
                 renderCustomItemsList();
                 showToast("Material option removed.");
             }
+        }
+
+        function deleteMaterialOptionFromAdmin(roomId, itemId, materialLabel, isCustom, customIndex) {
+            if (!confirm(`Delete material option "${materialLabel}"?`)) return;
+
+            if (isCustom) {
+                if (customMaterials[itemId]) {
+                    customMaterials[itemId] = customMaterials[itemId].filter(m => m.label !== materialLabel);
+                    if (customMaterials[itemId].length === 0) delete customMaterials[itemId];
+                    localStorage.setItem('pks_custom_materials', JSON.stringify(customMaterials));
+                }
+            } else {
+                let deletedMats = getDeletedStandardMaterials();
+                const matKey = `${itemId}-${materialLabel}`;
+                if (!deletedMats.includes(matKey)) {
+                    deletedMats.push(matKey);
+                    localStorage.setItem('pks_deleted_standard_materials', JSON.stringify(deletedMats));
+                }
+            }
+
+            // Remove from pks_materials_db if present
+            let storedDb = localStorage.getItem('pks_materials_db');
+            if (storedDb) {
+                try {
+                    let db = JSON.parse(storedDb);
+                    db = db.filter(m => !(m.roomId === roomId && m.constructionType === materialLabel));
+                    localStorage.setItem('pks_materials_db', JSON.stringify(db));
+                } catch (e) { }
+            }
+
+            // Broadcast cloud sync update
+            try {
+                if (window.PKSSync) {
+                    if (window.PKSSync.pushCustomMaterials) window.PKSSync.pushCustomMaterials(customMaterials);
+                    if (window.PKSSync.pushDeletedStandardMaterials) window.PKSSync.pushDeletedStandardMaterials(getDeletedStandardMaterials());
+                    if (window.PKSSync.debouncedPush) window.PKSSync.debouncedPush(50);
+                }
+            } catch (e) { }
+
+            renderCurrentItemsList();
+            renderCustomItemsList();
+            renderRatesTable();
+            showToast(`Material "${materialLabel}" deleted!`);
+        }
+
+        function deleteCustomItemMaterialFromAdmin(itemId, optIdx) {
+            const item = customItems.find(i => i.id === itemId);
+            if (!item || !item.options || !item.options[optIdx]) return;
+            const matLabel = item.options[optIdx].label || item.options[optIdx];
+            if (!confirm(`Delete material "${matLabel}" from "${item.name}"?`)) return;
+
+            item.options.splice(optIdx, 1);
+            localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+
+            try {
+                if (window.PKSSync) {
+                    if (window.PKSSync.pushCustomItems) window.PKSSync.pushCustomItems(customItems);
+                    if (window.PKSSync.debouncedPush) window.PKSSync.debouncedPush(50);
+                }
+            } catch (e) { }
+
+            renderCurrentItemsList();
+            renderCustomItemsList();
+            renderRatesTable();
+            showToast(`Material "${matLabel}" deleted!`);
         }
 
         function getStandardFormulaInfo(itemId, optName) {
@@ -2945,7 +3127,7 @@
 
         // Sync updates from other devices / Cloud Sync automatically
         function handleAdminExternalSync(key) {
-            if (!key || key === 'pks_item_specs' || key === 'pks_custom_specs_by_id' || key === 'pks_custom_materials' || key === 'pks_rates' || key === 'pks_custom_items' || key === 'pks_divisions' || key === 'pks_deleted_standard_materials' || key === 'pks_deleted_standard_items') {
+            if (!key || key === 'pks_materials_db' || key === 'pks_item_specs' || key === 'pks_custom_specs_by_id' || key === 'pks_custom_materials' || key === 'pks_rates' || key === 'pks_custom_items' || key === 'pks_divisions' || key === 'pks_deleted_standard_materials' || key === 'pks_deleted_standard_items') {
                 updateRoomState(selectedRoom, selectedRoomName);
                 const activeTab = document.querySelector('.tab-btn.active');
                 if (activeTab) {

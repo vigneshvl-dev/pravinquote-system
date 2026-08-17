@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pravin Kitchens &amp; Interiors — Employee Quote System</title>
+    <title>Pravin Kitchen &amp; Interiors — Employee Quote System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -385,7 +385,8 @@
             transition: all 0.2s ease;
         }
 
-        .quote-mode-btn.active, .quote-mode-btn:hover {
+        .quote-mode-btn.active,
+        .quote-mode-btn:hover {
             background: var(--accent);
             color: #ffffff;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
@@ -994,23 +995,17 @@
     <div class="print-invoice-header">
         <div class="invoice-left">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo"
+                <img src="logo.jpg" alt="Pravin Kitchen &amp; Interiors Logo"
                     style="height: 55px; border-radius: 6px; object-fit: contain;">
                 <div>
-                    <h2 style="color: var(--accent); margin: 0; font-size: 1.3rem;">Pravin Kitchens &amp; Interiors</h2>
-                    <p style="font-weight: 600; font-size: 0.82rem; margin: 3px 0 0 0; color: #555;">Premium Modular
-                        Kitchens & Interiors</p>
+                    <h2 style="color: var(--accent); margin: 0; font-size: 1.3rem;">Pravin Kitchen &amp; Interiors</h2>
                 </div>
             </div>
             <p style="font-size: 0.82rem; line-height: 1.4; color: #555; margin-top: 5px;">
-                Address: Pravin Modular Kitchens,<br>
+                Address: Pravin Modular Kitchen,<br>
                 Tvm Main Road, Azhagiamandapam,<br>
                 Mulagumoodu Post - 629167, T.N.<br>
                 Mobile: +91 9787769970
-            </p>
-            <p
-                style="font-size: 0.72rem; margin-top: 15px; color: #777; border-top: 1px dashed #ccc; padding-top: 5px;">
-                Note: 45 Days Storage Validity & Guarantee
             </p>
         </div>
         <div class="invoice-right">
@@ -1053,10 +1048,10 @@
     <header>
         <div class="header-inner">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo"
+                <img src="logo.jpg" alt="Pravin Kitchen &amp; Interiors Logo"
                     style="height: 50px; border-radius: 6px; object-fit: contain;">
                 <div>
-                    <h1>Pravin Kitchens &amp; Interiors
+                    <h1>Pravin Kitchen &amp; Interiors
                         <span class="role-badge">Employee</span>
                         <span class="role-badge" id="divisionBadge"
                             style="background:var(--accent-light);color:var(--accent-dark);border-color:var(--accent);">Marketing</span>
@@ -1074,9 +1069,6 @@
                 <span class="cloud-sync-badge role-badge"
                     style="background: rgba(255,255,255,0.08); font-size: 0.75rem; padding: 4px 8px; border-radius: 6px;">⚪
                     Local Mode</span>
-                <button id="adminPanelNavBtn" class="back-btn"
-                    style="display:none; padding: 8px 14px; font-size: 0.8rem; border-radius: 8px; font-weight: 600; cursor: pointer; background: var(--accent); border: none; color: #ffffff !important;"
-                    onclick="location.href='admin.html'">Admin Panel</button>
                 <button class="back-btn"
                     style="background: var(--accent); border: none; padding: 0; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 40px; height: 40px; min-width: 40px;"
                     onclick="openSavedQuotesModal()" title="Saved Quotes Folder">📂</button>
@@ -1196,7 +1188,8 @@
                             style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700;">✨ Premium</button>
                         <button type="button" class="quote-mode-btn" id="quoteModeBtnMedium"
                             onclick="convertQuoteSummaryMode('medium')"
-                            style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700;">⚖️ Middle / Standard</button>
+                            style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700;">⚖️ Middle /
+                            Standard</button>
                         <button type="button" class="quote-mode-btn" id="quoteModeBtnEconomy"
                             onclick="convertQuoteSummaryMode('economy')"
                             style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700;">💡 Economy</button>
@@ -1433,10 +1426,6 @@
                             <th>No.</th>
                             <th>Type</th>
                             <th>Customer</th>
-                            <th>Phone</th>
-                            <th>Division</th>
-                            <th>Room</th>
-                            <th>Material</th>
                             <th>Amount</th>
                             <th style="text-align: center;">Actions</th>
                         </tr>
@@ -1480,10 +1469,6 @@
         if (!role) {
             location.href = 'index.html';
         }
-        if (role === 'admin') {
-            const adminBtn = document.getElementById('adminPanelNavBtn');
-            if (adminBtn) adminBtn.style.display = 'inline-flex';
-        }
         const showRate = (role === 'admin');
 
         const allRooms = [
@@ -1503,15 +1488,12 @@
             { id: 'full_teak_wood', name: 'Full Teak Wood', icon: '👑', active: true },
             { id: 'half_teak_wood', name: 'Half Teak Wood', icon: '🪵', active: true }
         ];
-
         const ROOMS = allRooms.filter(r => {
             if (isEconomyMode && r.id === 'study_room') return false;
             return true;
         });
-
         let selectedRoom = (sessionStorage.getItem('pks_selected_room') || 'kitchen').toLowerCase();
         let selectedRoomName = sessionStorage.getItem('pks_selected_room_name') || 'Kitchen';
-
         let FIELD_LABELS = {
             L: "Length (in)",
             W: "Width",
@@ -2959,9 +2941,42 @@
                         if (customMats[stdItemId]) {
                             customMats[stdItemId] = customMats[stdItemId].filter(m => m.label !== opt.label);
                             localStorage.setItem('pks_custom_materials', JSON.stringify(customMats));
+                            if (window.PKSSync && window.PKSSync.pushCustomMaterials) {
+                                window.PKSSync.pushCustomMaterials(customMats);
+                            }
                         }
                     } catch (e) { }
                 }
+
+                const deletedMatsStr = localStorage.getItem('pks_deleted_standard_materials');
+                let deletedMats = deletedMatsStr ? JSON.parse(deletedMatsStr) : [];
+                const matKey = `${stdItemId}-${opt.label}`;
+                if (!deletedMats.includes(matKey)) {
+                    deletedMats.push(matKey);
+                    localStorage.setItem('pks_deleted_standard_materials', JSON.stringify(deletedMats));
+                    if (window.PKSSync && window.PKSSync.pushDeletedStandardMaterials) {
+                        window.PKSSync.pushDeletedStandardMaterials(deletedMats);
+                    }
+                }
+            } else {
+                const customItemsStr = localStorage.getItem('pks_custom_items');
+                if (customItemsStr) {
+                    try {
+                        let customItems = JSON.parse(customItemsStr);
+                        const cItem = customItems.find(ci => ci.id === itemId || ci.name === item.name);
+                        if (cItem && cItem.options) {
+                            cItem.options = cItem.options.filter(o => (o.label || o) !== opt.label);
+                            localStorage.setItem('pks_custom_items', JSON.stringify(customItems));
+                            if (window.PKSSync && window.PKSSync.pushCustomItems) {
+                                window.PKSSync.pushCustomItems(customItems);
+                            }
+                        }
+                    } catch (e) { }
+                }
+            }
+
+            if (window.PKSSync && window.PKSSync.debouncedPush) {
+                window.PKSSync.debouncedPush(50);
             }
 
             invalidateMaterialsCache();
@@ -2972,94 +2987,164 @@
         function addCustomMaterialOption(buildId, itemId) {
             const matName = prompt("Enter new material name (e.g. Teak Wood (Box Type)):");
             if (!matName || !matName.trim()) return;
+
             const rateStr = prompt("Enter rate (₹):");
             if (!rateStr) return;
             const rate = parseFloat(rateStr) || 0;
+
+            const formulaChoice = prompt(
+                "Select Formula Type for calculation:\n" +
+                "1 = (L + W) * H / 144  (Cabinet / Box Type)\n" +
+                "2 = L * H / 144  (Door / Wall Panel Type)\n" +
+                "3 = L * W / 144  (Ceiling / Ledge Type)\n" +
+                "4 = Direct Sq.Ft\n" +
+                "5 = Quantity / Per Piece",
+                "1"
+            );
+            if (!formulaChoice) return;
+
+            let chosenFormula = "(L+W)*H/144";
+            let formulaType = "(L+W)*H";
+            let fields = ["L", "W", "H"];
+            let note = "(L+W)×H";
+
+            const fVal = formulaChoice.trim();
+            if (fVal === "2") {
+                chosenFormula = "L*H/144";
+                formulaType = "L*H";
+                fields = ["L", "H"];
+                note = "L×H";
+            } else if (fVal === "3") {
+                chosenFormula = "L*W/144";
+                formulaType = "L*W";
+                fields = ["L", "W"];
+                note = "L×W";
+            } else if (fVal === "4") {
+                chosenFormula = "1";
+                formulaType = "SQFT";
+                fields = ["SQFT"];
+                note = "direct sq.ft";
+            } else if (fVal === "5") {
+                chosenFormula = "1";
+                formulaType = "QTY";
+                fields = ["QTY"];
+                note = "qty";
+            }
+
             const specs = prompt("Enter specifications (optional):") || "";
 
             const item = ITEMS.find(i => i.id === itemId);
             if (!item) return;
             const firstOpt = item.options[0] || {};
 
-            let storedDb = localStorage.getItem('pks_materials_db');
-            if (storedDb) {
+            let storedDb = localStorage.getItem('pks_materials_db') || '[]';
+            try {
+                let db = JSON.parse(storedDb) || [];
+                const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
+                let qual = 'Premium';
+                if (pMode === 'medium') qual = 'Middle / Standard';
+                else if (pMode === 'economy') qual = 'Economy';
+
+                const cleanMatName = matName.trim();
+
+                let customMats = {};
+                const storedCustom = localStorage.getItem('pks_custom_materials');
+                if (storedCustom) {
+                    try { customMats = JSON.parse(storedCustom) || {}; } catch (e) { }
+                }
+
+                // Add custom material entry for items across Premium, Middle, and Economy modes
+                const roomItems = (ITEMS && ITEMS.length > 0) ? ITEMS : [item];
+
+                roomItems.forEach(rItem => {
+                    const itemName = rItem.name;
+                    const stdItemId = getStandardItemId(selectedRoom, itemName) || rItem.id;
+                    const firstOpt = rItem.options ? (rItem.options[0] || {}) : {};
+
+                    ['Premium', 'Middle / Standard', 'Economy'].forEach(qVal => {
+                        const exists = db.some(m =>
+                            (m.roomId || '').toLowerCase() === selectedRoom.toLowerCase() &&
+                            (m.itemName || '').toUpperCase() === itemName.toUpperCase() &&
+                            (m.constructionType || '').toUpperCase() === cleanMatName.toUpperCase() &&
+                            (m.quality || '').toLowerCase() === qVal.toLowerCase()
+                        );
+                        if (!exists) {
+                            const newId = 'mat_custom_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+                            db.push({
+                                id: newId,
+                                roomId: selectedRoom,
+                                materialType: firstOpt.materialType || 'Standard',
+                                quality: qVal,
+                                itemName: itemName,
+                                constructionType: cleanMatName,
+                                specifications: specs || firstOpt.specifications || "",
+                                formula: chosenFormula,
+                                formulaType: formulaType,
+                                fields: fields,
+                                note: note,
+                                baseAmount: rate,
+                                offerPrice: rate,
+                                discountPercentage: 0,
+                                amountIncreasePercentage: 0,
+                                showSqft: (formulaType !== 'QTY'),
+                                status: 'ON'
+                            });
+                        }
+                    });
+
+                    if (stdItemId) {
+                        if (!customMats[stdItemId]) customMats[stdItemId] = [];
+                        const existsCustom = customMats[stdItemId].some(m => (m.label || '').toUpperCase() === cleanMatName.toUpperCase());
+                        if (!existsCustom) {
+                            customMats[stdItemId].push({ label: cleanMatName, rate: rate, specifications: specs, formulaType, fields, note });
+                        }
+                    }
+                });
+
+                localStorage.setItem('pks_materials_db', JSON.stringify(db));
+
+                // 1. Save rate in pks_rates with room and mode keys
+                const storedRates = localStorage.getItem('pks_rates');
+                let rates = {};
+                if (storedRates) {
+                    try { rates = JSON.parse(storedRates) || {}; } catch (e) { }
+                }
+                rates[`${cleanMatName}_${pMode}`] = rate;
+                rates[`${selectedRoom}_${cleanMatName}_${pMode}`] = rate;
+                rates[`${selectedDivision}_${selectedRoom}_${cleanMatName}_${pMode}`] = rate;
+                rates[cleanMatName] = rate;
+                localStorage.setItem('pks_rates', JSON.stringify(rates));
+
+                // 2. Save custom_materials to localStorage
+                localStorage.setItem('pks_custom_materials', JSON.stringify(customMats));
+
+                // 3. Save specs in pks_item_specs
+                let specsMap = {};
+                const storedSpecs = localStorage.getItem('pks_item_specs');
+                if (storedSpecs) {
+                    try { specsMap = JSON.parse(storedSpecs) || {}; } catch (e) { }
+                }
+                specsMap[`${selectedRoom}_${itemId}_${cleanMatName}_${pMode}`] = specs;
+                specsMap[`${selectedRoom}_${cleanMatName}_${pMode}`] = specs;
+                specsMap[`${cleanMatName}_${pMode}`] = specs;
+                specsMap[`${selectedRoom}_${itemId}_${cleanMatName}`] = specs;
+                specsMap[`${selectedRoom}_${cleanMatName}`] = specs;
+                specsMap[cleanMatName] = specs;
+                localStorage.setItem('pks_item_specs', JSON.stringify(specsMap));
+
+                // 4. Broadcast & Push immediately to Firebase Realtime Database Backend
                 try {
-                    let db = JSON.parse(storedDb);
-                    const pMode = sessionStorage.getItem('pks_pricing_mode') || 'premium';
-                    let qual = 'Premium';
-                    if (pMode === 'medium') qual = 'Middle / Standard';
-                    else if (pMode === 'economy') qual = 'Economy';
-
-                    const newId = 'mat_custom_' + Date.now();
-                    const newEntry = {
-                        id: newId,
-                        roomId: selectedRoom,
-                        materialType: firstOpt.materialType || 'Standard',
-                        quality: qual,
-                        itemName: item.name,
-                        constructionType: matName.trim(),
-                        specifications: specs || firstOpt.specifications || "",
-                        formula: firstOpt.formula || "(L+W)*H/144",
-                        baseAmount: rate,
-                        offerPrice: rate,
-                        discountPercentage: 0,
-                        amountIncreasePercentage: 0,
-                        showSqft: firstOpt.showSqft !== undefined ? firstOpt.showSqft : true,
-                        status: 'ON'
-                    };
-
-                    db.push(newEntry);
-                    localStorage.setItem('pks_materials_db', JSON.stringify(db));
-
-                    // 1. Save rate in pks_rates with mode key
-                    const storedRates = localStorage.getItem('pks_rates');
-                    let rates = {};
-                    if (storedRates) {
-                        try { rates = JSON.parse(storedRates); } catch (e) { }
+                    if (window.PKSSync) {
+                        if (window.PKSSync.pushMaterialsDb) window.PKSSync.pushMaterialsDb(db);
+                        if (window.PKSSync.pushCustomMaterials) window.PKSSync.pushCustomMaterials(customMats);
+                        if (window.PKSSync.pushRates) window.PKSSync.pushRates(rates);
+                        if (window.PKSSync.pushItemSpecs) window.PKSSync.pushItemSpecs(specsMap);
+                        if (window.PKSSync.debouncedPush) window.PKSSync.debouncedPush(50);
                     }
-                    rates[`${matName.trim()}_${pMode}`] = rate;
-                    rates[matName.trim()] = rate;
-                    localStorage.setItem('pks_rates', JSON.stringify(rates));
-
-                    // 2. Save in pks_custom_materials so Admin Panel sees it immediately
-                    const stdItemId = getStandardItemId(selectedRoom, item.name);
-                    const targetKey = stdItemId || itemId;
-                    if (targetKey) {
-                        const storedCustom = localStorage.getItem('pks_custom_materials');
-                        let customMats = {};
-                        if (storedCustom) {
-                            try { customMats = JSON.parse(storedCustom) || {}; } catch (e) { }
-                        }
-                        if (!customMats[targetKey]) {
-                            customMats[targetKey] = [];
-                        }
-                        customMats[targetKey].push({ label: matName.trim(), rate: rate, specifications: specs });
-                        localStorage.setItem('pks_custom_materials', JSON.stringify(customMats));
-                    }
-
-                    // 3. If specs provided, save in pks_item_specs
-                    if (specs) {
-                        let specsMap = {};
-                        const storedSpecs = localStorage.getItem('pks_item_specs');
-                        if (storedSpecs) {
-                            try { specsMap = JSON.parse(storedSpecs) || {}; } catch (e) { }
-                        }
-                        specsMap[`${selectedRoom}_${itemId}_${matName.trim()}`] = specs;
-                        specsMap[`${selectedRoom}_${matName.trim()}`] = specs;
-                        specsMap[matName.trim()] = specs;
-                        localStorage.setItem('pks_item_specs', JSON.stringify(specsMap));
-                    }
-
-                    // 4. Trigger cloud sync to propagate to admin panel and all devices
-                    try {
-                        if (window.PKSSync && window.PKSSync.debouncedPush) {
-                            window.PKSSync.debouncedPush(100);
-                        }
-                    } catch (e) { }
-
-                    showToast("Material option added successfully!");
                 } catch (e) { }
-            }
+
+                showToast("New material saved to database & synced to backend!");
+            } catch (e) { }
 
             invalidateMaterialsCache();
             ITEMS = getFullItemsList();
@@ -4010,14 +4095,14 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #b07d2e; padding-bottom: 15px; margin-bottom: 25px;">
                     <div style="width: 50%;">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-                            <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo" style="height: 48px; border-radius: 6px; object-fit: contain;">
+                            <img src="logo.jpg" alt="Pravin Kitchen &amp; Interiors Logo" style="height: 48px; border-radius: 6px; object-fit: contain;">
                             <div>
-                                <h2 style="color: #b07d2e; margin: 0; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; font-family: sans-serif;">Pravin Kitchens &amp; Interiors</h2>
+                                <h2 style="color: #b07d2e; margin: 0; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; font-family: sans-serif;">Pravin Kitchen &amp; Interiors</h2>
                                 <p style="font-weight: 600; font-size: 0.75rem; margin: 2px 0 0 0; color: #7a6e61; text-transform: uppercase; letter-spacing: 0.5px;"></p>
                             </div>
                         </div>
                         <p style="font-size: 0.78rem; line-height: 1.4; color: #7a6e61; margin: 0;">
-                            Address: Pravin Modular Kitchens,<br>
+                            Address: Pravin Modular Kitchen,<br>
                             Tvm Main Road, Azhagiamandapam,<br>
                             Mulagumoodu Post - 629167, T.N.<br>
                             Mobile: +91 9787769970
@@ -4150,7 +4235,7 @@
                     <div style="width: 35%; text-align: center;">
                         <div style="border-bottom: 1px solid #1a1714; height: 40px; margin-bottom: 6px; width: 80%; margin-left: auto; margin-right: auto;"></div>
                         <p style="font-size: 0.72rem; font-weight: 600; color: #1c2820; margin: 0; text-transform: uppercase;">Authorized Signatory</p>
-                        <p style="font-size: 0.62rem; color: #7a6e61; margin: 2px 0 0 0;">Pravin Kitchens &amp; Interiors</p>
+                        <p style="font-size: 0.62rem; color: #7a6e61; margin: 2px 0 0 0;">Pravin Kitchen &amp; Interiors</p>
                     </div>
                 </div>
                 <div style="margin-top: 40px; border-top: 1px solid #e0d6c8; padding-top: 12px; text-align: center;">
@@ -4364,10 +4449,6 @@
                     <td>${q.quoteNo}</td>
                     <td>${q.docType}</td>
                     <td>${q.custName || '—'}</td>
-                    <td>${q.custPhone || '—'}</td>
-                    <td>${q.divisionName}</td>
-                    <td>${uniqueRooms}</td>
-                    <td>${uniqueMaterials}</td>
                     <td>₹${q.totalAmount.toFixed(2)}</td>
                     <td style="text-align: center; white-space: nowrap; gap: 8px;">
                         <button class="confirm-btn" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; background: var(--accent); color: var(--bg);" onclick="loadSavedQuote('${q.id}')">Edit</button>
@@ -4598,10 +4679,12 @@
             if (storedSpecs) {
                 try { specsMap = JSON.parse(storedSpecs) || {}; } catch (e) { }
             }
-            const specificKey = `${selectedRoom}_${itemId}_${opt.label}`;
-            const roomMatKey = `${selectedRoom}_${opt.label}`;
-            specsMap[specificKey] = inputVal;
-            specsMap[roomMatKey] = inputVal;
+            specsMap[`${selectedRoom}_${itemId}_${opt.label}_${modeLabel}`] = inputVal;
+            specsMap[`${selectedRoom}_${opt.label}_${modeLabel}`] = inputVal;
+            specsMap[`${selectedRoom}_${itemId}_${opt.label}`] = inputVal;
+            specsMap[`${selectedRoom}_${opt.label}`] = inputVal;
+            specsMap[`${opt.label}_${modeLabel}`] = inputVal;
+            specsMap[opt.label] = inputVal;
             localStorage.setItem('pks_item_specs', JSON.stringify(specsMap));
 
             // 2. Save in custom_specs_by_id map (Cloud-synced)
@@ -4614,15 +4697,17 @@
                 customSpecs[opt.id || opt.dbId] = inputVal;
             }
             customSpecs[`mat_${selectedRoom}_${opt.label}`] = inputVal;
+            customSpecs[`${selectedRoom}_${opt.label}`] = inputVal;
             localStorage.setItem('pks_custom_specs_by_id', JSON.stringify(customSpecs));
 
             // 3. Save to localStorage database
+            let db = [];
             let stored = localStorage.getItem('pks_materials_db');
             if (stored) {
                 try {
-                    let db = JSON.parse(stored);
+                    db = JSON.parse(stored);
                     db.forEach(m => {
-                        if (m.roomId === selectedRoom && (m.itemName === item.name || m.itemName.toUpperCase() === item.name.toUpperCase()) && m.constructionType === opt.label) {
+                        if (m.constructionType === opt.label || (m.roomId === selectedRoom && m.itemName === item.name)) {
                             m.specifications = inputVal;
                         }
                     });
@@ -4642,12 +4727,10 @@
             // Immediately broadcast & push to Firebase Realtime Database
             try {
                 if (window.PKSSync) {
-                    if (window.PKSSync.pushItemSpecs) {
-                        window.PKSSync.pushItemSpecs(specsMap);
-                    }
-                    if (window.PKSSync.debouncedPush) {
-                        window.PKSSync.debouncedPush(100);
-                    }
+                    if (window.PKSSync.pushItemSpecs) window.PKSSync.pushItemSpecs(specsMap);
+                    if (window.PKSSync.pushCustomSpecsById) window.PKSSync.pushCustomSpecsById(customSpecs);
+                    if (window.PKSSync.pushMaterialsDb) window.PKSSync.pushMaterialsDb(db);
+                    if (window.PKSSync.debouncedPush) window.PKSSync.debouncedPush(50);
                 }
             } catch (e) { }
 
@@ -4715,7 +4798,7 @@
             let activeId = 'quoteModeBtnPremium';
             if (mode === 'medium') activeId = 'quoteModeBtnMedium';
             else if (mode === 'economy') activeId = 'quoteModeBtnEconomy';
-            
+
             const btn = document.getElementById(activeId);
             if (btn) btn.classList.add('active');
 
@@ -4787,12 +4870,24 @@
 
         // Consolidated live-sync listener for updates from Admin panel or Cloud Sync
         function handleExternalDataSync(key) {
-            if (!key || key === 'pks_rates' || key === 'pks_custom_materials' || key === 'pks_custom_items' || key === 'pks_item_specs' || key === 'pks_custom_specs_by_id' || key === 'pks_deleted_standard_materials' || key === 'pks_deleted_standard_items') {
+            if (!key || key === 'pks_materials_db' || key === 'pks_rates' || key === 'pks_custom_materials' || key === 'pks_custom_items' || key === 'pks_item_specs' || key === 'pks_custom_specs_by_id' || key === 'pks_deleted_standard_materials' || key === 'pks_deleted_standard_items') {
                 invalidateMaterialsCache();
                 ITEMS = getFullItemsList();
                 const activeBuilders = document.querySelectorAll('.builder');
                 if (activeBuilders.length === 0) {
                     renderItemsGrid();
+                } else {
+                    document.querySelectorAll('[id$="-specs-text"]').forEach(block => {
+                        const buildId = block.id.replace('-specs-text', '');
+                        const itemId = parseInt(buildId.split('-')[0]) || null;
+                        if (itemId) {
+                            const item = ITEMS.find(i => i.id === itemId);
+                            if (item && item.options && item.options[0]) {
+                                const effSpecs = getEffectiveSpecs(selectedRoom, itemId, item.options[0].label, item.options[0].specifications);
+                                block.textContent = formatSpecificationsText(effSpecs, selectedRoom, item.options[0].label) || "No specifications added. Click edit icon to add.";
+                            }
+                        }
+                    });
                 }
             }
         }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pravin Kitchens &amp; Interiors — Select Division</title>
+    <title>Pravin Kitchen &amp; Interiors — Select Division</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
@@ -299,9 +299,9 @@
 
     <header>
         <div class="header-left">
-            <img src="logo.jpg" alt="Pravin Kitchens &amp; Interiors Logo">
+            <img src="logo.jpg" alt="Pravin Kitchen &amp; Interiors Logo">
             <div>
-                <h1>Pravin Kitchens &amp; Interiors <span class="role-badge" id="roleBadge">Loading...</span></h1>
+                <h1>Pravin Kitchen &amp; Interiors <span class="role-badge" id="roleBadge">Loading...</span></h1>
                 <div
                     style="font-size:0.75rem; color:var(--muted); margin-top:2px; text-transform:uppercase; letter-spacing:1.5px;">
                     Select Division</div>
@@ -363,10 +363,6 @@
                             <th>No.</th>
                             <th>Type</th>
                             <th>Customer</th>
-                            <th>Phone</th>
-                            <th>Division</th>
-                            <th>Room</th>
-                            <th>Material</th>
                             <th>Amount</th>
                             <th style="text-align: center;">Actions</th>
                         </tr>
@@ -597,10 +593,6 @@
                     <td>${q.quoteNo}</td>
                     <td>${q.docType}</td>
                     <td>${q.custName || '—'}</td>
-                    <td>${q.custPhone || '—'}</td>
-                    <td>${q.divisionName}</td>
-                    <td>${uniqueRooms}</td>
-                    <td>${uniqueMaterials}</td>
                     <td>₹${q.totalAmount.toFixed(2)}</td>
                     <td style="text-align: center; white-space: nowrap; gap: 8px;">
                         <button class="logout-btn" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; background: var(--accent); color: var(--bg); border: none;" onclick="loadSavedQuote('${q.id}')">Edit</button>

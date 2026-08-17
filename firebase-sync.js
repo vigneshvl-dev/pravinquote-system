@@ -1,5 +1,5 @@
 /**
- * Pravin Kitchens & Interiors - Realtime Firebase Cloud Sync
+ * Pravin Kitchen & Interiors - Realtime Firebase Cloud Sync
  * Automatically syncs rates, specifications, custom materials, custom items, divisions, deleted configurations, and saved quotes across all devices.
  * High-performance edition: debounced cloud pushes, loop prevention, and optimized memory footprint.
  */
@@ -139,6 +139,7 @@ window.PKSSync = {
             };
 
             syncKey('pks/rates', 'pks_rates');
+            syncKey('pks/materials_db', 'pks_materials_db');
             syncKey('pks/item_specs', 'pks_item_specs');
             syncKey('pks/custom_specs_by_id', 'pks_custom_specs_by_id');
             syncKey('pks/custom_materials', 'pks_custom_materials');
@@ -172,6 +173,9 @@ window.PKSSync = {
 
                 if (!data.rates && localStorage.getItem('pks_rates')) {
                     try { updates['pks/rates'] = JSON.parse(localStorage.getItem('pks_rates')); } catch (e) { }
+                }
+                if (!data.materials_db && localStorage.getItem('pks_materials_db')) {
+                    try { updates['pks/materials_db'] = JSON.parse(localStorage.getItem('pks_materials_db')); } catch (e) { }
                 }
                 if (!data.item_specs && localStorage.getItem('pks_item_specs')) {
                     try { updates['pks/item_specs'] = JSON.parse(localStorage.getItem('pks_item_specs')); } catch (e) { }
@@ -229,6 +233,18 @@ window.PKSSync = {
         }
     },
 
+    pushMaterialsDb(materialsDbArr) {
+        try {
+            if (this.db) {
+                this.db.ref('pks/materials_db').set(materialsDbArr);
+                return;
+            }
+        } catch (e) { }
+        if (this.dbUrl) {
+            fetch(`${this.dbUrl}/pks/materials_db.json`, { method: 'PUT', body: JSON.stringify(materialsDbArr) }).catch(() => { });
+        }
+    },
+
     pushItemSpecs(specsObj) {
         try {
             if (this.db) {
@@ -238,6 +254,18 @@ window.PKSSync = {
         } catch (e) { }
         if (this.dbUrl) {
             fetch(`${this.dbUrl}/pks/item_specs.json`, { method: 'PUT', body: JSON.stringify(specsObj) }).catch(() => { });
+        }
+    },
+
+    pushCustomSpecsById(customSpecsObj) {
+        try {
+            if (this.db) {
+                this.db.ref('pks/custom_specs_by_id').set(customSpecsObj);
+                return;
+            }
+        } catch (e) { }
+        if (this.dbUrl) {
+            fetch(`${this.dbUrl}/pks/custom_specs_by_id.json`, { method: 'PUT', body: JSON.stringify(customSpecsObj) }).catch(() => { });
         }
     },
 
@@ -319,6 +347,9 @@ window.PKSSync = {
         if (localStorage.getItem('pks_rates')) {
             try { payload.rates = JSON.parse(localStorage.getItem('pks_rates')); } catch (e) { }
         }
+        if (localStorage.getItem('pks_materials_db')) {
+            try { payload.materials_db = JSON.parse(localStorage.getItem('pks_materials_db')); } catch (e) { }
+        }
         if (localStorage.getItem('pks_item_specs')) {
             try { payload.item_specs = JSON.parse(localStorage.getItem('pks_item_specs')); } catch (e) { }
         }
@@ -368,6 +399,7 @@ window.PKSSync = {
             if (data && typeof data === 'object') {
                 let changed = false;
                 if (data.rates && this.setLocalItemSilently('pks_rates', JSON.stringify(data.rates))) changed = true;
+                if (data.materials_db && this.setLocalItemSilently('pks_materials_db', JSON.stringify(data.materials_db))) changed = true;
                 if (data.item_specs && this.setLocalItemSilently('pks_item_specs', JSON.stringify(data.item_specs))) changed = true;
                 if (data.custom_specs_by_id && this.setLocalItemSilently('pks_custom_specs_by_id', JSON.stringify(data.custom_specs_by_id))) changed = true;
                 if (data.custom_materials && this.setLocalItemSilently('pks_custom_materials', JSON.stringify(data.custom_materials))) changed = true;
